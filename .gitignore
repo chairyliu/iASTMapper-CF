@@ -2,3 +2,5 @@ target/
 ase2023/
 .idea/
 paperData/
+!*.java
+

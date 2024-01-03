@@ -3,4 +3,6 @@ ase2023/
 .idea/
 paperData/
 !*.java
+!/src/test/java/ase2023
+
 

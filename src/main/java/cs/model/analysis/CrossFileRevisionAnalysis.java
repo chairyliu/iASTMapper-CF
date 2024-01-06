@@ -10,7 +10,6 @@ import org.apache.commons.text.similarity.CosineSimilarity;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
-import java.math.BigDecimal;
 import java.util.*;
 
 public class CrossFileRevisionAnalysis {
@@ -34,6 +33,8 @@ public class CrossFileRevisionAnalysis {
     public static double comparisonSimilarity;
 
     public double mp_similarity;
+
+    public double cross_similarity;
 
     public CrossFileRevisionAnalysis(String project, String commitId) throws Exception {
         this.project = project;
@@ -82,7 +83,6 @@ public class CrossFileRevisionAnalysis {
             this.methodDeclarationNum += tmpSrcMethodDeclarations.size();
             this.dstMethodDeclarations = new HashSet<ITree>();
             for (String dstPath : dstFilePathMapFiltered.keySet()) {
-//                System.out.println(dstPath);
                 ByteArrayOutputStream dstFileStream = GitUtils
                         .getFileContentOfCommitFile(project, commitId, dstPath);
                 dstFileContent = dstFileStream.toString("UTF-8");
@@ -117,15 +117,15 @@ public class CrossFileRevisionAnalysis {
                 int flag = 0;
                 for (ITree dstMethodDeclaration : this.dstMethodDeclarations) {
                     if (compareTwo(tmpSrcMethodDeclaration, dstMethodDeclaration)){
-                        double cross_similarity = getComparisonSimilarity();
+                        cross_similarity = getComparisonSimilarity();
 //                        System.out.println(cross_similarity);
- //                       if(mp_similarity < 0.9999999999999998){
+                        if(mp_similarity < 0.9999999999999998){
                             if(mp_similarity < cross_similarity) {
 //                                System.out.println("9");
                                 flag = 1;
                                 break;
                             }
-                       // }
+                        }
                     }
                 }
                 if (flag == 1){
@@ -164,10 +164,15 @@ public class CrossFileRevisionAnalysis {
         Map<CharSequence, Integer> dstMaptokens = convertToMap(dstTokens);
         CosineSimilarity cosineSimilarity = new CosineSimilarity();
         comparisonSimilarity = cosineSimilarity.cosineSimilarity(srcMaptokens, dstMaptokens);
-        BigDecimal srcBigDecimal = BigDecimal.valueOf(comparisonSimilarity);
-//        System.out.println(srcBigDecimal);
-        BigDecimal threshold = new BigDecimal("0.8");
-        return srcBigDecimal.compareTo(threshold) >= 0;
+        return comparisonSimilarity >= 0.8;
+//        if (comparisonSimilarity >= 0.8){
+//            System.out.println("123");
+//            return true;
+//        }else
+//            return false;
+//        BigDecimal srcBigDecimal = BigDecimal.valueOf(comparisonSimilarity);
+//        BigDecimal threshold = new BigDecimal("0.8");
+//        return srcBigDecimal.compareTo(threshold) >= 0;
     }
 //        int editDistance = calculateTokenEditDistance(tokens1, tokens2);
 //        int editDistance = LevenshteinDistance.getDefaultInstance().apply(srcString, dstString);
@@ -279,7 +284,7 @@ public class CrossFileRevisionAnalysis {
          * 8f55d404affc0e4ab556ae1937a1ff8d21cdb368
          * project name: activemq
          */
-        CrossFileRevisionAnalysis instance = new CrossFileRevisionAnalysis("activemq", "8f55d404affc0e4ab556ae1937a1ff8d21cdb368");
+        CrossFileRevisionAnalysis instance = new CrossFileRevisionAnalysis("activemq", "ad1f751a412ddb258256c1e8d2e72858b52f43ca");
         System.out.println((100 * instance.crossTransferMethodDeclarationNum) / instance.methodDeclarationNum + "%");
 
         /**

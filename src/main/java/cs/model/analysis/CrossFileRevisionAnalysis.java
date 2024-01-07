@@ -148,16 +148,14 @@ public class CrossFileRevisionAnalysis {
                         if(mp_similarity < 1.0){
                             if(mp_similarity < cross_similarity) {
 //                               System.out.println("9");
-                                flag = 1;
-//                                if (cross_similarity < 0.5) {System.out.println(cross_similarity);
-//                                    System.out.println("gemenerbuzhiyu");}
-                                break;
+                               flag += 1;
+                               // break;
                             }
                         }
                     }
                 }
-                if (flag == 1){
-                    this.crossTransferMethodDeclarationNum += 1;
+                if (flag > 0){
+                    this.crossTransferMethodDeclarationNum += flag;
 //                        System.out.println("wofengla");
                 }
             }

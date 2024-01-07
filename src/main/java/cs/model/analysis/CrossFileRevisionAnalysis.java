@@ -33,11 +33,11 @@ public class CrossFileRevisionAnalysis {
 
     public Integer crossTransferMethodDeclarationNum;
 
-    public static double comparisonSimilarity;
+//    public static double comparisonSimilarity;
 
 //    public double mp_similarity;
 
-    public double cross_similarity;
+//    public double cross_similarity;
 
     public CrossFileRevisionAnalysis(String project, String commitId) throws Exception {
         this.project = project;
@@ -66,7 +66,7 @@ public class CrossFileRevisionAnalysis {
             // 对于每一个src，过滤出一个不含其本身的dst map
             Map<String, String> dstFilePathMapFiltered = new HashMap<String, String>();
             dstFilePathMapFiltered.putAll(dstFilePathMap);
-//            dstFilePathMapFiltered.remove(srcPath);//删除-ljy
+//            dstFilePathMapFiltered.remove(srcPath);
 //            System.out.println("checkPoint");
             // 获取其srcFileContent
             ByteArrayOutputStream srcFileStream = GitUtils
@@ -93,11 +93,15 @@ public class CrossFileRevisionAnalysis {
                     dstFileContent = null;
                     return;
                 }
-                ITree tmp_dst = GumTreeUtil.getITreeRoot(dstFileContent, this.used_ASTType);
+                ITree tmp_dst = null;
+                try {
+                    tmp_dst = GumTreeUtil.getITreeRoot(dstFileContent, this.used_ASTType);
+                } catch (Exception e){
+                    break;
+                }
                 Set<ITree> tmpDstMethodDeclarations = DeclarationUtil.getMethodDeclarations(tmp_dst);
                 this.dstMethodDeclarations.addAll(tmpDstMethodDeclarations);
 //                System.out.println(this.dstMethodDeclarations);
-                //93-102行新补充-ljy
                 if (srcPath.equals(dstPath)){
                     List<ITree> dstMethodsToRemove = new ArrayList<>();
 //                    List<ITree> srcMethodsToRemove = new ArrayList<>();
@@ -107,7 +111,7 @@ public class CrossFileRevisionAnalysis {
                             StringBuilder mp_dstContent = tree2String(mp_tmpDstMethodDeclaration);
                             if (mp_srcContent.toString().equals(mp_dstContent.toString())){
                                 dstMethodsToRemove.add(mp_tmpDstMethodDeclaration);
-                                double mp_similarity = 1;
+                                double mp_similarity = 1.0;
 //                                Map<ITree, Double> tmpMap = new HashMap<>();
 //                                tmpMap.put(mp_tmpDstMethodDeclaration, mp_similarity);
                                 mpSimMap.put(mp_tmpSrcMethodDeclaration, mp_similarity);
@@ -122,7 +126,6 @@ public class CrossFileRevisionAnalysis {
                                 if(e_sim < mp_similarity) {
                                     mpSimMap.put(mp_tmpSrcMethodDeclaration, mp_similarity);
                                 }
-
 //                              System.out.println(mp_tmpDstMethodDeclaration);
                                 dstMethodsToRemove.add(mp_tmpDstMethodDeclaration);
                             }
@@ -135,17 +138,14 @@ public class CrossFileRevisionAnalysis {
             }
 //            System.out.println("6");
             // tmpSrcMethodDeclarations中每一个元素分别看，是不是在dstMethodDeclarations里。
-//            System.out.println(5);
             for (ITree tmpSrcMethodDeclaration : tmpSrcMethodDeclarations) {
                 int flag = 0;
                 for (ITree dstMethodDeclaration : this.dstMethodDeclarations) {
-                    if (compareTwo(tmpSrcMethodDeclaration, dstMethodDeclaration) >= 0.8){
-                        cross_similarity = getComparisonSimilarity();
-
-
+                    double cross_similarity = compareTwo(tmpSrcMethodDeclaration, dstMethodDeclaration);
+                    if (cross_similarity >= 0.8){
                         double mp_similarity = mpSimMap.get(tmpSrcMethodDeclaration);
-                        System.out.println(mp_similarity);
-                        if(mp_similarity < 1){
+//                        System.out.println(mp_similarity);
+                        if(mp_similarity < 1.0){
                             if(mp_similarity < cross_similarity) {
 //                               System.out.println("9");
                                 flag = 1;
@@ -171,9 +171,9 @@ public class CrossFileRevisionAnalysis {
         }
     }
 
-    public static double getComparisonSimilarity() {
-        return comparisonSimilarity;
-    }
+//    public static double getComparisonSimilarity() {
+//        return comparisonSimilarity;
+//    }
 
     /**
      * public static boolean compareTwo(ITree src)
@@ -191,17 +191,19 @@ public class CrossFileRevisionAnalysis {
         String[] dstTokens = dstString.split("\\s+");
         Map<CharSequence, Integer> srcMaptokens = convertToMap(srcTokens);
         Map<CharSequence, Integer> dstMaptokens = convertToMap(dstTokens);
+//        CosineSimilarity simEngine = new CosineSimilarity();
         CosSimilarity simEngine = new CosSimilarity();
-        comparisonSimilarity = simEngine.cosineSimilarity(srcMaptokens, dstMaptokens);
+        double comparisonSimilarity = simEngine.cosineSimilarity(srcMaptokens, dstMaptokens);
+//        System.out.println("========");
+//        System.out.println(comparisonSimilarity);
+//        System.out.println("========");
+//        if (comparisonSimilarity >= 0.8){
+//            System.out.println("higher");
+//        }
 //        CosineSimilarity cosineSimilarity = new CosineSimilarity();
 //        comparisonSimilarity = cosineSimilarity.cosineSimilarity(srcMaptokens, dstMaptokens);
 //        comparisonSimilarity = mitigateRound(comparisonSimilarity, 4, BigDecimal.ROUND_HALF_UP);
         return comparisonSimilarity;
-//        if (comparisonSimilarity >= 0.8){
-//            System.out.println("123");
-//            return true;
-//        }else
-//            return false;
 //        BigDecimal srcBigDecimal = BigDecimal.valueOf(comparisonSimilarity);
 //        BigDecimal threshold = new BigDecimal("0.8");
 //        return srcBigDecimal.compareTo(threshold) >= 0;
@@ -327,6 +329,8 @@ public class CrossFileRevisionAnalysis {
          * project name: activemq
          */
         CrossFileRevisionAnalysis instance = new CrossFileRevisionAnalysis("activemq", "fb3b6dba571b9dbffaac45ac920037760ceb6dbc");
+        System.out.println(instance.methodDeclarationNum);
+        System.out.println(instance.crossTransferMethodDeclarationNum);
         System.out.println((100 * instance.crossTransferMethodDeclarationNum) / instance.methodDeclarationNum + "%");
 
         /**
@@ -341,13 +345,13 @@ public class CrossFileRevisionAnalysis {
 ////        System.out.println(commitSet.size());
 ////        System.out.println(commitSet);
 //        // only remain 100 elements in commitSet
-//        while (commitSet.size() > 30){
+//        while (commitSet.size() > 1500){
 //            commitSet.remove(commitSet.iterator().next());
 //        }
 //        Integer totalCrossTransferMethodDeclarationNum = 0;
 //        Integer totalMethodDeclarationNum = 0;
 //        for (String commitId : commitSet){
-//            if(!commitId.equals("58aca869816e893e7a2f34f0708c1d7fcbdca0f5") && !commitId.equals("7077d2b910405dea7a60c5140824966ffebc66a8")){
+//            if(!commitId.equals("58aca869816e893e7a2f34f0708c1d7fcbdca0f5")){
 //                CrossFileRevisionAnalysis instanceTmp = new CrossFileRevisionAnalysis("activemq", commitId);
 //                totalCrossTransferMethodDeclarationNum += instanceTmp.crossTransferMethodDeclarationNum;
 //                totalMethodDeclarationNum += instanceTmp.methodDeclarationNum;

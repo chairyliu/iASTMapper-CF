@@ -9,6 +9,7 @@ import cs.model.utils.CosSimilarity;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileReader;
 import java.util.*;
 
@@ -19,8 +20,8 @@ public class CrossFileRevisionAnalysis {
     protected String project;
     protected String commitId;
     protected String baseCommitId;
-    protected Map<String, String> srcFilePathMap;
-    protected Map<String, String> dstFilePathMap;
+    public Map<String, String> srcFilePathMap;
+    public Map<String, String> dstFilePathMap;
     protected String srcFileContent;
     protected String dstFileContent;
     public Set<ITree> srcMethodDeclarations;
@@ -30,6 +31,7 @@ public class CrossFileRevisionAnalysis {
     public static String used_ASTType = "gt";
 
     public Integer methodDeclarationNum;
+    public List<String> crossList = new ArrayList<>();
 
     public Integer crossTransferMethodDeclarationNum;
 
@@ -42,10 +44,20 @@ public class CrossFileRevisionAnalysis {
     public CrossFileRevisionAnalysis(String project, String commitId) throws Exception {
         this.project = project;
         this.commitId = commitId;
+        System.out.println("===================================");
+//                String commitID = "fb3b6dba571b9dbffaac45ac920037760ceb6dbc";
+        System.out.println("Commit: " + commitId);
+        System.out.println("===================================");
         String baseCommitId = GitUtils.getBaseCommitId(project, commitId);
         this.baseCommitId = baseCommitId;
         // old path 等价于
-        this.srcFilePathMap = GitInfoRetrieval.getOldModifiedFileMap(project, commitId);
+        try {
+            this.srcFilePathMap = GitInfoRetrieval.getOldModifiedFileMap(project, commitId);
+        }
+        catch (Exception e){
+            srcFilePathMap = null;
+            return;
+        }
         // new path 等价于
         this.dstFilePathMap = new HashMap<String, String>();
         for (String key : srcFilePathMap.keySet()) {
@@ -62,6 +74,7 @@ public class CrossFileRevisionAnalysis {
 
 //        System.out.println("testpoint");
         for (String srcPath : srcFilePathMap.keySet()) {
+//            System.out.println(srcPath);
             Map<ITree, Double> mpSimMap = new HashMap<>();
             // 对于每一个src，过滤出一个不含其本身的dst map
             Map<String, String> dstFilePathMapFiltered = new HashMap<String, String>();
@@ -82,10 +95,25 @@ public class CrossFileRevisionAnalysis {
             Set<ITree> tmpSrcMethodDeclarations = DeclarationUtil.getMethodDeclarations(tmp_src);
             // save the whole method declarations
             this.srcMethodDeclarations.addAll(tmpSrcMethodDeclarations);
+            // format printer step2:
+            System.out.println("=================");
+            System.out.println("File: " + srcPath);
+            System.out.println("=================");
+            int t = 0;
+            for (ITree tmpSrcMethodDeclaration : tmpSrcMethodDeclarations) {
+                System.out.println("Method " + ++t + ": ");
+                System.out.println(TreePrinter(tmpSrcMethodDeclaration));
+            }
+
             // update counter num;
             this.methodDeclarationNum += tmpSrcMethodDeclarations.size();
             this.dstMethodDeclarations = new HashSet<ITree>();
+            Map<ITree, String> reverseProjectMap = new HashMap<>();
             for (String dstPath : dstFilePathMapFiltered.keySet()) {
+//                System.out.println(dstPath);
+//                if (dstPath.equals("activemq-core/src/main/java/org/apache/activemq/state/CommandVisitorAdapter.java")){
+//                    System.out.println("666");
+//                }
                 ByteArrayOutputStream dstFileStream = GitUtils
                         .getFileContentOfCommitFile(project, commitId, dstPath);
                 dstFileContent = dstFileStream.toString("UTF-8");
@@ -100,6 +128,9 @@ public class CrossFileRevisionAnalysis {
                     break;
                 }
                 Set<ITree> tmpDstMethodDeclarations = DeclarationUtil.getMethodDeclarations(tmp_dst);
+                for (ITree declaration : tmpDstMethodDeclarations) {
+                    reverseProjectMap.put(declaration, dstPath);
+                }
                 this.dstMethodDeclarations.addAll(tmpDstMethodDeclarations);
 //                System.out.println(this.dstMethodDeclarations);
                 if (srcPath.equals(dstPath)){
@@ -123,12 +154,15 @@ public class CrossFileRevisionAnalysis {
 //                                Map<ITree, Double> tmpMap = new HashMap<>();
 //                                tmpMap.put(mp_tmpDstMethodDeclaration, mp_similarity);
                                 Double e_sim = mpSimMap.getOrDefault(mp_tmpSrcMethodDeclaration, 0.0);
-                                if(e_sim < mp_similarity) {
+                                if(e_sim <= mp_similarity) {
                                     mpSimMap.put(mp_tmpSrcMethodDeclaration, mp_similarity);
                                 }
 //                              System.out.println(mp_tmpDstMethodDeclaration);
                                 dstMethodsToRemove.add(mp_tmpDstMethodDeclaration);
                             }
+//                            if (mpSimMap.size() == 0){
+//                                System.out.println("不是哥们儿你咋了");
+//                            }
                         }
                     }
                     this.dstMethodDeclarations.removeAll(dstMethodsToRemove);
@@ -142,14 +176,45 @@ public class CrossFileRevisionAnalysis {
                 int flag = 0;
                 for (ITree dstMethodDeclaration : this.dstMethodDeclarations) {
                     double cross_similarity = compareTwo(tmpSrcMethodDeclaration, dstMethodDeclaration);
+//                    if (srcPath.equals("activemq-core/src/main/java/org/apache/activemq/state/ConnectionStateTracker.java")){
+//                        int a  =3;
+//                        if (reverseProjectMap.get(dstMethodDeclaration).equals("activemq-core/src/main/java/org/apache/activemq/ActiveMQConnection.java")){
+//                            a = 2;
+//                            for (ITree child : dstMethodDeclaration.getChildren()) {
+////                                System.out.println(child.getType().name);
+//                                if (child.getType().name.equals("SimpleName")){
+//                                    System.out.println("666");
+//                                    System.out.println(child.getLabel());
+//                                    if (child.getLabel().equals("processBrokerInfo")){
+//                                        a = 4;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
                     if (cross_similarity >= 0.8){
-                        double mp_similarity = mpSimMap.get(tmpSrcMethodDeclaration);
+//                        if (reverseProjectMap.get(dstMethodDeclaration).equals("activemq-core/src/main/java/org/apache/activemq/ActiveMQConnection.java")){
+//                            int a = 2;
+//                        }
+                        double mp_similarity = mpSimMap.getOrDefault(tmpSrcMethodDeclaration, 0.0);
 //                        System.out.println(mp_similarity);
                         if(mp_similarity < 1.0){
+//                            if (reverseProjectMap.get(dstMethodDeclaration).equals("activemq-core/src/main/java/org/apache/activemq/ActiveMQConnection.java")){
+//                                int a = 2;
+//                            }
                             if(mp_similarity < cross_similarity) {
 //                               System.out.println("9");
-                               flag = 1;
-                               break;
+                                boolean f = checkForReverse(dstMethodDeclaration, reverseProjectMap.get(dstMethodDeclaration));
+                                if (!f){
+                                    continue;
+                                }
+                                String r = "In file: " + srcPath + "\n" + "[" + TreePrinter(tmpSrcMethodDeclaration) + "] ----> "
+                                        + "\n" + reverseProjectMap.get(dstMethodDeclaration) + "-[" + TreePrinter(dstMethodDeclaration) + "]"
+                                        + "\n" +"Similarity: " +cross_similarity + "\n\n";
+                                System.out.print(r);
+                                crossList.add(r);
+                                flag = 1;
+//                                break;
                             }
                         }
                     }
@@ -162,16 +227,47 @@ public class CrossFileRevisionAnalysis {
             // clear tmp declaration set
             tmpSrcMethodDeclarations.clear();
             mpSimMap.clear();
-//            System.out.println("methodDeclarationNum");
-//            System.out.println(this.methodDeclarationNum);
-//            System.out.println("crossTransferMethodDeclarationNum");
-//            System.out.println(this.crossTransferMethodDeclarationNum);
+            reverseProjectMap.clear();
         }
     }
 
-//    public static double getComparisonSimilarity() {
-//        return comparisonSimilarity;
-//    }
+    private boolean checkForReverse(ITree declaration, String file) throws Exception {
+//        if (file.equals("activemq-core/src/main/java/org/apache/activemq/state/CommandVisitorAdapter.java")){
+//            System.out.println('t');
+//        }
+//        System.out.println("tttest");
+//        System.out.println(file);
+        ByteArrayOutputStream srcFileStream = null;
+        try {
+            srcFileStream = GitUtils
+                    .getFileContentOfCommitFile(project, this.baseCommitId, file);
+        } catch (Exception e){
+            return true;
+        }
+        String srcFileContent = srcFileStream.toString("UTF-8");
+        if (srcFileContent.equals("")){
+            srcFileContent = null;
+            return true;
+        }
+        // generate src_tree
+        ITree tmp_src = GumTreeUtil.getITreeRoot(srcFileContent, this.used_ASTType);
+        // get all method declarations
+        Set<ITree> declarations = DeclarationUtil.getMethodDeclarations(tmp_src);
+        StringBuilder uncheckedContent = tree2String(declaration);
+        for (ITree node : declarations) {
+            StringBuilder src_content = tree2String(node);
+            if (src_content.toString().equals(uncheckedContent.toString())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static String TreePrinter(ITree node){
+        StringBuilder builder = tree2String(node);
+        String res = builder.toString();
+        return res;
+    }
 
     /**
      * public static boolean compareTwo(ITree src)
@@ -192,19 +288,10 @@ public class CrossFileRevisionAnalysis {
 //        CosineSimilarity simEngine = new CosineSimilarity();
         CosSimilarity simEngine = new CosSimilarity();
         double comparisonSimilarity = simEngine.cosineSimilarity(srcMaptokens, dstMaptokens);
-//        System.out.println("========");
-//        System.out.println(comparisonSimilarity);
-//        System.out.println("========");
-//        if (comparisonSimilarity >= 0.8){
-//            System.out.println("higher");
-//        }
 //        CosineSimilarity cosineSimilarity = new CosineSimilarity();
 //        comparisonSimilarity = cosineSimilarity.cosineSimilarity(srcMaptokens, dstMaptokens);
 //        comparisonSimilarity = mitigateRound(comparisonSimilarity, 4, BigDecimal.ROUND_HALF_UP);
         return comparisonSimilarity;
-//        BigDecimal srcBigDecimal = BigDecimal.valueOf(comparisonSimilarity);
-//        BigDecimal threshold = new BigDecimal("0.8");
-//        return srcBigDecimal.compareTo(threshold) >= 0;
     }
 //        int editDistance = calculateTokenEditDistance(tokens1, tokens2);
 //        int editDistance = LevenshteinDistance.getDefaultInstance().apply(srcString, dstString);
@@ -326,36 +413,63 @@ public class CrossFileRevisionAnalysis {
          * 8f55d404affc0e4ab556ae1937a1ff8d21cdb368
          * project name: activemq
          */
-        CrossFileRevisionAnalysis instance = new CrossFileRevisionAnalysis("activemq", "fb3b6dba571b9dbffaac45ac920037760ceb6dbc");
-        System.out.println(instance.methodDeclarationNum);
-        System.out.println(instance.crossTransferMethodDeclarationNum);
-        System.out.println((100 * instance.crossTransferMethodDeclarationNum) / instance.methodDeclarationNum + "%");
+//        System.out.println("===================================");
+//        String commitID = "fb3b6dba571b9dbffaac45ac920037760ceb6dbc";
+//        System.out.println("Commit: " + commitID);
+//        System.out.println("===================================");
+//        CrossFileRevisionAnalysis instance = new CrossFileRevisionAnalysis("activemq", commitID);
+//        System.out.println(instance.methodDeclarationNum);
+//        System.out.println(instance.crossTransferMethodDeclarationNum);
+//        System.out.println("The rate of cross transfer method is: ");
+//        System.out.println((100 * instance.crossTransferMethodDeclarationNum) / instance.methodDeclarationNum + "%");
+//
+//        System.out.println("=============================");
+//        for (String s : instance.crossList) {
+//            System.out.println(s);
+//        }
+//        System.out.println("=============================");
 
+//        CommitAnalysis commitAnalysis = new CommitAnalysis("activemq", "fb3b6dba571b9dbffaac45ac920037760ceb6dbc");
+//        commitAnalysis.calResultMappings(false, false);
         /**
          * test point for one project
          * project name: activemq
          */
-//        String project = "activemq";
-//        String filePath = "ase2023" + File.separator + "project_commits-1" + File.separator + project + ".txt";
-//        List<String> commitList = getCommitList(project,filePath);
-//        // transfer commitList to set
-//        Set<String> commitSet = new HashSet<>(commitList);
-////        System.out.println(commitSet.size());
-////        System.out.println(commitSet);
-//        // only remain 100 elements in commitSet
-//        while (commitSet.size() > 100){
-//            commitSet.remove(commitSet.iterator().next());
-//        }
-//        Integer totalCrossTransferMethodDeclarationNum = 0;
-//        Integer totalMethodDeclarationNum = 0;
-//        for (String commitId : commitSet){
-//            if(!commitId.equals("58aca869816e893e7a2f34f0708c1d7fcbdca0f5") && !commitId.equals("fb3b6dba571b9dbffaac45ac920037760ceb6dbc")){
-//                CrossFileRevisionAnalysis instanceTmp = new CrossFileRevisionAnalysis("activemq", commitId);
-//                totalCrossTransferMethodDeclarationNum += instanceTmp.crossTransferMethodDeclarationNum;
-//                totalMethodDeclarationNum += instanceTmp.methodDeclarationNum;
-//                System.out.println(commitId + " finished");
-//            }
-//        }
-//        System.out.println((100*totalCrossTransferMethodDeclarationNum) / totalMethodDeclarationNum +"%");
+        String project = "activemq";
+        String filePath = "ase2023" + File.separator + "project_commits-1" + File.separator + project + ".txt";
+        List<String> commitList = getCommitList(project,filePath);
+        // transfer commitList to set
+        Set<String> commitSet = new HashSet<>(commitList);
+//        System.out.println(commitSet.size());
+//        System.out.println(commitSet);
+        // only remain 100 elements in commitSet
+        while (commitSet.size() > 200){
+            commitSet.remove(commitSet.iterator().next());
+        }
+        Integer totalCrossTransferMethodDeclarationNum = 0;
+        Integer totalMethodDeclarationNum = 0;
+        for (String commitId : commitSet){
+            if(!commitId.equals("58aca869816e893e7a2f34f0708c1d7fcbdca0f5") && !commitId.equals("fb3b6dba571b9dbffaac45ac920037760ceb6dbc")){
+                CrossFileRevisionAnalysis instanceTmp = new CrossFileRevisionAnalysis("activemq", commitId);
+                if (instanceTmp.srcFilePathMap == null) {
+                    continue;
+                }
+                totalCrossTransferMethodDeclarationNum += instanceTmp.crossTransferMethodDeclarationNum;
+                totalMethodDeclarationNum += instanceTmp.methodDeclarationNum;
+
+                System.out.println("=============================");
+
+                System.out.println((instanceTmp.methodDeclarationNum != 0 ? ((100 * instanceTmp.crossTransferMethodDeclarationNum) / instanceTmp.methodDeclarationNum) : "0") + "%");
+                System.out.println("=============================");
+                for (String s : instanceTmp.crossList) {
+                    System.out.println(s);
+                }
+                System.out.println(commitId + " finished");
+            }
+        }
+        System.out.println("=============================");
+        System.out.println("The total rate of cross transfer method is: ");
+        System.out.println((100*totalCrossTransferMethodDeclarationNum) / totalMethodDeclarationNum +"%");
+        System.out.println("=============================");
     }
 }

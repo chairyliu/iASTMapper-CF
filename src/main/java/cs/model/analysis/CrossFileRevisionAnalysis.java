@@ -148,14 +148,14 @@ public class CrossFileRevisionAnalysis {
                         if(mp_similarity < 1.0){
                             if(mp_similarity < cross_similarity) {
 //                               System.out.println("9");
-                               flag += 1;
-                               // break;
+                               flag = 1;
+                               break;
                             }
                         }
                     }
                 }
-                if (flag > 0){
-                    this.crossTransferMethodDeclarationNum += flag;
+                if (flag == 1){
+                    this.crossTransferMethodDeclarationNum += 1;
 //                        System.out.println("wofengla");
                 }
             }
@@ -343,13 +343,13 @@ public class CrossFileRevisionAnalysis {
 ////        System.out.println(commitSet.size());
 ////        System.out.println(commitSet);
 //        // only remain 100 elements in commitSet
-//        while (commitSet.size() > 1500){
+//        while (commitSet.size() > 100){
 //            commitSet.remove(commitSet.iterator().next());
 //        }
 //        Integer totalCrossTransferMethodDeclarationNum = 0;
 //        Integer totalMethodDeclarationNum = 0;
 //        for (String commitId : commitSet){
-//            if(!commitId.equals("58aca869816e893e7a2f34f0708c1d7fcbdca0f5")){
+//            if(!commitId.equals("58aca869816e893e7a2f34f0708c1d7fcbdca0f5") && !commitId.equals("fb3b6dba571b9dbffaac45ac920037760ceb6dbc")){
 //                CrossFileRevisionAnalysis instanceTmp = new CrossFileRevisionAnalysis("activemq", commitId);
 //                totalCrossTransferMethodDeclarationNum += instanceTmp.crossTransferMethodDeclarationNum;
 //                totalMethodDeclarationNum += instanceTmp.methodDeclarationNum;

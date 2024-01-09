@@ -31,6 +31,7 @@ public class CrossFileRevisionAnalysis {
     public static String used_ASTType = "gt";
 
     public Integer methodDeclarationNum;
+
     public List<String> crossList = new ArrayList<>();
 
     public Integer crossTransferMethodDeclarationNum;
@@ -45,7 +46,6 @@ public class CrossFileRevisionAnalysis {
         this.project = project;
         this.commitId = commitId;
         System.out.println("===================================");
-//                String commitID = "fb3b6dba571b9dbffaac45ac920037760ceb6dbc";
         System.out.println("Commit: " + commitId);
         System.out.println("===================================");
         String baseCommitId = GitUtils.getBaseCommitId(project, commitId);
@@ -160,9 +160,10 @@ public class CrossFileRevisionAnalysis {
 //                              System.out.println(mp_tmpDstMethodDeclaration);
                                 dstMethodsToRemove.add(mp_tmpDstMethodDeclaration);
                             }
-//                            if (mpSimMap.size() == 0){
-//                                System.out.println("不是哥们儿你咋了");
-//                            }
+//                            String sameFileMethodspair = "The same file: " + srcPath + "\n" + "[" + TreePrinter(mp_tmpSrcMethodDeclaration) + "] ----> "
+//                                    + "\n" + reverseProjectMap.get(mp_tmpDstMethodDeclaration) + "-[" + TreePrinter(mp_tmpDstMethodDeclaration) + "]"
+//                                    + "\n" +"mp_similarity: " +mpSimMap.get(mp_tmpSrcMethodDeclaration) + "\n\n";
+//                            System.out.println(sameFileMethodspair);
                         }
                     }
                     this.dstMethodDeclarations.removeAll(dstMethodsToRemove);
@@ -220,6 +221,7 @@ public class CrossFileRevisionAnalysis {
                     }
                 }
                 if (flag == 1){
+//                    System.out.println(reverseProjectMap.get(dstMethodDeclarations));
                     this.crossTransferMethodDeclarationNum += 1;
 //                        System.out.println("wofengla");
                 }
@@ -411,10 +413,12 @@ public class CrossFileRevisionAnalysis {
          * 58aca869816e893e7a2f34f0708c1d7fcbdca0f5 98% -> 97% -> 43% -> 22%
          * 0c93dfde72494a5906b2937d320bde8ef46794e6 22% -> 0%
          * 8f55d404affc0e4ab556ae1937a1ff8d21cdb368
+         * fb3b6dba571b9dbffaac45ac920037760ceb6dbc(342)
+         * 8d11f07a96fe4e2a0a338e68c9785438813d53b6
          * project name: activemq
          */
 //        System.out.println("===================================");
-//        String commitID = "fb3b6dba571b9dbffaac45ac920037760ceb6dbc";
+//        String commitID = "8d11f07a96fe4e2a0a338e68c9785438813d53b6";
 //        System.out.println("Commit: " + commitID);
 //        System.out.println("===================================");
 //        CrossFileRevisionAnalysis instance = new CrossFileRevisionAnalysis("activemq", commitID);
@@ -443,13 +447,13 @@ public class CrossFileRevisionAnalysis {
 //        System.out.println(commitSet.size());
 //        System.out.println(commitSet);
         // only remain 100 elements in commitSet
-        while (commitSet.size() > 200){
+        while (commitSet.size() > 2000){
             commitSet.remove(commitSet.iterator().next());
         }
         Integer totalCrossTransferMethodDeclarationNum = 0;
         Integer totalMethodDeclarationNum = 0;
         for (String commitId : commitSet){
-            if(!commitId.equals("58aca869816e893e7a2f34f0708c1d7fcbdca0f5") && !commitId.equals("fb3b6dba571b9dbffaac45ac920037760ceb6dbc")){
+            if(!commitId.equals("58aca869816e893e7a2f34f0708c1d7fcbdca0f5") && !commitId.equals("a9223e42ebc04d420b2e62e9e57450408ee9f513")){
                 CrossFileRevisionAnalysis instanceTmp = new CrossFileRevisionAnalysis("activemq", commitId);
                 if (instanceTmp.srcFilePathMap == null) {
                     continue;

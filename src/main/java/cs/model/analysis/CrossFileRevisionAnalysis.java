@@ -9,7 +9,6 @@ import cs.model.utils.CosSimilarity;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileReader;
 import java.util.*;
 
@@ -45,9 +44,9 @@ public class CrossFileRevisionAnalysis {
     public CrossFileRevisionAnalysis(String project, String commitId) throws Exception {
         this.project = project;
         this.commitId = commitId;
-        System.out.println("===================================");
-        System.out.println("Commit: " + commitId);
-        System.out.println("===================================");
+//        System.out.println("===================================");
+//        System.out.println("Commit: " + commitId);
+//        System.out.println("===================================");
         String baseCommitId = GitUtils.getBaseCommitId(project, commitId);
         this.baseCommitId = baseCommitId;
         // old path 等价于
@@ -160,11 +159,14 @@ public class CrossFileRevisionAnalysis {
 //                              System.out.println(mp_tmpDstMethodDeclaration);
                                 dstMethodsToRemove.add(mp_tmpDstMethodDeclaration);
                             }
+//                            if (srcPath.equals("activemq-core/src/main/java/org/apache/activemq/broker/region/Topic.java")) {
 //                            String sameFileMethodspair = "The same file: " + srcPath + "\n" + "[" + TreePrinter(mp_tmpSrcMethodDeclaration) + "] ----> "
 //                                    + "\n" + reverseProjectMap.get(mp_tmpDstMethodDeclaration) + "-[" + TreePrinter(mp_tmpDstMethodDeclaration) + "]"
-//                                    + "\n" +"mp_similarity: " +mpSimMap.get(mp_tmpSrcMethodDeclaration) + "\n\n";
+//                                    + "\n" +"mp_similarity: " +mpSimMap.get(mp_tmpSrcMethodDeclaration);
 //                            System.out.println(sameFileMethodspair);
+//                            }
                         }
+
                     }
                     this.dstMethodDeclarations.removeAll(dstMethodsToRemove);
 //                    tmpSrcMethodDeclarations.removeAll(srcMethodsToRemove);
@@ -417,21 +419,21 @@ public class CrossFileRevisionAnalysis {
          * 8d11f07a96fe4e2a0a338e68c9785438813d53b6
          * project name: activemq
          */
-//        System.out.println("===================================");
-//        String commitID = "8d11f07a96fe4e2a0a338e68c9785438813d53b6";
-//        System.out.println("Commit: " + commitID);
-//        System.out.println("===================================");
-//        CrossFileRevisionAnalysis instance = new CrossFileRevisionAnalysis("activemq", commitID);
-//        System.out.println(instance.methodDeclarationNum);
-//        System.out.println(instance.crossTransferMethodDeclarationNum);
-//        System.out.println("The rate of cross transfer method is: ");
-//        System.out.println((100 * instance.crossTransferMethodDeclarationNum) / instance.methodDeclarationNum + "%");
-//
-//        System.out.println("=============================");
-//        for (String s : instance.crossList) {
-//            System.out.println(s);
-//        }
-//        System.out.println("=============================");
+        System.out.println("===================================");
+        String commitID = "8d11f07a96fe4e2a0a338e68c9785438813d53b6";
+        System.out.println("Commit: " + commitID);
+        System.out.println("===================================");
+        CrossFileRevisionAnalysis instance = new CrossFileRevisionAnalysis("activemq", commitID);
+        System.out.println(instance.methodDeclarationNum);
+        System.out.println(instance.crossTransferMethodDeclarationNum);
+        System.out.println("The rate of cross transfer method is: ");
+        System.out.println((100 * instance.crossTransferMethodDeclarationNum) / instance.methodDeclarationNum + "%");
+
+        System.out.println("=============================");
+        for (String s : instance.crossList) {
+            System.out.println(s);
+        }
+        System.out.println("=============================");
 
 //        CommitAnalysis commitAnalysis = new CommitAnalysis("activemq", "fb3b6dba571b9dbffaac45ac920037760ceb6dbc");
 //        commitAnalysis.calResultMappings(false, false);
@@ -439,41 +441,41 @@ public class CrossFileRevisionAnalysis {
          * test point for one project
          * project name: activemq
          */
-        String project = "activemq";
-        String filePath = "ase2023" + File.separator + "project_commits-1" + File.separator + project + ".txt";
-        List<String> commitList = getCommitList(project,filePath);
-        // transfer commitList to set
-        Set<String> commitSet = new HashSet<>(commitList);
-//        System.out.println(commitSet.size());
-//        System.out.println(commitSet);
-        // only remain 100 elements in commitSet
-        while (commitSet.size() > 2000){
-            commitSet.remove(commitSet.iterator().next());
-        }
-        Integer totalCrossTransferMethodDeclarationNum = 0;
-        Integer totalMethodDeclarationNum = 0;
-        for (String commitId : commitSet){
-            if(!commitId.equals("58aca869816e893e7a2f34f0708c1d7fcbdca0f5") && !commitId.equals("a9223e42ebc04d420b2e62e9e57450408ee9f513")){
-                CrossFileRevisionAnalysis instanceTmp = new CrossFileRevisionAnalysis("activemq", commitId);
-                if (instanceTmp.srcFilePathMap == null) {
-                    continue;
-                }
-                totalCrossTransferMethodDeclarationNum += instanceTmp.crossTransferMethodDeclarationNum;
-                totalMethodDeclarationNum += instanceTmp.methodDeclarationNum;
-
-                System.out.println("=============================");
-
-                System.out.println((instanceTmp.methodDeclarationNum != 0 ? ((100 * instanceTmp.crossTransferMethodDeclarationNum) / instanceTmp.methodDeclarationNum) : "0") + "%");
-                System.out.println("=============================");
-                for (String s : instanceTmp.crossList) {
-                    System.out.println(s);
-                }
-                System.out.println(commitId + " finished");
-            }
-        }
-        System.out.println("=============================");
-        System.out.println("The total rate of cross transfer method is: ");
-        System.out.println((100*totalCrossTransferMethodDeclarationNum) / totalMethodDeclarationNum +"%");
-        System.out.println("=============================");
+//        String project = "activemq";
+//        String filePath = "ase2023" + File.separator + "project_commits-1" + File.separator + project + ".txt";
+//        List<String> commitList = getCommitList(project,filePath);
+//        // transfer commitList to set
+//        Set<String> commitSet = new HashSet<>(commitList);
+////        System.out.println(commitSet.size());
+////        System.out.println(commitSet);
+//        // only remain 100 elements in commitSet
+//        while (commitSet.size() > 2000){
+//            commitSet.remove(commitSet.iterator().next());
+//        }
+//        Integer totalCrossTransferMethodDeclarationNum = 0;
+//        Integer totalMethodDeclarationNum = 0;
+//        for (String commitId : commitSet){
+//            if(!commitId.equals("58aca869816e893e7a2f34f0708c1d7fcbdca0f5") && !commitId.equals("a9223e42ebc04d420b2e62e9e57450408ee9f513")){
+//                CrossFileRevisionAnalysis instanceTmp = new CrossFileRevisionAnalysis("activemq", commitId);
+//                if (instanceTmp.srcFilePathMap == null) {
+//                    continue;
+//                }
+//                totalCrossTransferMethodDeclarationNum += instanceTmp.crossTransferMethodDeclarationNum;
+//                totalMethodDeclarationNum += instanceTmp.methodDeclarationNum;
+//
+//                System.out.println("=============================");
+//
+//                System.out.println((instanceTmp.methodDeclarationNum != 0 ? ((100 * instanceTmp.crossTransferMethodDeclarationNum) / instanceTmp.methodDeclarationNum) : "0") + "%");
+//                System.out.println("=============================");
+//                for (String s : instanceTmp.crossList) {
+//                    System.out.println(s);
+//                }
+//                System.out.println(commitId + " finished");
+//            }
+//        }
+//        System.out.println("=============================");
+//        System.out.println("The total rate of cross transfer method is: ");
+//        System.out.println((100*totalCrossTransferMethodDeclarationNum) / totalMethodDeclarationNum +"%");
+//        System.out.println("=============================");
     }
 }

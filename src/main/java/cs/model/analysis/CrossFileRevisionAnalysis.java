@@ -12,259 +12,185 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.util.*;
 
-//import static com.sun.tools.javac.util.Constants.formatDouble;
-
 
 public class CrossFileRevisionAnalysis {
-    protected String project;
-    protected String commitId;
-    protected String baseCommitId;
-    public Map<String, String> srcFilePathMap;
-    public Map<String, String> dstFilePathMap;
     protected String srcFileContent;
     protected String dstFileContent;
-    public Set<ITree> srcMethodDeclarations;
-
-    public Set<ITree> dstMethodDeclarations;
-
     public static String used_ASTType = "gt";
-
     public Integer methodDeclarationNum;
-
     public List<String> crossList = new ArrayList<>();
-
     public Integer crossTransferMethodDeclarationNum;
-
-//    public static double comparisonSimilarity;
-
-//    public double mp_similarity;
-
-//    public double cross_similarity;
+    public Map<String, List<String>> srcPathAndMethodsMap;
+    public Map<String, List<String>> dstPathAndMethodsMap;
+    public List<String> allDstMethods;
 
     public CrossFileRevisionAnalysis(String project, String commitId) throws Exception {
-        this.project = project;
-        this.commitId = commitId;
 //        System.out.println("===================================");
 //        System.out.println("Commit: " + commitId);
 //        System.out.println("===================================");
         String baseCommitId = GitUtils.getBaseCommitId(project, commitId);
-        this.baseCommitId = baseCommitId;
-        // old path 等价于
+        Map<String, String> srcFilePathMap = null;
         try {
-            this.srcFilePathMap = GitInfoRetrieval.getOldModifiedFileMap(project, commitId);
-        }
-        catch (Exception e){
+            srcFilePathMap = GitInfoRetrieval.getOldModifiedFileMap(project, commitId);
+        } catch (Exception e) {
             srcFilePathMap = null;
             return;
         }
-        // new path 等价于
-        this.dstFilePathMap = new HashMap<String, String>();
-        for (String key : srcFilePathMap.keySet()) {
-            this.dstFilePathMap.put(srcFilePathMap.get(key), key);
-        }
-
-        // initialization
-        this.srcMethodDeclarations = new HashSet<ITree>();
-        this.dstMethodDeclarations = new HashSet<ITree>();
 
         // count
         this.methodDeclarationNum = 0;
         this.crossTransferMethodDeclarationNum = 0;
 
-//        System.out.println("testpoint");
-        for (String srcPath : srcFilePathMap.keySet()) {
-//            System.out.println(srcPath);
-            Map<ITree, Double> mpSimMap = new HashMap<>();
-            // 对于每一个src，过滤出一个不含其本身的dst map
-            Map<String, String> dstFilePathMapFiltered = new HashMap<String, String>();
-            dstFilePathMapFiltered.putAll(dstFilePathMap);
-//            dstFilePathMapFiltered.remove(srcPath);
-//            System.out.println("checkPoint");
-            // 获取其srcFileContent
+        //methodsList
+        this.srcPathAndMethodsMap = new HashMap<>();
+        this.dstPathAndMethodsMap = new HashMap<>();
+        List<String> srcMethodsList;
+        List<String> dstMethodsList;
+
+        allDstMethods = new ArrayList<>();
+
+        Map<String, Map<String,Double>> mpSimMap = new HashMap<>();
+        Map<String, String> reverseProjectMap = new HashMap<>();
+
+        for (Map.Entry<String, String> entry : srcFilePathMap.entrySet()) {
+            String srcPath = entry.getKey();
+            String dstPath = entry.getValue();
+
+            // fresh the method list for each srcPath
+            srcMethodsList = new ArrayList<>();
+            dstMethodsList = new ArrayList<>();
+
+            // get Content for both src and dst
             ByteArrayOutputStream srcFileStream = GitUtils
-                    .getFileContentOfCommitFile(project, this.baseCommitId, srcPath);
+                    .getFileContentOfCommitFile(project, baseCommitId, srcPath);
             srcFileContent = srcFileStream.toString("UTF-8");
-            if (srcFileContent.equals("")){
+            if (srcFileContent.equals("")) {
                 srcFileContent = null;
                 return;
             }
-            // generate src_tree
-            ITree tmp_src = GumTreeUtil.getITreeRoot(srcFileContent, this.used_ASTType);
+            ByteArrayOutputStream dstFileStream = GitUtils
+                    .getFileContentOfCommitFile(project, commitId, dstPath);
+            dstFileContent = dstFileStream.toString("UTF-8");
+            if (dstFileContent.equals("")) {
+                dstFileContent = null;
+                return;
+            }
+
+            // generate src_tree, and dst_tree
+            ITree tmp_src = null;
+            ITree tmp_dst = null;
+            try {
+                tmp_src = GumTreeUtil.getITreeRoot(srcFileContent, used_ASTType);
+                tmp_dst = GumTreeUtil.getITreeRoot(dstFileContent, used_ASTType);
+            } catch (Exception e) {
+                break;
+            }
             // get all method declarations
-            Set<ITree> tmpSrcMethodDeclarations = DeclarationUtil.getMethodDeclarations(tmp_src);
-            // save the whole method declarations
-            this.srcMethodDeclarations.addAll(tmpSrcMethodDeclarations);
+            Set<ITree> srcMethodDeclarations = DeclarationUtil.getMethodDeclarations(tmp_src);
+            for (ITree srcMethodDeclaration : srcMethodDeclarations) {
+                String srcMethod = TreePrinter(srcMethodDeclaration);
+                srcMethodsList.add(srcMethod);
+            }
+            Set<ITree> dstMethodDeclarations = DeclarationUtil.getMethodDeclarations(tmp_dst);
+            for (ITree dstMethodDeclaration : dstMethodDeclarations) {
+                String dstMethod = TreePrinter(dstMethodDeclaration);
+                dstMethodsList.add(dstMethod);
+
+            }
+
+            srcPathAndMethodsMap.put(srcPath, srcMethodsList);
+            dstPathAndMethodsMap.put(dstPath, dstMethodsList);
+
+
             // format printer step2:
             System.out.println("=================");
             System.out.println("File: " + srcPath);
             System.out.println("=================");
-            int t = 0;
-            for (ITree tmpSrcMethodDeclaration : tmpSrcMethodDeclarations) {
-                System.out.println("Method " + ++t + ": ");
-                System.out.println(TreePrinter(tmpSrcMethodDeclaration));
+//            int t = 0;
+            System.out.println("The total number of methods is " + srcMethodsList.size() + ": ");
+            for (ITree srcMethodDeclaration : srcMethodDeclarations) {
+                System.out.println(TreePrinter(srcMethodDeclaration));
             }
 
             // update counter num;
-            this.methodDeclarationNum += tmpSrcMethodDeclarations.size();
-            this.dstMethodDeclarations = new HashSet<ITree>();
-            Map<ITree, String> reverseProjectMap = new HashMap<>();
-            for (String dstPath : dstFilePathMapFiltered.keySet()) {
-//                System.out.println(dstPath);
-//                if (dstPath.equals("activemq-core/src/main/java/org/apache/activemq/state/CommandVisitorAdapter.java")){
-//                    System.out.println("666");
-//                }
-                ByteArrayOutputStream dstFileStream = GitUtils
-                        .getFileContentOfCommitFile(project, commitId, dstPath);
-                dstFileContent = dstFileStream.toString("UTF-8");
-                if (dstFileContent.equals("")) {
-                    dstFileContent = null;
-                    return;
-                }
-                ITree tmp_dst = null;
-                try {
-                    tmp_dst = GumTreeUtil.getITreeRoot(dstFileContent, this.used_ASTType);
-                } catch (Exception e){
-                    break;
-                }
-                Set<ITree> tmpDstMethodDeclarations = DeclarationUtil.getMethodDeclarations(tmp_dst);
-                for (ITree declaration : tmpDstMethodDeclarations) {
-                    reverseProjectMap.put(declaration, dstPath);
-                }
-                this.dstMethodDeclarations.addAll(tmpDstMethodDeclarations);
-//                System.out.println(this.dstMethodDeclarations);
-                if (srcPath.equals(dstPath)){
-                    List<ITree> dstMethodsToRemove = new ArrayList<>();
-//                    List<ITree> srcMethodsToRemove = new ArrayList<>();
-                    for (ITree mp_tmpSrcMethodDeclaration : tmpSrcMethodDeclarations){
-                        for (ITree mp_tmpDstMethodDeclaration : tmpDstMethodDeclarations){
-                            StringBuilder mp_srcContent = tree2String(mp_tmpSrcMethodDeclaration);
-                            StringBuilder mp_dstContent = tree2String(mp_tmpDstMethodDeclaration);
-                            if (mp_srcContent.toString().equals(mp_dstContent.toString())){
-                                dstMethodsToRemove.add(mp_tmpDstMethodDeclaration);
-                                double mp_similarity = 1.0;
-//                                Map<ITree, Double> tmpMap = new HashMap<>();
-//                                tmpMap.put(mp_tmpDstMethodDeclaration, mp_similarity);
-                                mpSimMap.put(mp_tmpSrcMethodDeclaration, mp_similarity);
-//                                srcMethodsToRemove.add(mp_tmpSrcMethodDeclaration);
-//                                System.out.println("nishenmeqingkuang");
-                            }
-                            else {
-                                double mp_similarity = compareTwo(mp_tmpSrcMethodDeclaration, mp_tmpDstMethodDeclaration);
-//                                Map<ITree, Double> tmpMap = new HashMap<>();
-//                                tmpMap.put(mp_tmpDstMethodDeclaration, mp_similarity);
-                                Double e_sim = mpSimMap.getOrDefault(mp_tmpSrcMethodDeclaration, 0.0);
-                                if(e_sim <= mp_similarity) {
-                                    mpSimMap.put(mp_tmpSrcMethodDeclaration, mp_similarity);
-                                }
-//                              System.out.println(mp_tmpDstMethodDeclaration);
-                                dstMethodsToRemove.add(mp_tmpDstMethodDeclaration);
-                            }
-//                            if (srcPath.equals("activemq-core/src/main/java/org/apache/activemq/broker/region/Topic.java")) {
-//                            String sameFileMethodspair = "The same file: " + srcPath + "\n" + "[" + TreePrinter(mp_tmpSrcMethodDeclaration) + "] ----> "
-//                                    + "\n" + reverseProjectMap.get(mp_tmpDstMethodDeclaration) + "-[" + TreePrinter(mp_tmpDstMethodDeclaration) + "]"
-//                                    + "\n" +"mp_similarity: " +mpSimMap.get(mp_tmpSrcMethodDeclaration);
-//                            System.out.println(sameFileMethodspair);
-//                            }
-                        }
+            this.methodDeclarationNum += srcMethodDeclarations.size();
 
+
+            // filtering unchanged methods
+            List<String> commonMethods = new ArrayList<>(srcMethodsList);
+            commonMethods.retainAll(dstMethodsList);
+            List<String> filterSrcMethodList = new ArrayList<>(srcMethodsList);
+            List<String> filterDstMethodList = new ArrayList<>(dstMethodsList);
+            filterSrcMethodList.removeAll(commonMethods);
+            filterDstMethodList.removeAll(commonMethods);
+            for (String filterDstMethod : filterDstMethodList) {
+                reverseProjectMap.put(filterDstMethod, dstPath);
+            }
+            allDstMethods.addAll(filterDstMethodList);
+
+            HashMap<String, Double> methodToSimMap = new HashMap<>();
+
+            for (String sameFile_srcMethodDeclaration : filterSrcMethodList) {
+                for (String sameFile_dstMethodDeclaration : filterDstMethodList) {
+                    double sameFile_similarity = compareTwo(sameFile_srcMethodDeclaration, sameFile_dstMethodDeclaration);
+                    methodToSimMap.put(sameFile_srcMethodDeclaration, sameFile_similarity);
+                    Double max_similarity = methodToSimMap.getOrDefault(sameFile_srcMethodDeclaration, 0.0);
+                    if (max_similarity <= sameFile_similarity) {
+                        methodToSimMap.put(sameFile_srcMethodDeclaration, sameFile_similarity);
+                        methodToSimMap.put(sameFile_dstMethodDeclaration, sameFile_similarity);
+//                        System.out.println("123");
                     }
-                    this.dstMethodDeclarations.removeAll(dstMethodsToRemove);
-//                    tmpSrcMethodDeclarations.removeAll(srcMethodsToRemove);
-//                    System.out.println(this.dstMethodDeclarations);
                 }
             }
-//            System.out.println("6");
-            // tmpSrcMethodDeclarations中每一个元素分别看，是不是在dstMethodDeclarations里。
-            for (ITree tmpSrcMethodDeclaration : tmpSrcMethodDeclarations) {
+            mpSimMap.put(srcPath, methodToSimMap);
+        }
+
+        for (Map.Entry<String, List<String>> entry : srcPathAndMethodsMap.entrySet()) {
+            String srcPath = entry.getKey();
+            List<String> srcMethodList = entry.getValue();
+            List<String> curDstMethods = dstPathAndMethodsMap.get(srcPath);
+            List<String> crossDstMethods = new ArrayList<>(allDstMethods);
+            crossDstMethods.removeAll(curDstMethods);
+            for (String srcMethod : srcMethodList) {
                 int flag = 0;
-                for (ITree dstMethodDeclaration : this.dstMethodDeclarations) {
-                    double cross_similarity = compareTwo(tmpSrcMethodDeclaration, dstMethodDeclaration);
-//                    if (srcPath.equals("activemq-core/src/main/java/org/apache/activemq/state/ConnectionStateTracker.java")){
-//                        int a  =3;
-//                        if (reverseProjectMap.get(dstMethodDeclaration).equals("activemq-core/src/main/java/org/apache/activemq/ActiveMQConnection.java")){
-//                            a = 2;
-//                            for (ITree child : dstMethodDeclaration.getChildren()) {
-////                                System.out.println(child.getType().name);
-//                                if (child.getType().name.equals("SimpleName")){
-//                                    System.out.println("666");
-//                                    System.out.println(child.getLabel());
-//                                    if (child.getLabel().equals("processBrokerInfo")){
-//                                        a = 4;
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-                    if (cross_similarity >= 0.8){
-//                        if (reverseProjectMap.get(dstMethodDeclaration).equals("activemq-core/src/main/java/org/apache/activemq/ActiveMQConnection.java")){
-//                            int a = 2;
-//                        }
-                        double mp_similarity = mpSimMap.getOrDefault(tmpSrcMethodDeclaration, 0.0);
-//                        System.out.println(mp_similarity);
-                        if(mp_similarity < 1.0){
-//                            if (reverseProjectMap.get(dstMethodDeclaration).equals("activemq-core/src/main/java/org/apache/activemq/ActiveMQConnection.java")){
-//                                int a = 2;
-//                            }
-                            if(mp_similarity < cross_similarity) {
-//                               System.out.println("9");
-                                boolean f = checkForReverse(dstMethodDeclaration, reverseProjectMap.get(dstMethodDeclaration));
-                                if (!f){
-                                    continue;
-                                }
-                                String r = "In file: " + srcPath + "\n" + "[" + TreePrinter(tmpSrcMethodDeclaration) + "] ----> "
-                                        + "\n" + reverseProjectMap.get(dstMethodDeclaration) + "-[" + TreePrinter(dstMethodDeclaration) + "]"
-                                        + "\n" +"Similarity: " +cross_similarity + "\n\n";
+                for (String dstMethod : crossDstMethods) {
+                    double cross_similarity = compareTwo(srcMethod, dstMethod);
+                    String dstPath = reverseProjectMap.get(dstMethod);
+                    double srcSameFileSimilarity = 0.0;
+                    double dstSameFileSimilarity = 0.0;
+                    if (cross_similarity >= 0.8) {
+                        Map<String, Double> srcMethodToSimMap = mpSimMap.getOrDefault(srcPath, null);
+                        Map<String, Double> dstMethodToSimMap = mpSimMap.getOrDefault(dstPath, null);
+                        if (srcMethodToSimMap == null) {
+                            srcSameFileSimilarity = 0.0;
+                        }
+                        else {
+                            srcSameFileSimilarity = srcMethodToSimMap.getOrDefault(srcMethod, 0.0);
+                        }
+
+                        if (dstMethodToSimMap == null) {
+                            dstSameFileSimilarity = 0.0;
+                        }
+                        else{
+                            dstSameFileSimilarity = dstMethodToSimMap.getOrDefault(dstMethod, 0.0);
+                        }
+                        if (srcSameFileSimilarity < 1.0) {
+                            if (srcSameFileSimilarity < cross_similarity && dstSameFileSimilarity < cross_similarity) {
+                                String r = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
+                                                + "\n" + reverseProjectMap.get(dstMethod) + "-[" + dstMethod + "]"
+                                                + "\n" + "Similarity: " + cross_similarity + "\n\n";
                                 System.out.print(r);
                                 crossList.add(r);
                                 flag = 1;
-//                                break;
+//                                  break;
                             }
                         }
                     }
                 }
-                if (flag == 1){
-//                    System.out.println(reverseProjectMap.get(dstMethodDeclarations));
+                if (flag == 1)
                     this.crossTransferMethodDeclarationNum += 1;
-//                        System.out.println("wofengla");
-                }
-            }
-            // clear tmp declaration set
-            tmpSrcMethodDeclarations.clear();
-            mpSimMap.clear();
-            reverseProjectMap.clear();
-        }
-    }
-
-    private boolean checkForReverse(ITree declaration, String file) throws Exception {
-//        if (file.equals("activemq-core/src/main/java/org/apache/activemq/state/CommandVisitorAdapter.java")){
-//            System.out.println('t');
-//        }
-//        System.out.println("tttest");
-//        System.out.println(file);
-        ByteArrayOutputStream srcFileStream = null;
-        try {
-            srcFileStream = GitUtils
-                    .getFileContentOfCommitFile(project, this.baseCommitId, file);
-        } catch (Exception e){
-            return true;
-        }
-        String srcFileContent = srcFileStream.toString("UTF-8");
-        if (srcFileContent.equals("")){
-            srcFileContent = null;
-            return true;
-        }
-        // generate src_tree
-        ITree tmp_src = GumTreeUtil.getITreeRoot(srcFileContent, this.used_ASTType);
-        // get all method declarations
-        Set<ITree> declarations = DeclarationUtil.getMethodDeclarations(tmp_src);
-        StringBuilder uncheckedContent = tree2String(declaration);
-        for (ITree node : declarations) {
-            StringBuilder src_content = tree2String(node);
-            if (src_content.toString().equals(uncheckedContent.toString())) {
-                return false;
             }
         }
-        return true;
     }
 
     public static String TreePrinter(ITree node){
@@ -280,31 +206,15 @@ public class CrossFileRevisionAnalysis {
      * @param dst
      * @return
      */
-    public static double compareTwo(ITree src, ITree dst) {
-        StringBuilder srcContent = tree2String(src);
-        StringBuilder dstContent = tree2String(dst);
-        String srcString = srcContent.toString();
-        String dstString = dstContent.toString();
-        String[] srcTokens = srcString.split("\\s+");
-        String[] dstTokens = dstString.split("\\s+");
+    public static double compareTwo(String src, String dst) {
+        String[] srcTokens = src.split("\\s+");
+        String[] dstTokens = dst.split("\\s+");
         Map<CharSequence, Integer> srcMaptokens = convertToMap(srcTokens);
         Map<CharSequence, Integer> dstMaptokens = convertToMap(dstTokens);
-//        CosineSimilarity simEngine = new CosineSimilarity();
         CosSimilarity simEngine = new CosSimilarity();
         double comparisonSimilarity = simEngine.cosineSimilarity(srcMaptokens, dstMaptokens);
-//        CosineSimilarity cosineSimilarity = new CosineSimilarity();
-//        comparisonSimilarity = cosineSimilarity.cosineSimilarity(srcMaptokens, dstMaptokens);
-//        comparisonSimilarity = mitigateRound(comparisonSimilarity, 4, BigDecimal.ROUND_HALF_UP);
         return comparisonSimilarity;
     }
-//        int editDistance = calculateTokenEditDistance(tokens1, tokens2);
-//        int editDistance = LevenshteinDistance.getDefaultInstance().apply(srcString, dstString);
-//        if (editDistance <= 3 )
-//            return true;
-//        else{
-//            return false;
-//        }
-//        return srcString.equals(dstString);
 
     private static Map<CharSequence, Integer> convertToMap(String[] tokens) {
         Map<CharSequence, Integer> map = new HashMap<>();
@@ -313,35 +223,6 @@ public class CrossFileRevisionAnalysis {
         }
         return map;
     }
-
-//    public static double mitigateRound(double value, int scale, int mode){
-//
-//        BigDecimal bigDecimal = new BigDecimal(s);
-//        bigDecimal.setScale(scale, mode);
-//        double res = bigDecimal.doubleValue();
-//        // clear the memory
-//        bigDecimal = null;
-//        return res;
-//    }
-
-//    private static int calculateTokenEditDistance(String[] tokens1, String[] tokens2) {
-//        LevenshteinDistance levenshteinDistance = LevenshteinDistance.getDefaultInstance();
-//        int totalDistance = 0;
-//        int minLength = Math.min(tokens1.length, tokens2.length);
-//
-//        for (int i = 0; i < minLength; i++) {
-//            if (!(tokens1[i].equals(tokens2[i]))) {
-//                for (int j = 0; j < minLength; j++) {
-//                    if(!(tokens1[i].equals(tokens2[j])))
-//                        totalDistance ++;
-////              totalDistance += levenshteinDistance.apply(tokens1[i], tokens2[j]);
-//                }
-//            }
-//        }
-//        totalDistance += Math.abs(tokens1.length - tokens2.length);
-//        System.out.println(totalDistance);
-//        return totalDistance;
-//    }
 
     public static StringBuilder tree2String(ITree tree){
         StringBuilder content = new StringBuilder();
@@ -406,7 +287,6 @@ public class CrossFileRevisionAnalysis {
 
     }
 
-
     public static void main(String[] args) throws Exception {
         /**
          * test point for one commit
@@ -435,8 +315,6 @@ public class CrossFileRevisionAnalysis {
         }
         System.out.println("=============================");
 
-//        CommitAnalysis commitAnalysis = new CommitAnalysis("activemq", "fb3b6dba571b9dbffaac45ac920037760ceb6dbc");
-//        commitAnalysis.calResultMappings(false, false);
         /**
          * test point for one project
          * project name: activemq

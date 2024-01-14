@@ -20,8 +20,8 @@ public class CrossFileRevisionAnalysis {
     public Integer methodDeclarationNum;
     public List<String> crossList = new ArrayList<>();
     public Integer crossTransferMethodDeclarationNum;
-    public Map<String, List<String>> srcPathAndMethodsMap;
-    public Map<String, List<String>> dstPathAndMethodsMap;
+    public Map<String, List<String>> srcPathToMethodsMap;
+    public Map<String, List<String>> dstPathToMethodsMap;
     public List<String> allDstMethods;
 
     public CrossFileRevisionAnalysis(String project, String commitId) throws Exception {
@@ -29,11 +29,11 @@ public class CrossFileRevisionAnalysis {
 //        System.out.println("Commit: " + commitId);
 //        System.out.println("===================================");
         String baseCommitId = GitUtils.getBaseCommitId(project, commitId);
-        Map<String, String> srcFilePathMap = null;
+        Map<String, String> pathMap = null;
         try {
-            srcFilePathMap = GitInfoRetrieval.getOldModifiedFileMap(project, commitId);
+            pathMap = GitInfoRetrieval.getOldModifiedFileMap(project, commitId);
         } catch (Exception e) {
-            srcFilePathMap = null;
+            pathMap = null;
             return;
         }
 
@@ -42,9 +42,9 @@ public class CrossFileRevisionAnalysis {
         //存在跨文件映射的方法，也就是分子
         this.crossTransferMethodDeclarationNum = 0;
 
-        //srcPathAndAllMethodsMap中第一个String代表srcpath，第二个List存放每一个srcpath下的所有改动过的方法声明，把所有方法汇总起来存到map里，dst同理
-        this.srcPathAndMethodsMap = new HashMap<>();
-        this.dstPathAndMethodsMap = new HashMap<>();
+        //srcPathToMethodsMap中第一个String代表srcpath，第二个List存放每一个srcpath下的所有改动过的方法声明，把所有方法汇总起来存到map里，dst同理
+        this.srcPathToMethodsMap = new HashMap<>();
+        this.dstPathToMethodsMap = new HashMap<>();
         List<String> srcMethodsList;
         List<String> dstMethodsList;
 
@@ -58,7 +58,7 @@ public class CrossFileRevisionAnalysis {
         Map<String, String> reverseProjectMap = new HashMap<>();
 
         //这一块总体是遍历每个srcpath和dstpath，拿到其AST树和每个路径下的所有方法。再把ITree节点转换成字符串，存入对应的map集合中
-        for (Map.Entry<String, String> entry : srcFilePathMap.entrySet()) {
+        for (Map.Entry<String, String> entry : pathMap.entrySet()) {
             String srcPath = entry.getKey();
             String dstPath = entry.getValue();
 
@@ -90,17 +90,10 @@ public class CrossFileRevisionAnalysis {
             // fresh the method list for each srcPath
             srcMethodsList = new ArrayList<>();
             dstMethodsList = new ArrayList<>();
+
             // get all method declarations
-            Set<ITree> srcMethodDeclarations = DeclarationUtil.getMethodDeclarations(tmp_src);
-            for (ITree srcMethodDeclaration : srcMethodDeclarations) {
-                String srcMethod = TreePrinter(srcMethodDeclaration);
-                srcMethodsList.add(srcMethod);
-            }
-            Set<ITree> dstMethodDeclarations = DeclarationUtil.getMethodDeclarations(tmp_dst);
-            for (ITree dstMethodDeclaration : dstMethodDeclarations) {
-                String dstMethod = TreePrinter(dstMethodDeclaration);
-                dstMethodsList.add(dstMethod);
-            }
+            srcMethodsList = DeclarationUtil.getMethodDeclarations(tmp_src);
+            dstMethodsList = DeclarationUtil.getMethodDeclarations(tmp_dst);
 
             // format printer step2:
             System.out.println("=================");
@@ -108,12 +101,12 @@ public class CrossFileRevisionAnalysis {
             System.out.println("=================");
 //            int t = 0;
             System.out.println("The total number of methods is " + srcMethodsList.size() + ": ");
-            for (ITree srcMethodDeclaration : srcMethodDeclarations) {
-                System.out.println(TreePrinter(srcMethodDeclaration));
+            for (String srcMethodDeclaration : srcMethodsList) {
+                System.out.println(srcMethodDeclaration);
             }
 
             // 每拿完一个srcpath下的所有方法，都会更新methodDeclarationNum的值
-            this.methodDeclarationNum += srcMethodDeclarations.size();
+            this.methodDeclarationNum += srcMethodsList.size();
 
             //过滤掉没有修改的方法。commonMethods表示src和dst里相同的方法，如果两个方法完全相同，那么就说明没有更改过，不考虑未修改的方法
             List<String> commonMethods = new ArrayList<>(srcMethodsList);
@@ -125,8 +118,8 @@ public class CrossFileRevisionAnalysis {
             filterDstMethodList.removeAll(commonMethods);
 //            System.out.println("6");
 
-            srcPathAndMethodsMap.put(srcPath, filterSrcMethodList);
-            dstPathAndMethodsMap.put(dstPath, filterDstMethodList);
+            srcPathToMethodsMap.put(srcPath, filterSrcMethodList);
+            dstPathToMethodsMap.put(dstPath, filterDstMethodList);
 
             //对于每个dst中的方法，都将它和其dstpath绑定起来，方便后面输出
             for (String filterDstMethod : filterDstMethodList) {
@@ -138,7 +131,7 @@ public class CrossFileRevisionAnalysis {
             //mpSimMap的第二个参数，将每个方法和其相似度值绑定
             HashMap<String, Double> methodToSimMap = new HashMap<>();
 
-            for (String sameFile_srcMethodDeclaration : filterSrcMethodList) {
+            for (String sameFile_srcMethodDeclaration : filterSrcMethodList) {//srcmethod
                 for (String sameFile_dstMethodDeclaration : filterDstMethodList) {
                     //src和dst路径相同时，获取每个方法之间的相似度
                     double sameFile_similarity = compareTwo(sameFile_srcMethodDeclaration, sameFile_dstMethodDeclaration);
@@ -155,11 +148,11 @@ public class CrossFileRevisionAnalysis {
             mpSimMap.put(srcPath, methodToSimMap);
         }
 
-        for (Map.Entry<String, List<String>> entry : srcPathAndMethodsMap.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : srcPathToMethodsMap.entrySet()) {
             String srcPath = entry.getKey();
             List<String> srcMethodList = entry.getValue();
             //获取当前dstpath下所有修改过的方法
-            List<String> curDstMethods = dstPathAndMethodsMap.get(srcPath);
+            List<String> curDstMethods = dstPathToMethodsMap.get(srcPath);
             //初始化一个crossDstMethods，现在里面存了所有dstpath下的所有修改方法
             List<String> crossDstMethods = new ArrayList<>(allDstMethods);
             //从crossDstMethods中移除掉当前dstpath下的修改方法，剩下的方法列表就是用于跨文件映射的方法
@@ -198,15 +191,10 @@ public class CrossFileRevisionAnalysis {
         }
     }
 
-    public static String TreePrinter(ITree node){
-        StringBuilder builder = tree2String(node);
-        String res = builder.toString();
-        return res;
-    }
 
     /**
-     * public static boolean compareTwo(ITree src)
-     * public static boolean compareTwo(Tree src)
+     * public static double compareTwo(ITree src)
+     * public static double compareTwo(Tree src)
      * @param src
      * @param dst
      * @return
@@ -227,52 +215,6 @@ public class CrossFileRevisionAnalysis {
             map.put(token, map.getOrDefault(token, 0) + 1);
         }
         return map;
-    }
-
-    public static StringBuilder tree2String(ITree tree){
-        StringBuilder content = new StringBuilder();
-
-        for (ITree child : tree.getChildren()) {
-            //过滤掉没用的
-            if (!((child.getType().name).equals("Block") ||
-                    (child.getType().name).equals("MarkerAnnotation") ||
-                    (child.getType().name).equals("SingleMemberAnnotation") ||
-                    (child.getType().name).equals("NormalAnnotation")||
-                    (child.getType().name).equals("Javadoc")
-                )
-            ){
-                if ((child.getType().name).equals("SingleVariableDeclaration")) {
-//                    content.append("(");
-                    content.append(extractDeclaration(child));
-//                    content.append(")");
-                }
-                else{
-                    content.append(extractDeclaration(child));
-                }
-            }
-
-        }
-        return content;
-    }
-
-    public static String extractDeclaration(ITree tree){
-        StringBuilder content = new StringBuilder();
-        if (tree.getChildren().size() == 0){
-            content.append(tree.getLabel());
-        }
-        else{
-            // 这个地方根本拿不到数据集合类型，因为iASTMapper这部分没有储存！！！
-//            content.append(tree.getType().name);
-//            content.append("<");
-            List<ITree> children = tree.getChildren();
-            for (int i = 0; i < children.size(); i++) {
-                content.append(extractDeclaration(children.get(i)));
-//                content.append(" ");
-            }
-//            content.append(">");
-        }
-        content.append(" ");
-        return content.toString();
     }
 
     public static List<String> getCommitList(String project, String filePath){

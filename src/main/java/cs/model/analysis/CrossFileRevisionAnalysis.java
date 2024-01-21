@@ -24,6 +24,9 @@ public class CrossFileRevisionAnalysis {
     public Map<String, List<String>> dstPathToMethodsMap;
     public List<String> allDstMethods;
 
+    public Map<String, String> idx2Path;
+    public Map<String, String> idx2Method;
+
     public CrossFileRevisionAnalysis(String project, String commitId) throws Exception {
 //        System.out.println("===================================");
 //        System.out.println("Commit: " + commitId);
@@ -45,6 +48,11 @@ public class CrossFileRevisionAnalysis {
         //srcPathToMethodsMap中第一个String代表srcpath，第二个List存放每一个srcpath下的所有改动过的方法声明，把所有方法汇总起来存到map里，dst同理
         this.srcPathToMethodsMap = new HashMap<>();
         this.dstPathToMethodsMap = new HashMap<>();
+
+        //这两个参数分别用来存每个索引数字对应的srcpath和srcmethod
+        idx2Method = new HashMap<>();
+        idx2Path = new HashMap<>();
+
         List<String> srcMethodsList;
         List<String> dstMethodsList;
 
@@ -52,11 +60,15 @@ public class CrossFileRevisionAnalysis {
         //除了遍历路径外，还需要遍历每个list，会进行多层循环。所以用allDstMethods存储所有dstpath下的方法，减少了循环次数
         allDstMethods = new ArrayList<>();
 
-        //第一个String表示srcpath，第二个map集合绑定了每个方法和其相似度值，方便比较同一个方法同文件映射和跨文件映射的相似度大小
-        Map<String, Map<String,Double>> mpSimMap = new HashMap<>();
+        //第一个String表示srcpath-srcmethod索引，第二个map集合绑定了每个dst方法和其相似度值，方便比较同一个方法同文件映射和跨文件映射的相似度大小
+        Map<String, Map<String, Double>> mpSimMap = new HashMap<>();
+
+        Map<String, Double> srcMethodToSimCompare = new HashMap<>();
+
         //第一个参数是dst方法，第二个参数是其对应的dstpath。因为后续输出时，需要拿到每一个dst方法对应的路径
         Map<String, String> reverseProjectMap = new HashMap<>();
 
+        int idx = 0;
         //这一块总体是遍历每个srcpath和dstpath，拿到其AST树和每个路径下的所有方法。再把ITree节点转换成字符串，存入对应的map集合中
         for (Map.Entry<String, String> entry : pathMap.entrySet()) {
             String srcPath = entry.getKey();
@@ -128,73 +140,103 @@ public class CrossFileRevisionAnalysis {
             //每一次方法过滤后，都同步更新allDstMethods列表，所有dstpath都遍历一遍后，该参数内存着所有修改过的dst方法
             allDstMethods.addAll(filterDstMethodList);
 
-            //mpSimMap的第二个参数，将每个方法和其相似度值绑定
-            HashMap<String, Double> methodToSimMap = new HashMap<>();
-
-            for (String sameFile_srcMethodDeclaration : filterSrcMethodList) {//srcmethod
-                for (String sameFile_dstMethodDeclaration : filterDstMethodList) {
+            int idy = 0;
+            for (String srcMethod : filterSrcMethodList) {
+                String index = idx + "-" + idy;
+                Map<String, Double> methodToSimMap = new HashMap<>();
+                for (String dstMethod : filterDstMethodList) {
                     //src和dst路径相同时，获取每个方法之间的相似度
-                    double sameFile_similarity = compareTwo(sameFile_srcMethodDeclaration, sameFile_dstMethodDeclaration);
-                    //将src的方法和相似度绑定，方便后面和跨文件的相似度进行对比
-                    methodToSimMap.put(sameFile_srcMethodDeclaration, sameFile_similarity);
+                    double similarity = compareTwo(srcMethod, dstMethod);
+                    //mpSimMap的第二个参数，将每个dst方法和其相似度值绑定
+                    methodToSimMap.put(dstMethod, similarity);
+                    //将src的方法和相似度绑定，方便后面获取每个srcmethod对应的最大相似度值
+                    srcMethodToSimCompare.put(srcMethod, similarity);
+//                    System.out.println("5");
                     //定义max_similarity用来更迭src方法最大的相似度
-                    Double max_similarity = methodToSimMap.getOrDefault(sameFile_srcMethodDeclaration, 0.0);
-                    if (max_similarity <= sameFile_similarity) {
-                        methodToSimMap.put(sameFile_srcMethodDeclaration, sameFile_similarity);
+                    Double max_similarity = srcMethodToSimCompare.getOrDefault(srcMethod, 0.0);
+                    if (max_similarity <= similarity) {
+                        methodToSimMap.clear();
+                        methodToSimMap.put(dstMethod, similarity);
+                        srcMethodToSimCompare.put(srcMethod, similarity);
 //                        System.out.println("123");
                     }
+                    idx2Path.put(index, srcPath);
+                    idx2Method.put(index, srcMethod);
                 }
+                mpSimMap.put(index, methodToSimMap);
+                idy++;
             }
-            mpSimMap.put(srcPath, methodToSimMap);
+            //map<path, mpSImMap>
+            //map<srcpath ,map<srcmethod ,map<map<dstpath, map<dstmethod ,sim>>>>
+            idx++;
         }
 
+
+
+        idx = 0;
+        String index;
         for (Map.Entry<String, List<String>> entry : srcPathToMethodsMap.entrySet()) {
             String srcPath = entry.getKey();
             List<String> srcMethodList = entry.getValue();
+            int idy = 0;
             //获取当前dstpath下所有修改过的方法
             List<String> curDstMethods = dstPathToMethodsMap.get(srcPath);
             //初始化一个crossDstMethods，现在里面存了所有dstpath下的所有修改方法
             List<String> crossDstMethods = new ArrayList<>(allDstMethods);
             //从crossDstMethods中移除掉当前dstpath下的修改方法，剩下的方法列表就是用于跨文件映射的方法
             crossDstMethods.removeAll(curDstMethods);
+
             for (String srcMethod : srcMethodList) {
-                int flag = 0;
+                index = idx + "-" + idy;
+                Map<String, Double> methodToSimMap = mpSimMap.get(index);
+                if (methodToSimMap == null) methodToSimMap = new HashMap<>();
                 for (String dstMethod : crossDstMethods) {
                     double cross_similarity = compareTwo(srcMethod, dstMethod);
+                    methodToSimMap.put(dstMethod, cross_similarity);
+                    //System.out.println("6");
+                    idx2Path.put(index, srcPath);
+                    idx2Method.put(index, srcMethod);
+                }
+                mpSimMap.put(index, methodToSimMap);
+                idy ++;
+            }
+            idx ++;
+        }
+
+        double threshold = 0.8;
+        for (Map.Entry<String, Map<String, Double>> entry : mpSimMap.entrySet()){
+            index = entry.getKey();
+            Map<String, Double> tmpmethodToSimMap = entry.getValue();
+            double maxSim = 0.0;
+            for (String dstMethod : tmpmethodToSimMap.keySet()){
+                int flag = 0;
+                double sim = tmpmethodToSimMap.get(dstMethod);
+                if (sim >= threshold){
+                    //拿到dstMethod对应的dstpath，如果和索引中srcmethod的srcpath一致，则不是跨文件，跳过，若不一致，跨文件+1
                     String dstPath = reverseProjectMap.get(dstMethod);
-                    double sameFile_similarity = 0.0;
-                    if (cross_similarity >= 0.8) {
-                        Map<String, Double> methodToSimMap = mpSimMap.getOrDefault(srcPath, null);
-                        if (methodToSimMap == null) {
-                            sameFile_similarity = 0.0;
-                        }
-                        else {
-                            sameFile_similarity = methodToSimMap.getOrDefault(srcMethod, 0.0);
-                        }
-                        if (sameFile_similarity < 1.0) {
-                            if (sameFile_similarity < cross_similarity) {
-                                String r = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
-                                                + "\n" + reverseProjectMap.get(dstMethod) + "-[" + dstMethod + "]"
-                                                + "\n" + "Similarity: " + cross_similarity + "\n\n";
-                                System.out.print(r);
-                                //存储了所有跨文件映射的方法，用于后续集体输出
-                                crossList.add(r);
-                                flag = 1;
-//                                  break;
-                            }
-                        }
+                    String srcPath = idx2Path.get(index);
+                    String srcMethod = idx2Method.get(index);
+                    if (!dstPath.equals(srcPath)){
+                        String r = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
+                                + "\n" + reverseProjectMap.get(dstMethod) + "-[" + dstMethod + "]"
+                                + "\n" + "Similarity: " + sim + "\n\n";
+//                        System.out.print(r);
+                        //存储了所有跨文件映射的方法，用于后续集体输出
+                        crossList.add(r);
+                        flag = 1;
                     }
                 }
-                if (flag == 1)
+                if (flag == 1) {
                     this.crossTransferMethodDeclarationNum += 1;
+                }
             }
         }
     }
 
-
     /**
      * public static double compareTwo(ITree src)
      * public static double compareTwo(Tree src)
+     *
      * @param src
      * @param dst
      * @return
@@ -217,12 +259,12 @@ public class CrossFileRevisionAnalysis {
         return map;
     }
 
-    public static List<String> getCommitList(String project, String filePath){
+    public static List<String> getCommitList(String project, String filePath) {
         List<String> commitList = new ArrayList<>();
         try {
             String line = "";
             BufferedReader br = new BufferedReader(new FileReader(filePath));
-            while((line = br.readLine())!=null) {
+            while ((line = br.readLine()) != null) {
 //                System.out.println(666);
                 commitList.add(line.split(" ")[0].trim());
             }

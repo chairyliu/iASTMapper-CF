@@ -24,8 +24,8 @@ public class CrossFileRevisionAnalysis {
     public Map<String, List<String>> dstPathToMethodsMap;
     public List<String> allDstMethods;
 
-    public Map<String, String> idx2Path;
-    public Map<String, String> idx2Method;
+    public Map<String, String> idxToPath;
+    public Map<String, String> idxToMethod;
 
     public CrossFileRevisionAnalysis(String project, String commitId) throws Exception {
 //        System.out.println("===================================");
@@ -50,8 +50,8 @@ public class CrossFileRevisionAnalysis {
         this.dstPathToMethodsMap = new HashMap<>();
 
         //这两个参数分别用来存每个索引数字对应的srcpath和srcmethod
-        idx2Method = new HashMap<>();
-        idx2Path = new HashMap<>();
+        idxToMethod = new HashMap<>();
+        idxToPath = new HashMap<>();
 
         List<String> srcMethodsList;
         List<String> dstMethodsList;
@@ -160,17 +160,14 @@ public class CrossFileRevisionAnalysis {
                         srcMethodToSimCompare.put(srcMethod, similarity);
 //                        System.out.println("123");
                     }
-                    idx2Path.put(index, srcPath);
-                    idx2Method.put(index, srcMethod);
+                    idxToPath.put(index, srcPath);
+                    idxToMethod.put(index, srcMethod);
                 }
                 mpSimMap.put(index, methodToSimMap);
                 idy++;
             }
-            //map<path, mpSImMap>
-            //map<srcpath ,map<srcmethod ,map<map<dstpath, map<dstmethod ,sim>>>>
             idx++;
         }
-
 
 
         idx = 0;
@@ -194,8 +191,8 @@ public class CrossFileRevisionAnalysis {
                     double cross_similarity = compareTwo(srcMethod, dstMethod);
                     methodToSimMap.put(dstMethod, cross_similarity);
                     //System.out.println("6");
-                    idx2Path.put(index, srcPath);
-                    idx2Method.put(index, srcMethod);
+                    idxToPath.put(index, srcPath);
+                    idxToMethod.put(index, srcMethod);
                 }
                 mpSimMap.put(index, methodToSimMap);
                 idy ++;
@@ -214,8 +211,8 @@ public class CrossFileRevisionAnalysis {
                 if (sim >= threshold){
                     //拿到dstMethod对应的dstpath，如果和索引中srcmethod的srcpath一致，则不是跨文件，跳过，若不一致，跨文件+1
                     String dstPath = reverseProjectMap.get(dstMethod);
-                    String srcPath = idx2Path.get(index);
-                    String srcMethod = idx2Method.get(index);
+                    String srcPath = idxToPath.get(index);
+                    String srcMethod = idxToMethod.get(index);
                     if (!dstPath.equals(srcPath)){
                         String r = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
                                 + "\n" + reverseProjectMap.get(dstMethod) + "-[" + dstMethod + "]"

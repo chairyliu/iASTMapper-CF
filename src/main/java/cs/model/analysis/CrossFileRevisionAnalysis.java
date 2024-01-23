@@ -25,7 +25,8 @@ public class CrossFileRevisionAnalysis {
     public List<String> allDstMethods;
 
     public Map<String, String> idxToPath;
-    public Map<String, String> idxToMethod;
+    public Map<String, String> idxToSrcMethod;
+    public Map<String, String> idxToDstMethod;
 
     public CrossFileRevisionAnalysis(String project, String commitId) throws Exception {
 //        System.out.println("===================================");
@@ -50,7 +51,8 @@ public class CrossFileRevisionAnalysis {
         this.dstPathToMethodsMap = new HashMap<>();
 
         //这两个参数分别用来存每个索引数字对应的srcpath和srcmethod
-        idxToMethod = new HashMap<>();
+        idxToSrcMethod = new HashMap<>();
+        idxToDstMethod = new HashMap<>();
         idxToPath = new HashMap<>();
 
         List<String> srcMethodsList;
@@ -142,13 +144,15 @@ public class CrossFileRevisionAnalysis {
 
             int idy = 0;
             for (String srcMethod : filterSrcMethodList) {
-                String index = idx + "-" + idy;
+                String srcIndex = idx + "-" + idy;
                 Map<String, Double> methodToSimMap = new HashMap<>();
+                int idz = 0;
                 for (String dstMethod : filterDstMethodList) {
+                    String dstIndex = idx + "-" + idz;
                     //src和dst路径相同时，获取每个方法之间的相似度
                     double similarity = compareTwo(srcMethod, dstMethod);
                     //mpSimMap的第二个参数，将每个dst方法和其相似度值绑定
-                    methodToSimMap.put(dstMethod, similarity);
+                    methodToSimMap.put(dstIndex, similarity);
                     //将src的方法和相似度绑定，方便后面获取每个srcmethod对应的最大相似度值
                     srcMethodToSimCompare.put(srcMethod, similarity);
 //                    System.out.println("5");
@@ -156,14 +160,16 @@ public class CrossFileRevisionAnalysis {
                     Double max_similarity = srcMethodToSimCompare.getOrDefault(srcMethod, 0.0);
                     if (max_similarity <= similarity) {
                         methodToSimMap.clear();
-                        methodToSimMap.put(dstMethod, similarity);
+                        methodToSimMap.put(dstIndex, similarity);
                         srcMethodToSimCompare.put(srcMethod, similarity);
 //                        System.out.println("123");
                     }
-                    idxToPath.put(index, srcPath);
-                    idxToMethod.put(index, srcMethod);
+                    idxToPath.put(srcIndex, srcPath);
+                    idxToSrcMethod.put(srcIndex, srcMethod);
+                    idxToDstMethod.put(dstIndex, dstMethod);
+                    idz++;
                 }
-                mpSimMap.put(index, methodToSimMap);
+                mpSimMap.put(srcIndex, methodToSimMap);
                 idy++;
             }
             idx++;
@@ -171,11 +177,12 @@ public class CrossFileRevisionAnalysis {
 
 
         idx = 0;
-        String index;
+        String srcIndex;
         for (Map.Entry<String, List<String>> entry : srcPathToMethodsMap.entrySet()) {
             String srcPath = entry.getKey();
             List<String> srcMethodList = entry.getValue();
             int idy = 0;
+            int idz = 0;
             //获取当前dstpath下所有修改过的方法
             List<String> curDstMethods = dstPathToMethodsMap.get(srcPath);
             //初始化一个crossDstMethods，现在里面存了所有dstpath下的所有修改方法
@@ -184,17 +191,20 @@ public class CrossFileRevisionAnalysis {
             crossDstMethods.removeAll(curDstMethods);
 
             for (String srcMethod : srcMethodList) {
-                index = idx + "-" + idy;
-                Map<String, Double> methodToSimMap = mpSimMap.get(index);
+                srcIndex = idx + "-" + idy;
+                Map<String, Double> methodToSimMap = mpSimMap.get(srcIndex);
                 if (methodToSimMap == null) methodToSimMap = new HashMap<>();
                 for (String dstMethod : crossDstMethods) {
+                    String dstIndex = idx + "-" + idz;
                     double cross_similarity = compareTwo(srcMethod, dstMethod);
-                    methodToSimMap.put(dstMethod, cross_similarity);
+                    methodToSimMap.put(dstIndex, cross_similarity);
                     //System.out.println("6");
-                    idxToPath.put(index, srcPath);
-                    idxToMethod.put(index, srcMethod);
+                    idxToPath.put(srcIndex, srcPath);
+                    idxToSrcMethod.put(srcIndex, srcMethod);
+                    idxToDstMethod.put(dstIndex, dstMethod);
+                    idz++;
                 }
-                mpSimMap.put(index, methodToSimMap);
+                mpSimMap.put(srcIndex, methodToSimMap);
                 idy ++;
             }
             idx ++;
@@ -202,17 +212,18 @@ public class CrossFileRevisionAnalysis {
 
         double threshold = 0.8;
         for (Map.Entry<String, Map<String, Double>> entry : mpSimMap.entrySet()){
-            index = entry.getKey();
+            srcIndex = entry.getKey();
             Map<String, Double> tmpmethodToSimMap = entry.getValue();
             double maxSim = 0.0;
-            for (String dstMethod : tmpmethodToSimMap.keySet()){
+            for (String dstIndex : tmpmethodToSimMap.keySet()){
                 int flag = 0;
-                double sim = tmpmethodToSimMap.get(dstMethod);
+                String dstMethod = idxToDstMethod.get(dstIndex);
+                double sim = tmpmethodToSimMap.get(dstIndex);
                 if (sim >= threshold){
                     //拿到dstMethod对应的dstpath，如果和索引中srcmethod的srcpath一致，则不是跨文件，跳过，若不一致，跨文件+1
                     String dstPath = reverseProjectMap.get(dstMethod);
-                    String srcPath = idxToPath.get(index);
-                    String srcMethod = idxToMethod.get(index);
+                    String srcPath = idxToPath.get(srcIndex);
+                    String srcMethod = idxToSrcMethod.get(srcIndex);
                     if (!dstPath.equals(srcPath)){
                         String r = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
                                 + "\n" + reverseProjectMap.get(dstMethod) + "-[" + dstMethod + "]"

@@ -25,24 +25,14 @@ public class CommitAnalysis {
     private Map<String, RevisionEvaluation> evaluationMap;
     private boolean stmtOrToken;
 
-    public CommitAnalysis(String project, String commitId) {//考虑有没有用到，。没用到删除
-        this.project = project;
-        this.commitId = commitId;
-        this.filesToAnalyze = null;
-        this.resultMap = new HashMap<>();
-        this.comparisonResultMap = new HashMap<>();//后期去掉
-        this.evaluationMap = new HashMap<>();//后期去掉
-        this.stmtOrToken = false;//后期确定
-    }
-
     public CommitAnalysis(String project, String commitId,
                           Set<String> filesToAnalyze, boolean stmtOrToken) {
         this.project = project;
         this.commitId = commitId;
         this.filesToAnalyze = filesToAnalyze;
         this.resultMap = new HashMap<>();
-        this.comparisonResultMap = new HashMap<>();
-        this.evaluationMap = new HashMap<>();
+        this.comparisonResultMap = new HashMap<>();//后期去掉
+        this.evaluationMap = new HashMap<>();//后期去掉
         this.stmtOrToken = stmtOrToken;
     }
 

@@ -28,7 +28,7 @@ public class RevisionAnalysis {
     private iASTMapper matcher;
     private List<StmtMappingAndMeasureRecord> mappingRecords;
     private ProgramElement srcRootEle;
-    private ProgramElement dstRootEle;
+//    private ProgramElement dstRootEle;
     private List<StmtTokenAction> actionList = null;
     private ElementMappings eleMappings;
 
@@ -59,7 +59,7 @@ public class RevisionAnalysis {
             matcher.buildMappingsOuterLoop();//执行外层循环，建立元素映射及节点映射
             this.eleMappings = matcher.getEleMappings();
             srcRootEle = matcher.getSrcRootEle();
-            dstRootEle = matcher.getDstRootEle();
+//            dstRootEle = matcher.getDstRootEle();
             calMappingRecords();
         } catch (Exception e){
             e.printStackTrace();

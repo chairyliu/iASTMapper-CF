@@ -73,9 +73,6 @@ public class iASTMapper {
     private long mappingTime;
     private long actionGenerationTime;
 
-    private String data_dir;
-
-
     public static String used_ASTtype = "gt";  // 添加-ZN
 
     public static Set<String> used_rules = new HashSet<>();  // 添加-ZN
@@ -158,8 +155,8 @@ public class iASTMapper {
 
         while (true) {
             boolean findMappings1 = matcher1.buildMappingsInnerLoop();
-            boolean findMappings3 = matcher3.buildMappingsInnerLoop();//1，2，3
             boolean findMappings2 = matcher2.buildMappingsInnerLoop();
+            boolean findMappings3 = matcher3.buildMappingsInnerLoop();
             if (!findMappings2)
                 break;
         }
@@ -190,13 +187,6 @@ public class iASTMapper {
      */
     public ElementMappings getEleMappings(){
         return eleMappings;
-    }
-
-    /**
-     * Get the generated tree node mappings
-     */
-    public MappingStore getTreeMappings() {
-        return ms;
     }
 
     public ITree getSrc() {

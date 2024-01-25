@@ -112,14 +112,6 @@ public class RevisionAnalysis {
         return dstFilePath;
     }
 
-    public String getSrcFileContent() {
-        return srcFileContent;
-    }
-
-    public String getDstFileContent() {
-        return dstFileContent;
-    }
-
     public iASTMapper getMatcher() {
         return matcher;
     }

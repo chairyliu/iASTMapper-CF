@@ -48,10 +48,10 @@ public class iASTMapper100_runner {
                 BufferedReader br = new BufferedReader(new FileReader(f));
                 BufferedWriter bw = new BufferedWriter(new FileWriter(project_resFile, true));
                 BufferedWriter bw1;
-//                int num = 0;
+                int num = 0;
                 while((line = br.readLine())!=null) {
-//                    if (num++ >= 100)
-//                        break;
+                    if (num++ >= 100)
+                        break;
                     String[] sa = line.split(" ");
                     if (sa.length == 4) {
                         String commitId = sa[0];

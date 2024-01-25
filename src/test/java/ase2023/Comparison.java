@@ -26,8 +26,8 @@ public class Comparison {
             BufferedReader br = new BufferedReader(new FileReader(f));
             int i = 0;
             while((line = br.readLine())!=null) {
-//                if (i++ >= 100)
-//                    break;
+                if (i++ >= 100)
+                    break;
                 String[] sa = line.split(" ");
                 if (sa.length == 8) {
                     String commitId = sa[0];
@@ -200,8 +200,8 @@ public class Comparison {
 
     public static void main(String[] args) {
         // project name
-        String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_activemq\\iASTMapper_res2023-11-20-666\\activemq";
-        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20231122172131\\activemq";
+        String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240125173957\\activemq";
+        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_P1\\activemq";
 //        System.out.println(projectPath);
         // we only need to compare the first 100 commits,
         // and projectA and projectB should have the same commits lists
@@ -210,7 +210,7 @@ public class Comparison {
 //        System.out.println(commits.size());
         // for each commit, we compare Code Edit Script and AST Edit Script
         compare(projectPathA, projectPathB, commits);
-//        System.out.println("Total difference: " + count +" [" + (double)count + "%]");
-        System.out.println("Total difference: " + count +" [" + (double)(100*count/commits.size()) + "%]");
+        System.out.println("Total difference: " + count +" [" + (double)count + "%]");
+//        System.out.println("Total difference: " + count +" [" + (double)(100*count/commits.size()) + "%]");
     }
 }

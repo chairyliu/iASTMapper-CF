@@ -43,8 +43,7 @@ public class StmtComparisonScriptGenerator {
             Set<String> filesToAnalyze = new HashSet<>();
             filesToAnalyze.add(filePath);
 
-            CommitAnalysis commitResult = new CommitAnalysis(project, commitId, null,
-                    filesToAnalyze, true);
+            CommitAnalysis commitResult = new CommitAnalysis(project, commitId, filesToAnalyze, true);
             commitResult.calResultMappings(true, false);
 
             Map<String, RevisionComparison> comparisonMap = commitResult.getComparisonResultMap();

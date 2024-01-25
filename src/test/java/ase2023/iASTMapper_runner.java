@@ -78,8 +78,7 @@ public class iASTMapper_runner {
 
                                 filePaths.clear();
                                 filePaths.add(oldPath);
-                                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId,
-                                        null, filePaths, false);
+                                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filePaths, false);
                                 long time1 = System.currentTimeMillis();
                                 mappingResult.calResultMappings(false, false);
                                 long time2 = System.currentTimeMillis();
@@ -180,8 +179,7 @@ public class iASTMapper_runner {
                             try {
                                 filePaths.clear();
                                 filePaths.add(oldPath);
-                                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId,
-                                        null, filePaths, false);
+                                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filePaths, false);
                                 mappingResult.calResultMappings(false, false);
                                 for (String ruleName : iASTMapper.used_rules) {
                                     if (!ruleFreqMap.containsKey(ruleName))

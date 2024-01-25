@@ -19,7 +19,6 @@ import java.util.Set;
 public class CommitAnalysis {
     private String project;
     private String commitId;
-    private String[] mapMethods;
     private Set<String> filesToAnalyze;
     private Map<String, RevisionAnalysis> resultMap;
     private Map<String, RevisionComparison> comparisonResultMap;
@@ -29,7 +28,6 @@ public class CommitAnalysis {
     public CommitAnalysis(String project, String commitId) {//考虑有没有用到，。没用到删除
         this.project = project;
         this.commitId = commitId;
-        this.mapMethods = null;//跟踪确定是否有用
         this.filesToAnalyze = null;
         this.resultMap = new HashMap<>();
         this.comparisonResultMap = new HashMap<>();//后期去掉
@@ -37,12 +35,10 @@ public class CommitAnalysis {
         this.stmtOrToken = false;//后期确定
     }
 
-
-    public CommitAnalysis(String project, String commitId, String[] mapMethods,
+    public CommitAnalysis(String project, String commitId,
                           Set<String> filesToAnalyze, boolean stmtOrToken) {
         this.project = project;
         this.commitId = commitId;
-        this.mapMethods = mapMethods;
         this.filesToAnalyze = filesToAnalyze;
         this.resultMap = new HashMap<>();
         this.comparisonResultMap = new HashMap<>();

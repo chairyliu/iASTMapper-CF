@@ -22,8 +22,7 @@ public class TestUtils {
         Set<String> filePaths = null;
         filePaths = new HashSet<>();
         filePaths.add(file);
-        CommitAnalysis mappingResult = new CommitAnalysis(project, commitId,
-                null, filePaths, false);
+        CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filePaths, false);
         long time1 = System.currentTimeMillis();
         mappingResult.calResultMappings(false, false);
         Map<String, RevisionAnalysis> resultMap = mappingResult.getRevisionAnalysisResultMap();

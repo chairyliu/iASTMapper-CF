@@ -67,8 +67,7 @@ public class iASTMapper100_runner {
                         try {
                             filePaths.clear();
                             filePaths.add(oldPath);
-                            CommitAnalysis mappingResult = new CommitAnalysis(project, commitId,
-                                    null, filePaths, false);
+                            CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filePaths, false);
                             long time1 = System.currentTimeMillis();
                             mappingResult.calResultMappings(false, false);
                             long time2 = System.currentTimeMillis();

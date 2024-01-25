@@ -1,21 +1,13 @@
 package cs.model.evaluation;
 
-import cs.model.algorithm.actions.StmtTokenAction;
-import cs.model.algorithm.actions.TreeEditAction;
-import cs.model.algorithm.element.ProgramElement;
 import cs.model.analysis.CommitAnalysis;
 import cs.model.analysis.RevisionEvaluation;
 import cs.model.gitops.CommitOps;
 import cs.model.gitops.GitUtils;
-import cs.model.utils.CsvOperationsUtil;
 import cs.model.utils.Pair;
-import cs.model.utils.PathResolver;
 import cs.model.utils.TimeUtil;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
@@ -61,8 +53,7 @@ public class AnalysisMultipleCommits {
                 Set<String> filesToAnalyze = null;
 //                EvalASTMatchForCommit eval = new EvalASTMatchForCommit(project, commitId, methods, filesToAnalyze);
 
-                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId,
-                        null, filesToAnalyze, true);
+                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filesToAnalyze, true);
                 mappingResult.calResultMappings(false, true);
                 Map<String, RevisionEvaluation> evaluationMap = mappingResult.getEvaluationMap();
                 for (String filePath: evaluationMap.keySet()) {

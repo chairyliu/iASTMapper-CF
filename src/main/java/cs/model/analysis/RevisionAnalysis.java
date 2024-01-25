@@ -55,17 +55,6 @@ public class RevisionAnalysis {
                 this.dstFilePath = null;
                 return;
             }
-//            String file_name = "";
-//            String[]  strs =this.srcFilePath.split("/");
-//            for(int i=0,len=strs[strs.length - 1].length();i<len;i++){
-//                if(strs[strs.length - 1].charAt(i) == '.') {
-//                    file_name = strs[strs.length - 1].substring(0, i);
-//                    break;
-//                }
-//            }
-//            if(commitId.equals("0be4c31f80dc38ddf8decbc8d6d13bd23d3ae8b1")){
-//                System.out.println("stop");
-//            }
             matcher = new iASTMapper(srcFileContent, dstFileContent);//创建iASTMapper对象
             matcher.buildMappingsOuterLoop();//执行外层循环，建立元素映射及节点映射
             this.eleMappings = matcher.getEleMappings();

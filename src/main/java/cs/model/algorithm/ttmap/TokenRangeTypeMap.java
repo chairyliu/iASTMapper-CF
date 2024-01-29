@@ -47,13 +47,4 @@ public class TokenRangeTypeMap {
                 return TokenTypeCalculator.NULL_TOKEN;
         return tokenTypeMap.get(token);
     }
-
-
-    public String toString(TreeTokensMap ttMap) {
-        String ret = "";
-        for (TokenRange token: tokens){
-            ret += token.toString(ttMap) + ": " + tokenTypeMap.get(token) + "\n";
-        }
-        return ret;
-    }
 }

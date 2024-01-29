@@ -85,13 +85,11 @@ public class iASTMapper {
 //        this.src = GumTreeUtil.getITreeRoot(srcFileContent, "gt");
 //        this.dst = GumTreeUtil.getITreeRoot(dstFileContent, "gt");
         this.src = GumTreeUtil.getITreeRoot(srcFileContent, used_ASTtype);//获取源AST
-//        System.out.println(this.src.getLabel());
-//        System.out.println(this.src.toTreeString());
         this.dst = GumTreeUtil.getITreeRoot(dstFileContent, used_ASTtype);//目标AST
         long time2 = System.currentTimeMillis();
         treeBuildTime = time2 - time1;
 
-        this.srcFileContent = srcFileContent;//考虑是否删去
+        this.srcFileContent = srcFileContent;
         this.dstFileContent = dstFileContent;
 
         time1 = System.currentTimeMillis();

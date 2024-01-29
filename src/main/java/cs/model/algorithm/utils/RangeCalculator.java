@@ -1,7 +1,6 @@
 package cs.model.algorithm.utils;
 
 import com.github.gumtreediff.tree.ITree;
-import cs.model.gitops.GitHunk;
 import cs.model.utils.Pair;
 
 import java.util.ArrayList;
@@ -39,10 +38,6 @@ public class RangeCalculator {
         else if (!currentLine.equals(""))
             tmpLines.add(currentLine);
         lines = tmpLines.toArray(new String[tmpLines.size()]);//将tmpLines转换为字符串数组，lines包含了文件内容中每一行的字符串
-    }
-
-    public int getLineNumber(){
-        return lines.length;
     }
 
     public String[] getLines() {
@@ -87,35 +82,6 @@ public class RangeCalculator {
         int startLine = getLineNumberOfPos(startPos);
         int endLine = getLineNumberOfPos(endPos);
         return new Pair<>(startLine, endLine);
-    }
-
-    public List<Integer> getContentLineNumbers(ITree node){
-        Pair<Integer, Integer> range = getLineRangeOfNode(node);
-        return getContentLineNumbersFromRange(range);
-    }
-
-    public List<Integer> getContentLineNumbersFromRange(Pair<Integer, Integer> range){
-        if (range == null)
-            return null;
-        List<Integer> ret = new ArrayList<>();
-        for (int i = range.first; i <= range.second; i++){
-            String line = lines[i - 1];
-            if (GitHunk.isCommentOrBlankLine(line, false))
-                continue;
-            ret.add(i);
-        }
-        return ret;
-    }
-
-    public int getStartColumnOfNode(ITree node){
-        int pos = node.getPos();
-        int lineNumber = findEndIndexesBetweenNode(pos, lineEndIndexes);
-        if (lineNumber == 1)
-            return pos + 1;
-        else{
-            int priorLineEndIndex = lineEndIndexes.get(lineNumber - 2);
-            return pos - priorLineEndIndex;
-        }
     }
 
     private static int findEndIndexesBetweenNode(int pos, List<Integer> endIndexes) {

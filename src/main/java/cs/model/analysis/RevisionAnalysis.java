@@ -34,7 +34,7 @@ public class RevisionAnalysis {
 
     public RevisionAnalysis(String project, String commitId, String baseCommitId,
                             String srcFilePath, String dstFilePath) throws Exception{
-        this.project = project;//需要后期处理冗余
+        this.project = project;
         this.commitId = commitId;
         this.srcFilePath = srcFilePath;
         this.dstFilePath = dstFilePath;

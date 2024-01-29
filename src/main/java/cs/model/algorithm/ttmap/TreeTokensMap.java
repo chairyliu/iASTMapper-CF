@@ -109,10 +109,6 @@ public class TreeTokensMap {
         return content;
     }
 
-    public ITree getRootNode() {
-        return rootNode;
-    }
-
     /**
      * Get the string value of a token according to its character range
      * @param range

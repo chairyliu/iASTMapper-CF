@@ -15,7 +15,7 @@ public class RangeCalculator {
     private String[] lines;
     private String fileContent;
 
-    public RangeCalculator(String fileContent){//可能细节有问题，会超出索引
+    public RangeCalculator(String fileContent){
         initLineEndIndexes(fileContent);
         this.fileContent = fileContent;
         buildLines();

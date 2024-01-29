@@ -39,7 +39,6 @@ public class RevisionAnalysis {
         this.srcFilePath = srcFilePath;
         this.dstFilePath = dstFilePath;
 
-        System.out.println(srcFilePath);
         try {
             ByteArrayOutputStream srcFileStream = GitUtils
                     .getFileContentOfCommitFile(project, baseCommitId, srcFilePath);//获取源文件和修订后文件的内容

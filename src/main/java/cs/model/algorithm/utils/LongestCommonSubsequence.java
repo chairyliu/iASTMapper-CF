@@ -1,8 +1,7 @@
 package cs.model.algorithm.utils;
 
-import cs.model.utils.Pair;
-
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * The longest common subsequence class.
@@ -82,65 +81,5 @@ public abstract class LongestCommonSubsequence<T> {
             }
         }
         return indexes;
-    }
-
-    /**
-     * Calculate all the longest common subsequences.
-     * It cost a lot of time.
-     * Thus, currently, we use the default longest common subsequence.
-     *
-     * @return a set of index pair lists.
-     */
-    public Set<List<int[]>> calAllSequences(){
-        Map<Pair<Integer, Integer>, Set<List<int[]>>> idxesMap = new HashMap<>();
-        for (int i = 0; i <= max1; i++) {
-            Set<List<int[]>> idxesSet = new HashSet<>();
-            idxesSet.add(new ArrayList<>());
-            idxesMap.put(new Pair<>(i, 0), idxesSet);
-        }
-        for (int j = 0; j <= max2; j++) {
-            Set<List<int[]>> idxesSet = new HashSet<>();
-            idxesSet.add(new ArrayList<>());
-            idxesMap.put(new Pair<>(0, j), idxesSet);
-        }
-        for (int i = 1; i <= max1; i++) {
-            for (int j = 1; j <= max2; j++){
-                Pair<Integer, Integer> newPair = new Pair<>(i, j);
-                idxesMap.put(newPair, new HashSet<>());
-                if (equalMatrix[i][j] == 1) {
-                    Pair<Integer, Integer> pair = new Pair<>(i - 1, j - 1);
-                    Set<List<int[]>> idxesSet = idxesMap.get(pair);
-                    for (List<int[]> idxes: idxesSet){
-                        List<int[]> newIdxes = new ArrayList<>(idxes);
-                        newIdxes.add(new int[] {i - 1, j - 1});
-                        idxesMap.get(newPair).add(newIdxes);
-                    }
-                }
-
-                if (lengthMatrix[i][j] == lengthMatrix[i - 1][j]){
-                    Pair<Integer, Integer> pair = new Pair<>(i - 1, j);
-                    Set<List<int[]>> idxesSet = idxesMap.get(pair);
-                    for (List<int[]> idxes: idxesSet){
-                        List<int[]> newIdxes = new ArrayList<>(idxes);
-                        idxesMap.get(newPair).add(newIdxes);
-                    }
-                }
-
-                if (lengthMatrix[i][j] == lengthMatrix[i][j - 1]){
-                    Pair<Integer, Integer> pair = new Pair<>(i, j - 1);
-                    Set<List<int[]>> idxesSet = idxesMap.get(pair);
-                    for (List<int[]> idxes: idxesSet){
-                        List<int[]> newIdxes = new ArrayList<>(idxes);
-                        idxesMap.get(newPair).add(newIdxes);
-                    }
-                }
-            }
-        }
-
-        return idxesMap.get(new Pair<>(max1, max2));
-    }
-
-    public int getLcsLength() {
-        return lcsLength;
     }
 }

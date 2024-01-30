@@ -121,20 +121,6 @@ public abstract class BaseMatcher {
         return findMapping;
     }
 
-    /**
-     * Find the best mapped elements and map them for inner-stmt element
-     */
-    public void buildMappingsForInnerStmtElements() {
-        ElementMatchDeterminer determiner = new ElementMatchDeterminer(elementMappings);
-        bestMappingSearcher.setElementMatchDeterminer(determiner);
-        Map<ProgramElement, ProgramElement> elementsToMap = new HashMap<>();
-        bestMappingSearcher.findOneToOneElementPairsToMap(elementsToMap, srcElementsToMap);
-        for (ProgramElement srcEle: elementsToMap.keySet()) {
-            ProgramElement dstEle = elementsToMap.get(srcEle);
-            addElementMapping(srcEle, dstEle);
-        }
-    }
-
     private void removeIllegalMappings() {
         for (ProgramElement srcEle: srcElementsToMap) {
             if (elementMappings.isMapped(srcEle)) {

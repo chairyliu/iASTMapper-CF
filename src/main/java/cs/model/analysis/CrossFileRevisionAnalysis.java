@@ -69,6 +69,8 @@ public class CrossFileRevisionAnalysis {
 
         //第一个参数是dst方法，第二个参数是其对应的dstpath。因为后续输出时，需要拿到每一个dst方法对应的路径
         Map<String, String> reverseProjectMap = new HashMap<>();
+        Map<String, String> dstMethodToIndex = new HashMap<>();
+
 
         int idx = 0;
         //这一块总体是遍历每个srcpath和dstpath，拿到其AST树和每个路径下的所有方法。再把ITree节点转换成字符串，存入对应的map集合中
@@ -136,8 +138,11 @@ public class CrossFileRevisionAnalysis {
             dstPathToMethodsMap.put(dstPath, filterDstMethodList);
 
             //对于每个dst中的方法，都将它和其dstpath绑定起来，方便后面输出
+            int idz = 0;
             for (String filterDstMethod : filterDstMethodList) {
                 reverseProjectMap.put(filterDstMethod, dstPath);
+                String dstIndex = idx + "-" + idz++;
+                dstMethodToIndex.put(filterDstMethod, dstIndex);
             }
             //每一次方法过滤后，都同步更新allDstMethods列表，所有dstpath都遍历一遍后，该参数内存着所有修改过的dst方法
             allDstMethods.addAll(filterDstMethodList);
@@ -146,9 +151,10 @@ public class CrossFileRevisionAnalysis {
             for (String srcMethod : filterSrcMethodList) {
                 String srcIndex = idx + "-" + idy;
                 Map<String, Double> methodToSimMap = new HashMap<>();
-                int idz = 0;
+//                 idz = 0;
                 for (String dstMethod : filterDstMethodList) {
-                    String dstIndex = idx + "-" + idz;
+//                    String dstIndex = idx + "-" + idz;
+                    String dstIndex = dstMethodToIndex.get(dstMethod);
                     //src和dst路径相同时，获取每个方法之间的相似度
                     double similarity = compareTwo(srcMethod, dstMethod);
                     //mpSimMap的第二个参数，将每个dst方法和其相似度值绑定
@@ -167,11 +173,14 @@ public class CrossFileRevisionAnalysis {
                     idxToPath.put(srcIndex, srcPath);
                     idxToSrcMethod.put(srcIndex, srcMethod);
                     idxToDstMethod.put(dstIndex, dstMethod);
-                    idz++;
+                    dstMethodToIndex.put(dstMethod, dstIndex);
+//                    idz++;
                 }
                 mpSimMap.put(srcIndex, methodToSimMap);
                 idy++;
             }
+
+
             idx++;
         }
 
@@ -182,7 +191,7 @@ public class CrossFileRevisionAnalysis {
             String srcPath = entry.getKey();
             List<String> srcMethodList = entry.getValue();
             int idy = 0;
-            int idz = 0;
+
             //获取当前dstpath下所有修改过的方法
             List<String> curDstMethods = dstPathToMethodsMap.get(srcPath);
             //初始化一个crossDstMethods，现在里面存了所有dstpath下的所有修改方法
@@ -192,17 +201,18 @@ public class CrossFileRevisionAnalysis {
 
             for (String srcMethod : srcMethodList) {
                 srcIndex = idx + "-" + idy;
+//                int idz = 0;
                 Map<String, Double> methodToSimMap = mpSimMap.get(srcIndex);
                 if (methodToSimMap == null) methodToSimMap = new HashMap<>();
                 for (String dstMethod : crossDstMethods) {
-                    String dstIndex = idx + "-" + idz;
+                    String dstIndex = dstMethodToIndex.get(dstMethod);
                     double cross_similarity = compareTwo(srcMethod, dstMethod);
                     methodToSimMap.put(dstIndex, cross_similarity);
                     //System.out.println("6");
                     idxToPath.put(srcIndex, srcPath);
                     idxToSrcMethod.put(srcIndex, srcMethod);
                     idxToDstMethod.put(dstIndex, dstMethod);
-                    idz++;
+//                    idz++;
                 }
                 mpSimMap.put(srcIndex, methodToSimMap);
                 idy ++;

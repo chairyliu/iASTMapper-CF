@@ -74,10 +74,6 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
                 }
             }
             addrecursive(dstStmt.getInnerStmtElements());
-//            for (ProgramElement innerStmtEle: dstStmt.getInnerStmtElements()) {
-//                if (!fastEleMappings.isMapped(innerStmtEle))
-//                    this.dstinnerStmtsToMap.add(innerStmtEle);
-//            }
         }
     }
     //递归，在快速映射阶段 语句的内部语句 没有映射的要被存入dstinnerStmtsToMap集合中，继续递归 内部语句的内部语句
@@ -145,24 +141,8 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
         return srcTokensToMap;
     }
 
-    public Set<ProgramElement> getDstStmtsToMap() {
-        return dstStmtsToMap;
-    }
-
-    public Set<ProgramElement> getDstTokensToMap() {
-        return dstTokensToMap;
-    }
-
     public Map<ProgramElementType, Set<ProgramElement>> getDstTypeElementMap() {
         return dstTypeElementMap;
-    }
-
-    public Map<String, Set<ProgramElement>> getDstValTokenMap() {
-        return dstValTokenMap;
-    }
-
-    public Map<String, Set<ProgramElement>> getDstValMultiTokenElementMap() {
-        return dstValMultiTokenElementMap;
     }
 
     public Set<ProgramElement> getSameTypeDstCandidates(ProgramElementType type) {

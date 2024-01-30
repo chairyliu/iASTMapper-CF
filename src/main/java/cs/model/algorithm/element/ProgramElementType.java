@@ -21,8 +21,6 @@ public class ProgramElementType {
     public int hashCode() {
         return Objects.hash(nodeType, tokenType, specialTokenType);
     }
-    public String getNodeType(){ return nodeType;}
-    public String getTokenType(){ return tokenType;}
     public static ProgramElementType getElementType(ProgramElement element) {
         ProgramElementType type = new ProgramElementType();
         type.nodeType = element.getNodeType();

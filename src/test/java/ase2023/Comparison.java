@@ -201,7 +201,7 @@ public class Comparison {
     public static void main(String[] args) {
         // project name
         String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240130180131\\activemq";
-        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240130165631\\activemq";
+        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240130191128\\activemq";
 //        System.out.println(projectPath);
         // we only need to compare the first 100 commits,
         // and projectA and projectB should have the same commits lists

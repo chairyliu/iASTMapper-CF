@@ -31,14 +31,6 @@ public class StmtMappingFilter {
         return typename.equals("Block");
     }
 
-    private boolean isEqualParent() {
-        ProgramElement srcParentEle = srcStmtEle.getParentElement();
-        ProgramElement dstParentEle = dstStmtEle.getParentElement();
-        if (srcParentEle != null && dstParentEle != null)
-            return srcParentEle.equalValue(dstParentEle);
-        return false;
-    }
-
     private boolean isParentMapping() {
         ProgramElement srcParentEle = srcStmtEle.getParentElement();
         ProgramElement dstParentEle = dstStmtEle.getParentElement();

@@ -29,10 +29,6 @@ public class ElementMappings implements Iterable<ElementMapping> {
         return this.srcToDst;
     }
 
-    public Set<ProgramElement> getMappedSrcElements(){
-        return new HashSet<>(srcToDst.keySet());
-    }
-
     public void addMapping(ProgramElement srcEle, ProgramElement dstEle){
         removeMapping(srcEle);
         removeMapping(dstEle);
@@ -145,13 +141,6 @@ public class ElementMappings implements Iterable<ElementMapping> {
             b.append(m.toString()).append('\n');
         }
         return b.toString();
-    }
-
-    public ElementMappings copy() {
-        ElementMappings mappings = new ElementMappings();
-        mappings.srcToDst = new HashMap<>(srcToDst);
-        mappings.dstToSrc = new HashMap<>(dstToSrc);
-        return mappings;
     }
 
     public RenameStatistics getRenameStatistics() {

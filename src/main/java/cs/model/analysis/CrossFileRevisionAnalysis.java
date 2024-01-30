@@ -224,29 +224,52 @@ public class CrossFileRevisionAnalysis {
         for (Map.Entry<String, Map<String, Double>> entry : mpSimMap.entrySet()){
             srcIndex = entry.getKey();
             Map<String, Double> tmpmethodToSimMap = entry.getValue();
+            //多对多映射删去228-229
             double maxSim = 0.0;
+            String subOptimDstIndex = null;
+            String srcPath = idxToPath.get(srcIndex);
+            int flag = 0;
             for (String dstIndex : tmpmethodToSimMap.keySet()){
-                int flag = 0;
                 String dstMethod = idxToDstMethod.get(dstIndex);
                 double sim = tmpmethodToSimMap.get(dstIndex);
                 if (sim >= threshold){
-                    //拿到dstMethod对应的dstpath，如果和索引中srcmethod的srcpath一致，则不是跨文件，跳过，若不一致，跨文件+1
                     String dstPath = reverseProjectMap.get(dstMethod);
-                    String srcPath = idxToPath.get(srcIndex);
-                    String srcMethod = idxToSrcMethod.get(srcIndex);
+                    //多对多映射恢复这两行
+//                    String dstMethod = idxToDstMethod.get(dstIndex);
+//                    String srcMethod = idxToSrcMethod.get(srcIndex);
                     if (!dstPath.equals(srcPath)){
-                        String r = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
-                                + "\n" + reverseProjectMap.get(dstMethod) + "-[" + dstMethod + "]"
-                                + "\n" + "Similarity: " + sim + "\n\n";
-//                        System.out.print(r);
-                        //存储了所有跨文件映射的方法，用于后续集体输出
-                        crossList.add(r);
-                        flag = 1;
+                        //多对多删除maxsim的比较
+                        if (sim >= maxSim){
+                            maxSim = sim;
+                            subOptimDstIndex = dstIndex;
+                        }
+                        //多对多恢复这段
+//                        String r = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
+//                                + "\n" + reverseProjectMap.get(dstMethod) + "-[" + dstMethod + "]"
+//                                + "\n" + "Similarity: " + sim + "\n\n";
+////                        System.out.print(r);
+//                        //存储了所有跨文件映射的方法，用于后续集体输出
+//                        crossList.add(r);
+//                        flag = 1;
                     }
                 }
-                if (flag == 1) {
-                    this.crossTransferMethodDeclarationNum += 1;
-                }
+            }
+            //多对多删除这段
+            // 如果maxSim = 0，则说明没有大于threshold的sim，反之一定是存在的，因此可以忽略掉subOptimalIndex = null带来的空指针风险
+            if (maxSim > 0){
+                String dstMethod = idxToDstMethod.get(subOptimDstIndex);
+                String srcMethod = idxToSrcMethod.get(srcIndex);
+                String r = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
+                        + "\n" + reverseProjectMap.get(dstMethod) + "-[" + dstMethod + "]"
+                        + "\n" + "Similarity: " + maxSim + "\n\n";
+//                        System.out.print(r);
+                //存储了所有跨文件映射的方法，用于后续集体输出
+                crossList.add(r);
+                flag = 1;
+            }
+            //多对多映射这个if要换循环位置，往前一个循环提
+            if (flag == 1) {
+                this.crossTransferMethodDeclarationNum += 1;
             }
         }
     }

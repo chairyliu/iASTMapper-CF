@@ -39,26 +39,26 @@ public class GumTreeUtil {
         return t;
     }
 
-    /**
-     * Calculate mappings of AST nodes using GumTree
-     * @param src root of source ITree
-     * @param dst root of target ITree
-     * @return the generated mappings
-     */
-    public static MappingStore getTreeMappings(ITree src, ITree dst) {
-        return getTreeMappings(src, dst, null);
-    }
+//    /**
+//     * Calculate mappings of AST nodes using GumTree
+//     * @param src root of source ITree
+//     * @param dst root of target ITree
+//     * @return the generated mappings
+//     */
+//    public static MappingStore getTreeMappings(ITree src, ITree dst) {
+//        return getTreeMappings(src, dst, null);
+//    }
 
-    /**
-     * Calculate mappings of AST nodes using GumTree given mappings of AST nodes
-     * @param src root of source ITree
-     * @param dst root of target ITree
-     * @param ms  the given mappings
-     * @return the generated mappings
-     */
-    public static MappingStore getTreeMappings(ITree src, ITree dst, MappingStore ms){
-        return getTreeMappings(src, dst, ms, "gumtree");
-    }
+//    /**
+//     * Calculate mappings of AST nodes using GumTree given mappings of AST nodes
+//     * @param src root of source ITree
+//     * @param dst root of target ITree
+//     * @param ms  the given mappings
+//     * @return the generated mappings
+//     */
+//    public static MappingStore getTreeMappings(ITree src, ITree dst, MappingStore ms){
+//        return getTreeMappings(src, dst, ms, "gumtree");
+//    }
 
     /**
      * Calculate mappings of AST nodes using a specified method
@@ -88,16 +88,16 @@ public class GumTreeUtil {
         }
     }
 
-    /**
-     * Build an ITree based on bytestream using a specified method
-     * @param stream the bytestream
-     * @param matcherId the matcher name
-     * @return the generated ITree
-     */
-    public static ITree getITreeRoot(ByteArrayOutputStream stream, String matcherId) {
-        Reader reader = new InputStreamReader(new ByteArrayInputStream(stream.toByteArray()));
-        return getITreeRoot(reader, matcherId);
-    }
+//    /**
+//     * Build an ITree based on bytestream using a specified method
+//     * @param stream the bytestream
+//     * @param matcherId the matcher name
+//     * @return the generated ITree
+//     */
+//    public static ITree getITreeRoot(ByteArrayOutputStream stream, String matcherId) {
+//        Reader reader = new InputStreamReader(new ByteArrayInputStream(stream.toByteArray()));
+//        return getITreeRoot(reader, matcherId);
+//    }
 
     /**
      * Build an ITree based on given file content using a specified method

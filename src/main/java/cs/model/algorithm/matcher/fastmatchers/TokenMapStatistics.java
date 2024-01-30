@@ -18,22 +18,6 @@ public class TokenMapStatistics {
     }
 
     /**
-     * When a token is mapped, we record it for the
-     * token mapping statistics of the relevant statement
-     */
-    public void tokenMapIncrement(ProgramElement stmt){
-        if (stmt.isFromSrc()){
-            if (!srcStmtMappedTokenNumMap.containsKey(stmt))
-                srcStmtMappedTokenNumMap.put(stmt, 0);
-            srcStmtMappedTokenNumMap.put(stmt, srcStmtMappedTokenNumMap.get(stmt) + 1);
-        } else {
-            if (!dstStmtMappedTokenNumMap.containsKey(stmt))
-                dstStmtMappedTokenNumMap.put(stmt, 0);
-            dstStmtMappedTokenNumMap.put(stmt, dstStmtMappedTokenNumMap.get(stmt) + 1);
-        }
-    }
-
-    /**
      * Record that all tokens of the statement are mapped.
      * @param stmt the statement
      */

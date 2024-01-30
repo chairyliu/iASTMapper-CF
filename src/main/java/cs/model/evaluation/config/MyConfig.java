@@ -67,10 +67,6 @@ public class MyConfig {
         return config.getInt(propertyName);
     }
 
-    private static String[] getStringArrayProperty(String propertyName){
-        return config.getStringArray(propertyName);
-    }
-
     public static boolean ifRemoveTestFiles(){
         return removeTestFiles;
     }

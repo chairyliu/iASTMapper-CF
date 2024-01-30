@@ -56,10 +56,6 @@ public class BestMappingSearcher {
         this.determiner = determiner;
     }
 
-    public ElementMatchDeterminer getElementMatchDeterminer() {
-        return this.determiner;
-    }
-
     public void clearBestCandidateMaps() {
         this.srcToGlobalBestDstCandidateMap.clear();
         this.srcToLocalBestDstCandidateMap.clear();

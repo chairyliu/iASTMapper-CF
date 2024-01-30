@@ -108,18 +108,6 @@ public class BestMappingSearcher {
         }
     }
 
-    /**
-     * Find one-to-one mappings excluding current mappings
-     * @param elementsToMap element pairs to map
-     * @param allSrcElements all the source elements
-     */
-    public void findOneToOneElementPairsToMap(Map<ProgramElement, ProgramElement> elementsToMap,
-                                              Set<ProgramElement> allSrcElements) {
-        for (ProgramElement srcElement: allSrcElements)
-            findBestDstCandidates(srcElement);
-        findOneToOneBestElementPairsToMap(elementsToMap, srcToLocalBestDstCandidateMap, dstToLocalBestSrcCandidateMap);
-    }
-
     private void findBestDstCandidates(ProgramElement srcElement) {
         //获取与源元素（srcElement）相关的目标元素候选集合
         Set<ProgramElement> candidateElements = candidateSearcher.getDstCandidateElements(srcElement);

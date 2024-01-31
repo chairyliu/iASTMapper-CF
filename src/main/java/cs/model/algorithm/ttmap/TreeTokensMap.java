@@ -198,7 +198,7 @@ public class TreeTokensMap {
         if (t == null) {
             range = new TokenRange(start, end);
             tokenRanges.add(range);
-            ITree tmp = treePosIdx.findRawTreeOfToken(range);
+            ITree tmp = treePosIdx.findITreeOfToken(range);
 //            System.out.println("My tmp " + tmp);
             allTokenTreeMap.put(range, tmp);
         } else {
@@ -286,8 +286,7 @@ public class TreeTokensMap {
         if (CHARS_SEPARATE.contains(tmp))
             return true;
         if (CHARS_NEED_HANDLE.contains(tmp)){
-            //修改findRawTreeOfToken
-            ITree t = treePosIdx.findITreeOfToken(new TokenRange(charIndex, charIndex + 1));
+            ITree t = treePosIdx.findRawTreeOfToken(new TokenRange(charIndex, charIndex + 1));
             if (typeChecker.isInfixExpression(t))
                 return false;
             if (typeChecker.isInfixExpressionOperator(t))

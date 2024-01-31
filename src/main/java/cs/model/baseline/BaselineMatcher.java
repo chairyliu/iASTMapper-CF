@@ -1,16 +1,15 @@
 package cs.model.baseline;
 
 import com.github.gumtreediff.actions.model.Action;
-import com.github.gumtreediff.matchers.Mapping;
 import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.tree.ITree;
-import cs.model.algorithm.iASTMapper;
 import cs.model.algorithm.actions.StmtTokenAction;
 import cs.model.algorithm.actions.StmtTokenActionGenerator;
 import cs.model.algorithm.actions.TreeEditAction;
 import cs.model.algorithm.element.ElementTreeBuilder;
 import cs.model.algorithm.element.ElementTreeUtils;
 import cs.model.algorithm.element.ProgramElement;
+import cs.model.algorithm.iASTMapper;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.mappings.MappingTransformer;
 import cs.model.algorithm.ttmap.TokenRangeTypeMap;
@@ -19,12 +18,9 @@ import cs.model.algorithm.utils.GumTreeUtil;
 import cs.model.algorithm.utils.RangeCalculator;
 import cs.model.analysis.AnalysisResultPackage;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 public class BaselineMatcher {

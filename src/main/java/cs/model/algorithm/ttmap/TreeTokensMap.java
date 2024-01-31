@@ -26,8 +26,8 @@ public class TreeTokensMap {
     private String fileContent;               // content of file
     private ITree rootNode;                   // root node of the used AST
 
-    private final Map<TokenRange, ITree> tokenRangeTreeMap;        //
-    private final Map<ITree, List<TokenRange>> treeTokenRangeMap;  //
+    private final Map<TokenRange, ITree> tokenRangeTreeMap;
+    private final Map<ITree, List<TokenRange>> treeTokenRangeMap;
     private Map<Integer, ITree> posLiteralMap; // Each literal is treated as one token (e.g., string literal)
     private final Set<Integer> removedPositions;     // comments and javadocs are not considered in the current version
 
@@ -57,7 +57,7 @@ public class TreeTokensMap {
     private List<Integer> endPositions;
 
     public TreeTokensMap(RangeCalculator rc, ITree rootNode, ITree rawTreeRootNode,
-                         Set<Integer> removedPositions){//初始化相关的数据结构
+                Set<Integer> removedPositions){
         this.fileContent = rc.getFileContent();//rc里面有行末索引，每行的内容
         this.rc = rc;
         this.rootNode = rootNode;
@@ -198,7 +198,7 @@ public class TreeTokensMap {
         if (t == null) {
             range = new TokenRange(start, end);
             tokenRanges.add(range);
-            ITree tmp = treePosIdx.findITreeOfToken(range);
+            ITree tmp = treePosIdx.findRawTreeOfToken(range);
 //            System.out.println("My tmp " + tmp);
             allTokenTreeMap.put(range, tmp);
         } else {
@@ -286,7 +286,8 @@ public class TreeTokensMap {
         if (CHARS_SEPARATE.contains(tmp))
             return true;
         if (CHARS_NEED_HANDLE.contains(tmp)){
-            ITree t = treePosIdx.findRawTreeOfToken(new TokenRange(charIndex, charIndex + 1));
+            //修改findRawTreeOfToken
+            ITree t = treePosIdx.findITreeOfToken(new TokenRange(charIndex, charIndex + 1));
             if (typeChecker.isInfixExpression(t))
                 return false;
             if (typeChecker.isInfixExpressionOperator(t))

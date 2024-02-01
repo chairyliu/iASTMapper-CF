@@ -18,7 +18,7 @@ public class CrossFileRevisionAnalysis {
     protected String dstFileContent;
     public static String used_ASTType = "gt";
     public Integer methodDeclarationNum;
-    public List<String> crossList = new ArrayList<>();
+    public List<String> crossFileMappingList = new ArrayList<>();
     public Integer crossTransferMethodDeclarationNum;
     public Map<String, List<String>> srcPathToMethodsMap;
     public Map<String, List<String>> dstPathToMethodsMap;
@@ -28,7 +28,8 @@ public class CrossFileRevisionAnalysis {
     public Map<String, String> idxToSrcMethod;
     public Map<String, String> idxToDstMethod;
 
-    public CrossFileRevisionAnalysis(String project, String commitId) throws Exception {
+
+    public CrossFileRevisionAnalysis(String project, String commitId, Boolean isMultiple) throws Exception {
 //        System.out.println("===================================");
 //        System.out.println("Commit: " + commitId);
 //        System.out.println("===================================");
@@ -50,7 +51,7 @@ public class CrossFileRevisionAnalysis {
         this.srcPathToMethodsMap = new HashMap<>();
         this.dstPathToMethodsMap = new HashMap<>();
 
-        //这两个参数分别用来存每个索引数字对应的srcpath和srcmethod
+        //这三个参数分别用来存每个索引数字对应的srcmethod、dstMethod、srcpath
         idxToSrcMethod = new HashMap<>();
         idxToDstMethod = new HashMap<>();
         idxToPath = new HashMap<>();
@@ -68,7 +69,8 @@ public class CrossFileRevisionAnalysis {
         Map<String, Double> srcMethodToSimCompare = new HashMap<>();
 
         //第一个参数是dst方法，第二个参数是其对应的dstpath。因为后续输出时，需要拿到每一个dst方法对应的路径
-        Map<String, String> reverseProjectMap = new HashMap<>();
+        Map<String, String> dstMethodToPath = new HashMap<>();
+        //用来存放dstMethod和dstIndex之间的映射
         Map<String, String> dstMethodToIndex = new HashMap<>();
 
 
@@ -115,7 +117,6 @@ public class CrossFileRevisionAnalysis {
             System.out.println("=================");
             System.out.println("File: " + srcPath);
             System.out.println("=================");
-//            int t = 0;
             System.out.println("The total number of methods is " + srcMethodsList.size() + ": ");
             for (String srcMethodDeclaration : srcMethodsList) {
                 System.out.println(srcMethodDeclaration);
@@ -140,7 +141,7 @@ public class CrossFileRevisionAnalysis {
             //对于每个dst中的方法，都将它和其dstpath绑定起来，方便后面输出
             int idz = 0;
             for (String filterDstMethod : filterDstMethodList) {
-                reverseProjectMap.put(filterDstMethod, dstPath);
+                dstMethodToPath.put(filterDstMethod, dstPath);
                 String dstIndex = idx + "-" + idz++;
                 dstMethodToIndex.put(filterDstMethod, dstIndex);
             }
@@ -151,9 +152,7 @@ public class CrossFileRevisionAnalysis {
             for (String srcMethod : filterSrcMethodList) {
                 String srcIndex = idx + "-" + idy;
                 Map<String, Double> methodToSimMap = new HashMap<>();
-//                 idz = 0;
                 for (String dstMethod : filterDstMethodList) {
-//                    String dstIndex = idx + "-" + idz;
                     String dstIndex = dstMethodToIndex.get(dstMethod);
                     //src和dst路径相同时，获取每个方法之间的相似度
                     double similarity = compareTwo(srcMethod, dstMethod);
@@ -174,13 +173,10 @@ public class CrossFileRevisionAnalysis {
                     idxToSrcMethod.put(srcIndex, srcMethod);
                     idxToDstMethod.put(dstIndex, dstMethod);
                     dstMethodToIndex.put(dstMethod, dstIndex);
-//                    idz++;
                 }
                 mpSimMap.put(srcIndex, methodToSimMap);
                 idy++;
             }
-
-
             idx++;
         }
 
@@ -201,7 +197,6 @@ public class CrossFileRevisionAnalysis {
 
             for (String srcMethod : srcMethodList) {
                 srcIndex = idx + "-" + idy;
-//                int idz = 0;
                 Map<String, Double> methodToSimMap = mpSimMap.get(srcIndex);
                 if (methodToSimMap == null) methodToSimMap = new HashMap<>();
                 for (String dstMethod : crossDstMethods) {
@@ -212,7 +207,6 @@ public class CrossFileRevisionAnalysis {
                     idxToPath.put(srcIndex, srcPath);
                     idxToSrcMethod.put(srcIndex, srcMethod);
                     idxToDstMethod.put(dstIndex, dstMethod);
-//                    idz++;
                 }
                 mpSimMap.put(srcIndex, methodToSimMap);
                 idy ++;
@@ -224,52 +218,55 @@ public class CrossFileRevisionAnalysis {
         for (Map.Entry<String, Map<String, Double>> entry : mpSimMap.entrySet()){
             srcIndex = entry.getKey();
             Map<String, Double> tmpmethodToSimMap = entry.getValue();
-            //多对多映射删去228-229
             double maxSim = 0.0;
             String subOptimDstIndex = null;
             String srcPath = idxToPath.get(srcIndex);
             int flag = 0;
             for (String dstIndex : tmpmethodToSimMap.keySet()){
-                String dstMethod = idxToDstMethod.get(dstIndex);
                 double sim = tmpmethodToSimMap.get(dstIndex);
                 if (sim >= threshold){
-                    String dstPath = reverseProjectMap.get(dstMethod);
-                    //多对多映射恢复这两行
-//                    String dstMethod = idxToDstMethod.get(dstIndex);
-//                    String srcMethod = idxToSrcMethod.get(srcIndex);
+                    String dstMethod = idxToDstMethod.get(dstIndex);
+                    String srcMethod = idxToSrcMethod.get(srcIndex);
+                    String dstPath = dstMethodToPath.get(dstMethod);
                     if (!dstPath.equals(srcPath)){
-                        //多对多删除maxsim的比较
-                        if (sim >= maxSim){
-                            maxSim = sim;
-                            subOptimDstIndex = dstIndex;
+                        if (!isMultiple) {
+                            if (sim >= maxSim) {
+                                maxSim = sim;
+                                subOptimDstIndex = dstIndex;
+                            }
                         }
-                        //多对多恢复这段
-//                        String r = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
-//                                + "\n" + reverseProjectMap.get(dstMethod) + "-[" + dstMethod + "]"
-//                                + "\n" + "Similarity: " + sim + "\n\n";
-////                        System.out.print(r);
-//                        //存储了所有跨文件映射的方法，用于后续集体输出
-//                        crossList.add(r);
-//                        flag = 1;
+                        else {
+                            String crossFileMapping = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
+                                    + "\n" + dstMethodToPath.get(dstMethod) + "-[" + dstMethod + "]"
+                                    + "\n" + "Similarity: " + sim + "\n\n";
+    //                        System.out.print(r);
+                            //存储了所有跨文件映射的方法，用于后续集体输出
+                            crossFileMappingList.add(crossFileMapping);
+                            flag = 1;
+                            if (flag == 1) {
+                                this.crossTransferMethodDeclarationNum += 1;
+                            }
+                        }
                     }
+
                 }
             }
-            //多对多删除这段
             // 如果maxSim = 0，则说明没有大于threshold的sim，反之一定是存在的，因此可以忽略掉subOptimalIndex = null带来的空指针风险
-            if (maxSim > 0){
-                String dstMethod = idxToDstMethod.get(subOptimDstIndex);
-                String srcMethod = idxToSrcMethod.get(srcIndex);
-                String r = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
-                        + "\n" + reverseProjectMap.get(dstMethod) + "-[" + dstMethod + "]"
-                        + "\n" + "Similarity: " + maxSim + "\n\n";
-//                        System.out.print(r);
-                //存储了所有跨文件映射的方法，用于后续集体输出
-                crossList.add(r);
-                flag = 1;
-            }
-            //多对多映射这个if要换循环位置，往前一个循环提
-            if (flag == 1) {
-                this.crossTransferMethodDeclarationNum += 1;
+            if (!isMultiple){
+                if (maxSim > 0){
+                    String dstMethod = idxToDstMethod.get(subOptimDstIndex);
+                    String srcMethod = idxToSrcMethod.get(srcIndex);
+                    String crossFileMapping = "In file: " + srcPath + "\n" + "[" + srcMethod + "] ----> "
+                            + "\n" + dstMethodToPath.get(dstMethod) + "-[" + dstMethod + "]"
+                            + "\n" + "Similarity: " + maxSim + "\n\n";
+    //                        System.out.print(r);
+                    //存储了所有跨文件映射的方法，用于后续集体输出
+                    crossFileMappingList.add(crossFileMapping);
+                    flag = 1;
+                }
+                if (flag == 1) {
+                    this.crossTransferMethodDeclarationNum += 1;
+                }
             }
         }
     }
@@ -333,15 +330,15 @@ public class CrossFileRevisionAnalysis {
         String commitID = "8d11f07a96fe4e2a0a338e68c9785438813d53b6";
         System.out.println("Commit: " + commitID);
         System.out.println("===================================");
-        CrossFileRevisionAnalysis instance = new CrossFileRevisionAnalysis("activemq", commitID);
+        CrossFileRevisionAnalysis instance = new CrossFileRevisionAnalysis("activemq", commitID, false);
         System.out.println(instance.methodDeclarationNum);
         System.out.println(instance.crossTransferMethodDeclarationNum);
         System.out.println("The rate of cross transfer method is: ");
         System.out.println((100 * instance.crossTransferMethodDeclarationNum) / instance.methodDeclarationNum + "%");
 
         System.out.println("=============================");
-        for (String s : instance.crossList) {
-            System.out.println(s);
+        for (String crossFileMapping : instance.crossFileMappingList) {
+            System.out.println(crossFileMapping);
         }
         System.out.println("=============================");
 

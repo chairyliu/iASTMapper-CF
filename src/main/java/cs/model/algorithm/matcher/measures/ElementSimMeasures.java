@@ -3,7 +3,10 @@ package cs.model.algorithm.matcher.measures;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.matcher.mappings.ElementMapping;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
-import cs.model.algorithm.matcher.measures.innerstmt.*;
+import cs.model.algorithm.matcher.measures.innerstmt.INNERSTMTSAMESTMTMeasure;
+import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleNameMappingMeasure;
+import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleSandwichMeasure;
+import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleTokenDiceMeasure;
 import cs.model.algorithm.matcher.measures.stmt.*;
 import cs.model.algorithm.matcher.measures.stmt.special.ReturnAndThrowStmtSimMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtIdenticalTokenMeasure;
@@ -12,11 +15,8 @@ import cs.model.algorithm.matcher.measures.stmt.textual.StmtTokenDiceMeasure;
 import cs.model.algorithm.matcher.measures.token.*;
 import cs.model.algorithm.matcher.measures.util.ElementAncestorMeasure;
 import cs.model.algorithm.matcher.measures.util.ElementTypeMeasure;
-import cs.model.algorithm.ml.AttrValue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -126,6 +126,9 @@ public class ElementSimMeasures {
             case SimMeasureNames.SAME_STMT:
                 measure = new IdenticalStmtMeasure();
                 break;
+            case SimMeasureNames.SAME_METHOD_BODY:
+                measure = new IdenticalMethodBodyMeasure();
+                break;
             case SimMeasureNames.PM:
                 measure = new StmtParentMappingMeasure();
                 break;
@@ -220,31 +223,31 @@ public class ElementSimMeasures {
     /**
      * calculate all the similarity measures when building dataset
      */
-    private void calAllSimMeasures(ElementMappings eleMappings){
-        if (srcEle.isStmt()) {
-            for (String measureName: SimMeasureConfiguration.STMT_MEASURE_CONFIGURATION)
-                addNewMeasure(measureName, eleMappings);
-        } else {
-            for (String measureName: SimMeasureConfiguration.TOKEN_MEASURE_CONFIGURATION)
-                addNewMeasure(measureName, eleMappings);
-        }
-    }
+//    private void calAllSimMeasures(ElementMappings eleMappings){
+//        if (srcEle.isStmt()) {
+//            for (String measureName: SimMeasureConfiguration.STMT_MEASURE_CONFIGURATION)
+//                addNewMeasure(measureName, eleMappings);
+//        } else {
+//            for (String measureName: SimMeasureConfiguration.TOKEN_MEASURE_CONFIGURATION)
+//                addNewMeasure(measureName, eleMappings);
+//        }
+//    }
 
     /**
      * get feature vector for training and testing dataset.
      */
-    public List<AttrValue> toMeasureVector(ElementMappings elementMappings){
-        List<AttrValue> ret = new ArrayList<>();
-        String[] measures = srcEle.isStmt() ?
-                SimMeasureConfiguration.STMT_MEASURE_CONFIGURATION :
-                SimMeasureConfiguration.TOKEN_MEASURE_CONFIGURATION;
-        for (String measureName: measures) {
-            double value = getSimMeasure(measureName, elementMappings).getValue();
-            AttrValue attrValue = new AttrValue(measureName, value);
-            ret.add(attrValue);
-        }
-        return ret;
-    }
+//    public List<AttrValue> toMeasureVector(ElementMappings elementMappings){
+//        List<AttrValue> ret = new ArrayList<>();
+//        String[] measures = srcEle.isStmt() ?
+//                SimMeasureConfiguration.STMT_MEASURE_CONFIGURATION :
+//                SimMeasureConfiguration.TOKEN_MEASURE_CONFIGURATION;
+//        for (String measureName: measures) {
+//            double value = getSimMeasure(measureName, elementMappings).getValue();
+//            AttrValue attrValue = new AttrValue(measureName, value);
+//            ret.add(attrValue);
+//        }
+//        return ret;
+//    }
 
     /**
      * Compare between two measures given a measure name
@@ -274,13 +277,13 @@ public class ElementSimMeasures {
         return measure1.compare(measure2);
     }
 
-    public static int doCompareWithConfigMeasures(ElementSimMeasures measures1, ElementSimMeasures measures2,
-                                                  ElementMappings elementMappings, String[] measures) {
-        for (String measureName: measures) {
-            int cmp = doCompare(measures1, measures2, elementMappings, measureName);
-            if (cmp != 0)
-                return cmp;
-        }
-        return 0;
-    }
+//    public static int doCompareWithConfigMeasures(ElementSimMeasures measures1, ElementSimMeasures measures2,
+//                                                  ElementMappings elementMappings, String[] measures) {
+//        for (String measureName: measures) {
+//            int cmp = doCompare(measures1, measures2, elementMappings, measureName);
+//            if (cmp != 0)
+//                return cmp;
+//        }
+//        return 0;
+//    }
 }

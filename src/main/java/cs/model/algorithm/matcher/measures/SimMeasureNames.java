@@ -11,6 +11,7 @@ public class SimMeasureNames {
 
     // statement similarity measure
     public final static String SAME_STMT = "SAME_STMT";
+    public final static String SAME_METHOD_BODY = "SAME_METHOD_BODY";
 
     public final static String PM = "PM";
     public final static String NAME = "NAME";

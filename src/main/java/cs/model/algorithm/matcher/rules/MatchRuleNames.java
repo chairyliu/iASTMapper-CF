@@ -8,6 +8,7 @@ package cs.model.algorithm.matcher.rules;
 public class MatchRuleNames {
     // Stmt Rules
     public static final String SAME_STMT = "SameStmt";
+    public static final String SAME_METHOD_BODY = "SameMethodBody";
     public static final String STMT_NAME = "StmtSameName";
     public static final String BLOCK = "Block";
     public static final String RETURN = "ReturnStmt";
@@ -27,4 +28,5 @@ public class MatchRuleNames {
     public static final String INNER_STMT_ELE_NAME = "InnerStmtEleCommonName";
     public static final String INNER_STMT_ELE_DICE = "InnerStmtEleTokenDice";
     public static final String INNER_STMT_ELE_SANDWICH = "InnerStmtEleSandwich";
+    public static final String ANONYMOUS_DEC = "AnonymousDec";
 }

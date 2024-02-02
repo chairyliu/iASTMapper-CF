@@ -3,6 +3,7 @@ package cs.model.algorithm.matcher.rules;
 import cs.model.algorithm.matcher.mappings.ElementMapping;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.measures.ElementSimMeasures;
+import cs.model.algorithm.matcher.rules.innerstmt.AnonymousDecRule;
 import cs.model.algorithm.matcher.rules.innerstmt.InnerStmtEleNameMappingRule;
 import cs.model.algorithm.matcher.rules.innerstmt.InnerStmtEleSandwichRule;
 import cs.model.algorithm.matcher.rules.innerstmt.InnerStmtEleTokenDiceRule;
@@ -41,9 +42,12 @@ public class ElementMatchDeterminer {
             return true;
         if (illegalMappings.contains(simMeasures.getElementMapping()))
             return false;
+        //这里用的第一套
         String[] ruleNames = MatchRulesConfiguration.getRuleConfiguration(simMeasures.getSrcEle());
         for (String ruleName: ruleNames) {
+            //getRuleConfiguration和getElementMatchRule统一起来
             ElementMatchRule rule = getElementMatchRule(ruleName);
+            //determineCanBeMapped是第一套
             if (rule.determineCanBeMapped(simMeasures, eleMappings)) {
                 legalMappings.add(simMeasures.getElementMapping());
                 return true;
@@ -58,6 +62,9 @@ public class ElementMatchDeterminer {
         switch (ruleName) {
             case MatchRuleNames.SAME_STMT:
                 rule = new IdenticalStmtMatchRule();
+                break;
+            case MatchRuleNames.SAME_METHOD_BODY:
+                rule = new IdenticalMethodBodyMatchRule();
                 break;
             case MatchRuleNames.STMT_NAME:
                 rule = new StmtNameMatchRule();
@@ -87,7 +94,7 @@ public class ElementMatchDeterminer {
             case MatchRuleNames.TOKEN_SANDWICH:
                 rule = new TokenSandwichRule();
                 break;
-            case MatchRuleNames.TOKEN_LRB:
+            case MatchRuleNames.TOKEN_LRB://keshan
                 rule = new Token_LRBRule();
                 break;
             case MatchRuleNames.TOKEN_MOVE:
@@ -104,6 +111,9 @@ public class ElementMatchDeterminer {
                 break;
             case MatchRuleNames.INNER_STMT_ELE_SANDWICH:
                 rule = new InnerStmtEleSandwichRule();
+                break;
+            case MatchRuleNames.ANONYMOUS_DEC:
+                rule = new AnonymousDecRule();
                 break;
             default:
                 rule = null;

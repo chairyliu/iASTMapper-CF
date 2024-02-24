@@ -10,7 +10,7 @@ public class SimMeasureNames {
     public final static String ANCESTOR = "E_ANCESTOR";
 
     // statement similarity measure
-    public final static String SAME_STMT = "SAME_STMT";
+    public final static String IDEN = "IDEN";
     public final static String SAME_METHOD_BODY = "SAME_METHOD_BODY";
 
     public final static String PM = "PM";

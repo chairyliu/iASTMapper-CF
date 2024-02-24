@@ -8,7 +8,7 @@ import cs.model.algorithm.element.ProgramElement;
 public class MatchRulesConfiguration {
     // match rule configuration for statement mapping
     private static final String[] STMT_RULE_CONFIGURATION = {
-            MatchRuleNames.SAME_STMT,          // same statement
+            MatchRuleNames.IDEN,          // same statement
             MatchRuleNames.SAME_METHOD_BODY,   // methods with the same body
             MatchRuleNames.STMT_NAME,    // same name and same scope
             MatchRuleNames.BLOCK,              // block with parent element mapped

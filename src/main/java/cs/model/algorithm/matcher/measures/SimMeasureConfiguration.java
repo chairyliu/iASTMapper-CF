@@ -14,7 +14,7 @@ public class SimMeasureConfiguration {
 
     // comparison order for stmt
     public static final String[] STMT_MEASURE_CONFIGURATION = {
-            SimMeasureNames.SAME_STMT,
+            SimMeasureNames.IDEN,
 //            SimMeasureNames.SAME_METHOD_BODY,
             SimMeasureNames.ANCESTOR,
 //            SimMeasureNames.NAME,

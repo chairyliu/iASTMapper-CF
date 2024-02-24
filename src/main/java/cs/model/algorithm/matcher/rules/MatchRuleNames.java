@@ -7,7 +7,7 @@ package cs.model.algorithm.matcher.rules;
  */
 public class MatchRuleNames {
     // Stmt Rules
-    public static final String SAME_STMT = "SameStmt";
+    public static final String IDEN = "Iden";
     public static final String SAME_METHOD_BODY = "SameMethodBody";
     public static final String STMT_NAME = "StmtSameName";
     public static final String BLOCK = "Block";

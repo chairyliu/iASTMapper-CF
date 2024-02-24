@@ -60,7 +60,7 @@ public class ElementMatchDeterminer {
     public ElementMatchRule getElementMatchRule(String ruleName) {  // 修改public-ZN
         ElementMatchRule rule;
         switch (ruleName) {
-            case MatchRuleNames.SAME_STMT:
+            case MatchRuleNames.IDEN:
                 rule = new IdenticalStmtMatchRule();
                 break;
             case MatchRuleNames.SAME_METHOD_BODY:

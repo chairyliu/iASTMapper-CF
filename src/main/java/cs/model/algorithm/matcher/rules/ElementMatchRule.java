@@ -18,7 +18,7 @@ public interface ElementMatchRule {
     JavaNodeTypeChecker typeChecker = StaticNodeTypeChecker.getConfigNodeTypeChecker();
 
     // threshold for ngram between two statements
-    double stmtNgramThreshold = 0.6;
+//    double stmtNgramThreshold = 0.6;
 
     // threshold for the ratio of common descendant statements.
     double stmtDMThreshold = 0.5;
@@ -36,7 +36,7 @@ public interface ElementMatchRule {
     double stmtDiceThreshold2 = 0.8;
 
     // Token Ngram measure
-    double tokenNgramThreshold = 0.8; // only very similar token can be mapped.
+//    double tokenNgramThreshold = 0.8; // only very similar token can be mapped.
 
 
     /**

@@ -200,8 +200,8 @@ public class Comparison {
 
     public static void main(String[] args) {
         // project name
-        String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_P0_1000\\activemq";
-        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240224101216\\activemq";
+        String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240224175500\\activemq";
+        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_P1_1000\\activemq";
 //        System.out.println(projectPath);
         // we only need to compare the first 100 commits,
         // and projectA and projectB should have the same commits lists
@@ -210,7 +210,7 @@ public class Comparison {
 //        System.out.println(commits.size());
         // for each commit, we compare Code Edit Script and AST Edit Script
         compare(projectPathA, projectPathB, commits);
-        System.out.println("Total difference: " + count +" [" + (double)count + "%]");
-//        System.out.println("Total difference: " + count +" [" + (double)(100*count/commits.size()) + "%]");
+//        System.out.println("Total difference: " + count +" [" + (double)count + "%]");
+        System.out.println("Total difference: " + count +" [" + (double)(100*count/commits.size()) + "%]");
     }
 }

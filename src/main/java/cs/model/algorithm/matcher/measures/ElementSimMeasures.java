@@ -123,7 +123,7 @@ public class ElementSimMeasures {
             case SimMeasureNames.E_TYPE:
                 measure = new ElementTypeMeasure();
                 break;
-            case SimMeasureNames.SAME_STMT:
+            case SimMeasureNames.IDEN:
                 measure = new IdenticalStmtMeasure();
                 break;
             case SimMeasureNames.SAME_METHOD_BODY:

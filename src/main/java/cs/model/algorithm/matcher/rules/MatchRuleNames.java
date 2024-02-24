@@ -22,7 +22,6 @@ public class MatchRuleNames {
     public static final String TOKEN_SANDWICH = "TokenSandwich";
     public static final String TOKEN_MOVE = "TokenMove";
     public static final String NAME_TOKEN_STMT = "NameTokeOfStmt";
-    public static final String TOKEN_LRB = "TOKEN_LRB";//T-ABS
 
     // Rules for inner-stmt elements
     public static final String INNER_STMT_ELE_NAME = "InnerStmtEleCommonName";

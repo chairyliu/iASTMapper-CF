@@ -50,7 +50,7 @@ public class iASTMapper100_runner {
                 BufferedWriter bw1;
                 int num = 0;
                 while((line = br.readLine())!=null) {
-                    if (num++ >= 100)
+                    if (num++ >= 1000)
                         break;
                     String[] sa = line.split(" ");
                     if (sa.length == 4) {

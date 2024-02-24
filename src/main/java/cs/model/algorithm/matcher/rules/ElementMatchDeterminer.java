@@ -73,7 +73,7 @@ public class ElementMatchDeterminer {
                 rule = new BlockMatchRule();
                 break;
             case MatchRuleNames.RETURN:
-                rule = new ReturnOrThrowStmtRule();
+                rule = new ReturnOrThrowStmtRule();//
 //                System.out.println("=====RETURN=====");
                 break;
             case MatchRuleNames.STMT_SANDWICH:
@@ -93,9 +93,6 @@ public class ElementMatchDeterminer {
                 break;
             case MatchRuleNames.TOKEN_SANDWICH:
                 rule = new TokenSandwichRule();
-                break;
-            case MatchRuleNames.TOKEN_LRB://keshan
-                rule = new Token_LRBRule();
                 break;
             case MatchRuleNames.TOKEN_MOVE:
                 rule = new TokenMoveAcrossStmtRule();

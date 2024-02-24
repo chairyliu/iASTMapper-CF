@@ -26,7 +26,7 @@ public class Comparison {
             BufferedReader br = new BufferedReader(new FileReader(f));
             int i = 0;
             while((line = br.readLine())!=null) {
-                if (i++ >= 100)
+                if (i++ >= 1000)
                     break;
                 String[] sa = line.split(" ");
                 if (sa.length == 8) {
@@ -200,8 +200,8 @@ public class Comparison {
 
     public static void main(String[] args) {
         // project name
-        String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240202185959\\activemq";
-        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_P0\\activemq";
+        String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_P0_1000\\activemq";
+        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240224101216\\activemq";
 //        System.out.println(projectPath);
         // we only need to compare the first 100 commits,
         // and projectA and projectB should have the same commits lists

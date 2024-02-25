@@ -3,12 +3,12 @@ package cs.model.algorithm.matcher.measures;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.matcher.mappings.ElementMapping;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
-import cs.model.algorithm.matcher.measures.innerstmt.INNERSTMTSAMESTMTMeasure;
+import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtSameStmtMeasure;
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleNameMappingMeasure;
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleSandwichMeasure;
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleTokenDiceMeasure;
 import cs.model.algorithm.matcher.measures.stmt.*;
-import cs.model.algorithm.matcher.measures.stmt.special.ReturnAndThrowStmtSimMeasure;
+import cs.model.algorithm.matcher.measures.stmt.special.ReturnOrThrowStmtMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtIdenticalTokenMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtNgramDiceMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtTokenDiceMeasure;
@@ -127,21 +127,21 @@ public class ElementSimMeasures {
                 measure = new IdenticalStmtMeasure();
                 break;
             case SimMeasureNames.SAME_METHOD_BODY:
-                measure = new IdenticalMethodBodyMeasure();
+                measure = new SameMethodBodyMeasure();
                 break;
             case SimMeasureNames.PM:
                 measure = new StmtParentMappingMeasure();
                 break;
-            case SimMeasureNames.NAME:
-                measure = new StmtSameNameMeasure();
+            case SimMeasureNames.STMT_NAME:
+                measure = new StmtNameMeasure();
                 break;
             case SimMeasureNames.NIT:
                 measure = new StmtIdenticalTokenMeasure();
                 break;
-            case SimMeasureNames.EXCHANGE:
+            case SimMeasureNames.S_ABS:
                 measure = new StmtExchangeMeasure();
                 break;
-            case SimMeasureNames.STMT:
+            case SimMeasureNames.T_MSIS:
                 measure = new TokenStmtMeasure();
                 break;
             case SimMeasureNames.SAME_VALUE_RENAME:
@@ -150,16 +150,16 @@ public class ElementSimMeasures {
             case SimMeasureNames.TOKEN_NEIGHBOR:
                 measure = new TokenNeighborMeasure();
                 break;
-            case SimMeasureNames.TOKEN_LRB:
+            case SimMeasureNames.T_ABS:
                 measure = new Token_LRBMeasure();
                 break;
             case SimMeasureNames.INNERSTMT:
-                measure = new INNERSTMTMeasure();
+                measure = new InnerStmtMeasure();
                 break;
-            case SimMeasureNames.STRUCT:
-                measure = new TokenStructureMeasure();
+            case SimMeasureNames.TOKEN_SAME_STRUCT:
+                measure = new TokenSameStructureMeasure();
                 break;
-            case SimMeasureNames.ANCESTOR:
+            case SimMeasureNames.ANCE:
                 measure = new ElementAncestorMeasure();
                 break;
             case SimMeasureNames.TOKEN_SANDWICH:
@@ -171,11 +171,10 @@ public class ElementSimMeasures {
             case SimMeasureNames.MS:
                 measure = new MethodSignatureMeasure();
                 break;
-            case SimMeasureNames.DICE:
+            case SimMeasureNames.IMTR:
                 measure = new StmtTokenDiceMeasure();
-//                System.out.println("=====DICE=====");
                 break;
-            case SimMeasureNames.DM:
+            case SimMeasureNames.IMSR:
                 measure = new StmtDescendantMappingMeasure();
                 break;
             case SimMeasureNames.NGRAM:
@@ -184,20 +183,20 @@ public class ElementSimMeasures {
             case SimMeasureNames.INNER_STMT_ELE_NAME:
                 measure = new InnerStmtEleNameMappingMeasure();
                 break;
-            case SimMeasureNames.INNER_STMT_ELE_DICE:
+            case SimMeasureNames.I_IMTR:
                 measure = new InnerStmtEleTokenDiceMeasure();
                 break;
-            case SimMeasureNames.INNER_STMT_SAME_STMT:
-                measure = new INNERSTMTSAMESTMTMeasure();
+            case SimMeasureNames.I_MSIS:
+                measure = new InnerStmtSameStmtMeasure();
                 break;
-            case SimMeasureNames.INNER_STMT_ELE_SANDWICH:
+            case SimMeasureNames.I_ABS:
                 measure = new InnerStmtEleSandwichMeasure();
                 break;
             case SimMeasureNames.TOKEN_SCOPE:
                 measure = new TokenScopeMeasure();
                 break;
             case SimMeasureNames.RETURN_STMT:
-                measure = new ReturnAndThrowStmtSimMeasure();
+                measure = new ReturnOrThrowStmtMeasure();
 //                System.out.println("=====RETURN_STMT=====");
                 break;
             case SimMeasureNames.STMT_NAME_TOKEN:
@@ -265,7 +264,7 @@ public class ElementSimMeasures {
         if (measures1.isSameStringValueForStmt() == 1 && measures2.isSameStringValueForStmt() == 1){
             if (measureName.equals(SimMeasureNames.NIT))
                 return 0;
-            if (measureName.equals(SimMeasureNames.DICE))
+            if (measureName.equals(SimMeasureNames.IMTR))
                 return 0;
             if (measureName.equals(SimMeasureNames.NGRAM))
                 return 0;

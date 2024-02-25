@@ -18,6 +18,6 @@ public class InnerStmtEleTokenDiceRule extends AbstractElementMatchRule implemen
     }
     @Override
     public boolean determineCanBeMapped(ElementSimMeasures measures, ElementMappings eleMappings) {
-        return measures.getSimMeasure(SimMeasureNames.INNER_STMT_ELE_DICE, eleMappings).getValue() >= InnerStmtEleDiceThreshold;
+        return measures.getSimMeasure(SimMeasureNames.I_IMTR, eleMappings).getValue() >= InnerStmtEleDiceThreshold;
     }
 }

@@ -27,7 +27,7 @@ public class TokenMoveAcrossStmtRule extends AbstractElementMatchRule implements
     public boolean determineCanBeMapped(ElementSimMeasures measures, ElementMappings eleMappings) {
         TokenElement srcTokenEle = (TokenElement) measures.getSrcEle();
         TokenElement dstTokenEle = (TokenElement) measures.getDstEle();
-        SimMeasure measure1 = measures.getSimMeasure(SimMeasureNames.STMT, eleMappings);
+        SimMeasure measure1 = measures.getSimMeasure(SimMeasureNames.T_MSIS, eleMappings);
         if (measure1.getValue() == 0.0) {
 
             if (srcTokenEle.getStmtElement().isDeclaration() || dstTokenEle.getStmtElement().isDeclaration())

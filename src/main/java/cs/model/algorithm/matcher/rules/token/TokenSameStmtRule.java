@@ -18,7 +18,7 @@ public class TokenSameStmtRule extends AbstractElementMatchRule implements Eleme
     }
     @Override
     public boolean determineCanBeMapped(ElementSimMeasures measures, ElementMappings eleMappings) {
-        SimMeasure measure1 = measures.getSimMeasure(SimMeasureNames.STMT, eleMappings);
+        SimMeasure measure1 = measures.getSimMeasure(SimMeasureNames.T_MSIS, eleMappings);
         if (measure1.getValue() == 1.0) {
             // if two tokens have the same value or the two tokens are renamed
             SimMeasure measure2 = measures.getSimMeasure(SimMeasureNames.SAME_VALUE_RENAME, eleMappings);

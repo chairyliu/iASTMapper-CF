@@ -11,21 +11,21 @@ public class MatchRuleNames {
     public static final String SAME_METHOD_BODY = "SameMethodBody";
     public static final String STMT_NAME = "StmtSameName";
     public static final String BLOCK = "Block";
-    public static final String RETURN = "ReturnStmt";
+    public static final String RETURN_STMT = "ReturnStmt";
     public static final String STMT_SANDWICH = "StmtSandwich";
-    public static final String DESCENDANT_STMT = "StmtDescendantMapped";
-    public static final String STMT_TOKEN_DICE = "StmtTokenDice";
+    public static final String IMSR = "IMSR";
+    public static final String IMTR = "StmtTokenDice";
 
     // Token Rules
     public static final String TOKEN_SAME_STRUCT = "TokenSameStructure";
     public static final String TOKEN_SAME_STMT = "TokenSameStmt";
     public static final String TOKEN_SANDWICH = "TokenSandwich";
     public static final String TOKEN_MOVE = "TokenMove";
-    public static final String NAME_TOKEN_STMT = "NameTokeOfStmt";
+    public static final String STMT_NAME_TOKEN = "StmtNameToken";
 
     // Rules for inner-stmt elements
     public static final String INNER_STMT_ELE_NAME = "InnerStmtEleCommonName";
-    public static final String INNER_STMT_ELE_DICE = "InnerStmtEleTokenDice";
-    public static final String INNER_STMT_ELE_SANDWICH = "InnerStmtEleSandwich";
+    public static final String I_IMTR = "I-IMTR";
+    public static final String I_ABS = "I-ABS";
     public static final String ANONYMOUS_DEC = "AnonymousDec";
 }

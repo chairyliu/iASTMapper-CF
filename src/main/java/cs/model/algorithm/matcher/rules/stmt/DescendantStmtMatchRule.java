@@ -21,6 +21,6 @@ public class DescendantStmtMatchRule extends AbstractElementMatchRule implements
     public boolean determineCanBeMapped(ElementSimMeasures measures, ElementMappings eleMappings) {
         if (typeChecker.isBlock(measures.getSrcEle().getITreeNode()))
             return false;
-        return measures.getSimMeasure(SimMeasureNames.DM, eleMappings).getValue() >= stmtDMThreshold;
+        return measures.getSimMeasure(SimMeasureNames.IMSR, eleMappings).getValue() >= stmtDMThreshold;
     }
 }

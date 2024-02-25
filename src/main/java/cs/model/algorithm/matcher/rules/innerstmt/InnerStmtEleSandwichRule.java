@@ -13,6 +13,6 @@ public class InnerStmtEleSandwichRule extends AbstractElementMatchRule implement
 
     @Override
     public boolean determineCanBeMapped(ElementSimMeasures measures, ElementMappings eleMappings) {
-        return measures.getSimMeasure(SimMeasureNames.INNER_STMT_ELE_SANDWICH, eleMappings).getValue() == 1.0;
+        return measures.getSimMeasure(SimMeasureNames.I_ABS, eleMappings).getValue() == 1.0;
     }
 }

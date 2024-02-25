@@ -5,7 +5,7 @@ import cs.model.algorithm.element.StmtElement;
 import cs.model.algorithm.matcher.measures.AbstractSimMeasure;
 import cs.model.algorithm.matcher.measures.SimMeasure;
 
-public class ReturnAndThrowStmtSimMeasure extends AbstractSimMeasure implements SimMeasure {
+public class ReturnOrThrowStmtMeasure extends AbstractSimMeasure implements SimMeasure {
     private boolean isReturnOrThrowStatement(ProgramElement element) {
         return typeChecker.isReturnStatement(element.getITreeNode()) ||
                 typeChecker.isThrowStatement(element.getITreeNode());

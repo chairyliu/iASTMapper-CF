@@ -9,7 +9,7 @@ import cs.model.algorithm.matcher.measures.SimMeasure;
 /**
  * 比较两个方法声明语句的方法体是否具有相同的语法结构
  */
-public class IdenticalMethodBodyMeasure extends AbstractSimMeasure implements SimMeasure {
+public class SameMethodBodyMeasure extends AbstractSimMeasure implements SimMeasure {
     @Override
     protected double calMeasureValue(ProgramElement srcEle, ProgramElement dstEle) {
         StmtElement srcStmt = (StmtElement) srcEle;

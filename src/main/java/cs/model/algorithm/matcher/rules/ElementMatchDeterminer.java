@@ -64,7 +64,7 @@ public class ElementMatchDeterminer {
                 rule = new IdenticalStmtMatchRule();
                 break;
             case MatchRuleNames.SAME_METHOD_BODY:
-                rule = new IdenticalMethodBodyMatchRule();
+                rule = new SameMethodBodyMatchRule();
                 break;
             case MatchRuleNames.STMT_NAME:
                 rule = new StmtNameMatchRule();
@@ -72,18 +72,18 @@ public class ElementMatchDeterminer {
             case MatchRuleNames.BLOCK:
                 rule = new BlockMatchRule();
                 break;
-            case MatchRuleNames.RETURN:
-                rule = new ReturnOrThrowStmtRule();//
+            case MatchRuleNames.RETURN_STMT:
+                rule = new ReturnOrThrowStmtRule();
 //                System.out.println("=====RETURN=====");
                 break;
             case MatchRuleNames.STMT_SANDWICH:
                 rule = new StmtSandwichRule();
                 break;
-            case MatchRuleNames.DESCENDANT_STMT:
+            case MatchRuleNames.IMSR:
                 rule = new DescendantStmtMatchRule();
                 break;
-            case MatchRuleNames.STMT_TOKEN_DICE:
-                rule = new StmtTokenDiceCoefficientRule();
+            case MatchRuleNames.IMTR:
+                rule = new StmtTokenDiceRule();
                 break;
             case MatchRuleNames.TOKEN_SAME_STRUCT:
                 rule = new TokenSameStructureRule();
@@ -97,16 +97,16 @@ public class ElementMatchDeterminer {
             case MatchRuleNames.TOKEN_MOVE:
                 rule = new TokenMoveAcrossStmtRule();
                 break;
-            case MatchRuleNames.NAME_TOKEN_STMT:
-                rule = new NameTokenOfStmtRule();
+            case MatchRuleNames.STMT_NAME_TOKEN:
+                rule = new StmtNameTokenRule();
                 break;
             case MatchRuleNames.INNER_STMT_ELE_NAME:
                 rule = new InnerStmtEleNameMappingRule();
                 break;
-            case MatchRuleNames.INNER_STMT_ELE_DICE:
+            case MatchRuleNames.I_IMTR:
                 rule = new InnerStmtEleTokenDiceRule();
                 break;
-            case MatchRuleNames.INNER_STMT_ELE_SANDWICH:
+            case MatchRuleNames.I_ABS:
                 rule = new InnerStmtEleSandwichRule();
                 break;
             case MatchRuleNames.ANONYMOUS_DEC:

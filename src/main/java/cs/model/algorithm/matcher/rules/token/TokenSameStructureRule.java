@@ -2,18 +2,15 @@ package cs.model.algorithm.matcher.rules.token;
 
 import com.github.gumtreediff.tree.ITree;
 import cs.model.algorithm.element.ProgramElement;
-import cs.model.algorithm.element.TokenElement;
 import cs.model.algorithm.languageutils.typechecker.JavaNodeTypeChecker;
 import cs.model.algorithm.languageutils.typechecker.StaticNodeTypeChecker;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.measures.ElementSimMeasures;
 import cs.model.algorithm.matcher.measures.SimMeasure;
 import cs.model.algorithm.matcher.measures.SimMeasureNames;
-import cs.model.algorithm.matcher.measures.token.TokenStructureMeasure;
+import cs.model.algorithm.matcher.measures.token.TokenSameStructureMeasure;
 import cs.model.algorithm.matcher.rules.AbstractElementMatchRule;
 import cs.model.algorithm.matcher.rules.ElementMatchRule;
-
-import java.util.Map;
 
 /**
  * Mapping rule for token.
@@ -29,7 +26,7 @@ public class TokenSameStructureRule extends AbstractElementMatchRule implements 
 
     @Override
     public boolean determineCanBeMapped(ElementSimMeasures measures, ElementMappings eleMappings) {
-        SimMeasure measure1 = measures.getSimMeasure(SimMeasureNames.STRUCT, eleMappings);
+        SimMeasure measure1 = measures.getSimMeasure(SimMeasureNames.TOKEN_SAME_STRUCT, eleMappings);
         if (measure1.getValue() > 1.0) {
             ProgramElement srcElement = measures.getSrcEle();
             ProgramElement dstElement = measures.getDstEle();
@@ -40,8 +37,8 @@ public class TokenSameStructureRule extends AbstractElementMatchRule implements 
                     eleMappings.getMappedElement(srcParentEle) != dstParentEle)
                 return false;
 
-            ITree srcNode = ((TokenStructureMeasure) measure1).getSrcMultiTokenNode();
-            ITree dstNode = ((TokenStructureMeasure) measure1).getDstMultiTokenNode();
+            ITree srcNode = ((TokenSameStructureMeasure) measure1).getSrcMultiTokenNode();
+            ITree dstNode = ((TokenSameStructureMeasure) measure1).getDstMultiTokenNode();
             if (srcNode != null && dstNode != null) {
                 // Fix issue #20, tokens in parameters of different method declarations
                 // cannot be determined to be mapped.

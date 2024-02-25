@@ -10,7 +10,7 @@ import cs.model.algorithm.matcher.measures.SimMeasureNames;
  */
 public abstract class AbstractElementMatchRule implements ElementMatchRule {
     protected static boolean isWithSameName(ElementSimMeasures measures, ElementMappings eleMappings) {
-        SimMeasure nameSameMeasure = measures.getSimMeasure(SimMeasureNames.NAME, eleMappings);
+        SimMeasure nameSameMeasure = measures.getSimMeasure(SimMeasureNames.STMT_NAME, eleMappings);
         return nameSameMeasure.getValue() == 1.0;
     }
 

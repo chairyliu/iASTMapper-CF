@@ -12,10 +12,10 @@ public class MatchRulesConfiguration {
             MatchRuleNames.SAME_METHOD_BODY,   // methods with the same body
             MatchRuleNames.STMT_NAME,    // same name and same scope
             MatchRuleNames.BLOCK,              // block with parent element mapped
-            MatchRuleNames.RETURN,               // return statement in the same method
+            MatchRuleNames.RETURN_STMT,               // return statement in the same method
             MatchRuleNames.STMT_SANDWICH,      // statements with surround statements mapped
-            MatchRuleNames.DESCENDANT_STMT,    // statements with enough descendant statements mapped
-            MatchRuleNames.STMT_TOKEN_DICE,    // statements with similar content
+            MatchRuleNames.IMSR,    // statements with enough descendant statements mapped
+            MatchRuleNames.IMTR,    // statements with similar content
     };
 
     // match rule configuration for token mapping
@@ -24,14 +24,14 @@ public class MatchRulesConfiguration {
             MatchRuleNames.TOKEN_SAME_STMT,     // tokens in the same statement with same or renamed value
             MatchRuleNames.TOKEN_SANDWICH,      // tokens with the sandwich measure
             MatchRuleNames.TOKEN_MOVE,          // move with neighbor token; same variable or literal moved intra same scope
-            MatchRuleNames.NAME_TOKEN_STMT,     // name of the statement can be mapped
+            MatchRuleNames.STMT_NAME_TOKEN,     // name of the statement can be mapped
     };
 
     // configuration for inner-stmt element mapping
     private static final String[] INNER_STMT_ELE_RULE_CONFIGURATION = {
             MatchRuleNames.INNER_STMT_ELE_NAME,           // inner-stmt elements with mapped token representing their name.
-            MatchRuleNames.INNER_STMT_ELE_DICE,           // inner-stmt elements with enough common tokens.
-            MatchRuleNames.INNER_STMT_ELE_SANDWICH,       // inner-stmt elements with left and right tokens mapped.
+            MatchRuleNames.I_IMTR,                        // inner-stmt elements with enough common tokens.
+            MatchRuleNames.I_ABS,                         // inner-stmt elements with left and right tokens mapped.
             MatchRuleNames.ANONYMOUS_DEC
     };
 

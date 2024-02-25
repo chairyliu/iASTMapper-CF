@@ -1,15 +1,13 @@
 package cs.model.algorithm.matcher.measures.stmt;
 
 import cs.model.algorithm.element.ProgramElement;
-import cs.model.algorithm.element.StmtElement;
-import cs.model.algorithm.element.TokenElement;
 import cs.model.algorithm.matcher.measures.AbstractSimMeasure;
 import cs.model.algorithm.matcher.measures.SimMeasure;
 
 /**
  * Mechanism: statements with the same name are more likely to be mapped.
  */
-public class StmtSameNameMeasure extends AbstractSimMeasure implements SimMeasure {
+public class StmtNameMeasure extends AbstractSimMeasure implements SimMeasure {
 
     @Override
     protected double calMeasureValue(ProgramElement srcEle, ProgramElement dstEle) {

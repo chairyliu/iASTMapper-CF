@@ -6,7 +6,7 @@ import cs.model.algorithm.matcher.measures.SimMeasure;
 import cs.model.algorithm.matcher.measures.token.TokenNeighborMeasure;
 import cs.model.algorithm.matcher.measures.token.TokenSameRenameValueMeasure;
 import cs.model.algorithm.matcher.measures.token.TokenStmtMeasure;
-import cs.model.algorithm.matcher.measures.token.TokenStructureMeasure;
+import cs.model.algorithm.matcher.measures.token.TokenSameStructureMeasure;
 
 import java.util.Set;
 
@@ -44,7 +44,7 @@ public class FastTokenCandidateSearcher {
     }
 
     public Set<ProgramElement> getCandidatesWithIdenticalMultiTokenForSrcToken() {
-        SimMeasure measure = new TokenStructureMeasure();//在结构上相似度的度量
+        SimMeasure measure = new TokenSameStructureMeasure();//在结构上相似度的度量
         measure.setElementMappings(elementMappings);
         return measure.filterBadDstCandidateElements(srcToken, sameTypeCandidates, candidateSetsAndMaps);
     }

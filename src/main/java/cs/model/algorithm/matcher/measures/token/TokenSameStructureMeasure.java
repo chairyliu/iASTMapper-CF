@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * Mechanism: tokens in identical multi-token structure are likely to be mapped.
  */
-public class TokenStructureMeasure extends AbstractSimMeasure implements SimMeasure {
+public class TokenSameStructureMeasure extends AbstractSimMeasure implements SimMeasure {
 
     private ITree srcMultiTokenNode = null;
     private ITree dstMultiTokenNode = null;

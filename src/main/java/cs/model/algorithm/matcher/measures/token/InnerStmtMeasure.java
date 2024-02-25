@@ -13,7 +13,7 @@ import java.util.Set;
 /*
  * Mechanism: two tokens from mapped inner statements are likely to be mapped.
  */
-public class INNERSTMTMeasure extends AbstractSimMeasure implements SimMeasure {
+public class InnerStmtMeasure extends AbstractSimMeasure implements SimMeasure {
 
     @Override
     protected double calMeasureValue(ProgramElement srcEle, ProgramElement dstEle) {

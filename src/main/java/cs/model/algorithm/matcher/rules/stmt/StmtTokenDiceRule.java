@@ -2,15 +2,14 @@ package cs.model.algorithm.matcher.rules.stmt;
 
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.element.StmtElement;
-import cs.model.algorithm.languageutils.typechecker.StaticNodeTypeChecker;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.measures.ElementSimMeasures;
 import cs.model.algorithm.matcher.measures.SimMeasureNames;
 import cs.model.algorithm.matcher.rules.AbstractElementMatchRule;
 import cs.model.algorithm.matcher.rules.ElementMatchRule;
 
-public class StmtTokenDiceCoefficientRule extends AbstractElementMatchRule implements ElementMatchRule {
-    public  StmtTokenDiceCoefficientRule(){
+public class StmtTokenDiceRule extends AbstractElementMatchRule implements ElementMatchRule {
+    public StmtTokenDiceRule(){
         super();
     }
     @Override
@@ -19,7 +18,7 @@ public class StmtTokenDiceCoefficientRule extends AbstractElementMatchRule imple
         if (typeChecker.isPackageDec(srcElement.getITreeNode()))
             return true;
 
-        double dice = measures.getSimMeasure(SimMeasureNames.DICE, eleMappings).getValue();
+        double dice = measures.getSimMeasure(SimMeasureNames.IMTR, eleMappings).getValue();
         if (typeChecker.isImportDec(srcElement.getITreeNode()))
             return dice >= stmtDiceThreshold0;
 //            return dice == 1;

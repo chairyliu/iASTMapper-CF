@@ -1,6 +1,8 @@
 package ase2023;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,14 +56,14 @@ public class Comparison {
         return blocks;
     }
 
-    public static void compare(String projectPathA, String projectPathB, List<String> commits){
+    public static void compare(String projectPathA, String projectPathB, List<String> commits, List<String> outputLines){
         // for each commits
         for (String commitId : commits) {
-            compareEle(projectPathA, projectPathB, commitId);
+            compareEle(projectPathA, projectPathB, commitId, outputLines);
         }
     }
 
-    public static void compareEle(String projectPathA, String projectPathB, String commitId){
+    public static void compareEle(String projectPathA, String projectPathB, String commitId, List<String> outputLines){
         String commitPathA = projectPathA + File.separator + commitId + ".txt";
         String commitPathB = projectPathB + File.separator + commitId + ".txt";
         File fA = new File(commitPathA);
@@ -127,33 +129,42 @@ public class Comparison {
          * count (%)
          */
         count++;
-        System.out.println("commitId: " + commitId);
-        System.out.println("CodeEditScriptBlockIndex: " + Diff_CodeEditScriptBlockIndex);
-        System.out.println("ASTEditScriptBlockIndex: " + Diff_ASTEditScriptBlockIndex);
-        System.out.println("CodeEditScriptBlock: ");
+//        System.out.println("commitId: " + commitId);
+//        System.out.println("CodeEditScriptBlockIndex: " + Diff_CodeEditScriptBlockIndex);
+//        System.out.println("ASTEditScriptBlockIndex: " + Diff_ASTEditScriptBlockIndex);
+//        System.out.println("CodeEditScriptBlock: ");
+        outputLines.add("commitId: " + commitId);
+        outputLines.add("CodeEditScriptBlockIndex: " + Diff_CodeEditScriptBlockIndex);
+        outputLines.add("ASTEditScriptBlockIndex: " + Diff_ASTEditScriptBlockIndex);
+        outputLines.add("CodeEditScriptBlock: ");
         if (CodeEditScriptA_block.size() > CodeEditScriptB_block.size()) {
             for (int j = 0; j < Diff_CodeEditScriptBlockIndex.size(); j++) {
                 int index = Diff_CodeEditScriptBlockIndex.get(j);
-                System.out.println(CodeEditScriptA_block.get(index));
+//                System.out.println(CodeEditScriptA_block.get(index));
+                outputLines.add(CodeEditScriptA_block.get(index));
             }
         }
         else {
             for (int j = 0; j < Diff_CodeEditScriptBlockIndex.size(); j++) {
                 int index = Diff_CodeEditScriptBlockIndex.get(j);
-                System.out.println(CodeEditScriptB_block.get(index));
+//                System.out.println(CodeEditScriptB_block.get(index));
+                outputLines.add(CodeEditScriptB_block.get(index));
             }
         }
-        System.out.println("ASTEditScriptBlock: ");
+//        System.out.println("ASTEditScriptBlock: ");
+        outputLines.add("ASTEditScriptBlock: ");
         if (ASTEditScriptA_block.size() > ASTEditScriptB_block.size()) {
             for (int j = 0; j < Diff_ASTEditScriptBlockIndex.size(); j++) {
                 int index = Diff_ASTEditScriptBlockIndex.get(j);
-                System.out.println(ASTEditScriptA_block.get(index));
+//                System.out.println(ASTEditScriptA_block.get(index));
+                outputLines.add(ASTEditScriptA_block.get(index));
             }
         }
         else {
             for (int j = 0; j < Diff_ASTEditScriptBlockIndex.size(); j++) {
                 int index = Diff_ASTEditScriptBlockIndex.get(j);
-                System.out.println(ASTEditScriptB_block.get(index));
+//                System.out.println(ASTEditScriptB_block.get(index));
+                outputLines.add(ASTEditScriptB_block.get(index));
             }
         }
     }
@@ -201,7 +212,7 @@ public class Comparison {
     public static void main(String[] args) {
         // project name
         String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240225144334\\activemq";
-        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240225111341\\activemq";
+        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_P1_1000\\activemq";
 //        System.out.println(projectPath);
         // we only need to compare the first 100 commits,
         // and projectA and projectB should have the same commits lists
@@ -209,7 +220,20 @@ public class Comparison {
 //        System.out.println(commits);
 //        System.out.println(commits.size());
         // for each commit, we compare Code Edit Script and AST Edit Script
-        compare(projectPathA, projectPathB, commits);
+//        compare(projectPathA, projectPathB, commits);
+        List<String> outputLines = new ArrayList<>();
+        compare(projectPathA, projectPathB, commits, outputLines);
+        LocalDateTime time = LocalDateTime.now();
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String formattedTimestamp = time.format(pattern);
+        // 现在将outputLines中的内容写入文件
+        try (PrintWriter writer = new PrintWriter(new File("C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\output.txt" + formattedTimestamp), "UTF-8")) {
+            for (String line : outputLines) {
+                writer.println(line);
+            }
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 //        System.out.println("Total difference: " + count +" [" + (double)count + "%]");
         System.out.println("Total difference: " + count +" [" + (double)(100*count/commits.size()) + "%]");
     }

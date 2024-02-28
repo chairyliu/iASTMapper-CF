@@ -3,14 +3,12 @@ package ase2023;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Comparison {
 
     public static int count = 0;
+    private static Set<String> processedCommitIds = new HashSet<>();
 
     /**
      * Get the first 100 commits from the file
@@ -64,6 +62,13 @@ public class Comparison {
     }
 
     public static void compareEle(String projectPathA, String projectPathB, String commitId, List<String> outputLines){
+        // Check if the commitId has already been processed
+        if (processedCommitIds.contains(commitId)) {
+            // Skip this commitId as it has already been processed
+            return;
+        }
+        // Add commitId to the set to mark it as processed
+        processedCommitIds.add(commitId);
         String commitPathA = projectPathA + File.separator + commitId + ".txt";
         String commitPathB = projectPathB + File.separator + commitId + ".txt";
         File fA = new File(commitPathA);
@@ -211,8 +216,8 @@ public class Comparison {
 
     public static void main(String[] args) {
         // project name
-        String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240225144334\\activemq";
-        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_P1_1000\\activemq";
+        String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_P1_1000\\activemq";
+        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240227152536\\activemq";
 //        System.out.println(projectPath);
         // we only need to compare the first 100 commits,
         // and projectA and projectB should have the same commits lists
@@ -226,7 +231,6 @@ public class Comparison {
         LocalDateTime time = LocalDateTime.now();
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String formattedTimestamp = time.format(pattern);
-        // 现在将outputLines中的内容写入文件
         try (PrintWriter writer = new PrintWriter(new File("C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\output.txt" + formattedTimestamp), "UTF-8")) {
             for (String line : outputLines) {
                 writer.println(line);

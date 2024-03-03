@@ -154,7 +154,7 @@ public class SameBigStructureMatcher extends BaseFastMatcher {
     private void buildValInnerStmtEleMap(List<ProgramElement> stmts) {
 //        int num = 0;
         for (ProgramElement stmt: stmts){
-            if (statistics.isAllTokenMapped(stmt))
+            if (statistics.isAllTokenMapped(stmt))//检查token是否已被映射
                 continue;
 //            System.out.println(num + " Stmt is " + stmt);
             for (TokenElement token: stmt.getTokenElements()) {

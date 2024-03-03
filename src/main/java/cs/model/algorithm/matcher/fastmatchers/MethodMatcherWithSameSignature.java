@@ -14,7 +14,7 @@ import java.util.*;
  * For method signature, we only consider method name, types of the
  */
 public class MethodMatcherWithSameSignature extends BaseFastMatcher {
-    private final Map<String, List<ProgramElement>> srcNameMethodMap;
+    private final Map<String, List<ProgramElement>> srcNameMethodMap;//键是方法名称
     private final Map<String, List<ProgramElement>> dstNameMethodMap;
 
     /**
@@ -30,8 +30,8 @@ public class MethodMatcherWithSameSignature extends BaseFastMatcher {
         this.dstNameMethodMap = new HashMap<>();
     }
 
-    public void buildMappings(){
-        buildNameMethodMap(srcStmts, srcNameMethodMap);//键是语句元素，值是对应的方法名称
+    public void buildMappings(){//找出名字相同的两个方法声明
+        buildNameMethodMap(srcStmts, srcNameMethodMap);//键是语句元素，值是对应的方法名称map集合
         buildNameMethodMap(dstStmts, dstNameMethodMap);
 
         for (String name: srcNameMethodMap.keySet()) {
@@ -45,18 +45,18 @@ public class MethodMatcherWithSameSignature extends BaseFastMatcher {
     }
 
     // only consider to map methods with identical signature (name + type list)
-    private void buildMapping(List<ProgramElement> srcMethods, List<ProgramElement> dstMethods) {
-        Map<ProgramElement, Set<ProgramElement>> srcToMultiDst = new HashMap<>();
-        Map<ProgramElement, Set<ProgramElement>> dstToMultiSrc = new HashMap<>();
+    private void buildMapping(List<ProgramElement> srcMethods, List<ProgramElement> dstMethods) {//参数列表匹配的两个方法
+        Map<ProgramElement, Set<ProgramElement>> srcToMultiDst = new HashMap<>();//源方法到多个目标方法的映射关系
+        Map<ProgramElement, Set<ProgramElement>> dstToMultiSrc = new HashMap<>();//目标方法到多个源方法的映射关系
         for (ProgramElement srcMethod: srcMethods) {
             for (ProgramElement dstMethod: dstMethods) {
-                List<MethodParameterType> typeList1 = ((StmtElement) srcMethod).getMethodTypeList();//获取类型列表
+                List<MethodParameterType> typeList1 = ((StmtElement) srcMethod).getMethodTypeList();//逐个获取每条语句中每个token的类型，构成List
                 List<MethodParameterType> typeList2 = ((StmtElement) dstMethod).getMethodTypeList();
 //                System.out.println("SrecMehod " + srcMethod + " " + dstMethod);
 //                System.out.println("Typelist  " + typeList1 + " " + typeList2);
-                if (MethodParameterType.isIdenticalMethodParameterTypeList(typeList1, typeList2, elementMappings)){
+                if (MethodParameterType.isIdenticalMethodParameterTypeList(typeList1, typeList2, elementMappings)){//遍历比较list中的每个类型
                     if (!srcToMultiDst.containsKey(srcMethod))
-                        srcToMultiDst.put(srcMethod, new HashSet<>());
+                        srcToMultiDst.put(srcMethod, new HashSet<>());//键是源方法，值用于后续添加srcmethod对应的所有候选dstmethod
                     if (!dstToMultiSrc.containsKey(dstMethod))
                         dstToMultiSrc.put(dstMethod, new HashSet<>());
                     srcToMultiDst.get(srcMethod).add(dstMethod);
@@ -65,7 +65,7 @@ public class MethodMatcherWithSameSignature extends BaseFastMatcher {
                 }
             }
         }
-
+        //如果srcmethod只有一个对应的dstmethod，该dstmethod也只对应该srcmethod，加入到elementMappings中
         for (ProgramElement srcEle: srcToMultiDst.keySet()) {
             Set<ProgramElement> dstElements = srcToMultiDst.get(srcEle);
             if (dstElements.size() == 1) {

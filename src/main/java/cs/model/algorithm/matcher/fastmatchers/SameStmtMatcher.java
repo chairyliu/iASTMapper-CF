@@ -47,7 +47,7 @@ public class SameStmtMatcher extends BaseFastMatcher {
             if (dstStmts.size() > 1)
                 continue;
 
-            ProgramElement srcStmtEle = srcStmts.iterator().next();
+            ProgramElement srcStmtEle = srcStmts.iterator().next();//获取集合中的第一个元素
             ProgramElement dstStmtEle = dstStmts.iterator().next();
             if (elementMappings.isMapped(srcStmtEle))
                 continue;

@@ -3,7 +3,6 @@ package cs.model.algorithm.matcher.measures;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.matcher.mappings.ElementMapping;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
-import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleNameMappingMeasure;
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleSandwichMeasure;
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleTokenDiceMeasure;
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtSameStmtMeasure;
@@ -126,9 +125,6 @@ public class ElementSimMeasures {
             case SimMeasureNames.IDEN:
                 measure = new IdenticalStmtMeasure();
                 break;
-            case SimMeasureNames.SAME_METHOD_BODY:
-                measure = new SameMethodBodyMeasure();
-                break;
             case SimMeasureNames.PM:
                 measure = new StmtParentMappingMeasure();
                 break;
@@ -179,9 +175,6 @@ public class ElementSimMeasures {
                 break;
             case SimMeasureNames.NGRAM:
                 measure = new StmtNgramDiceMeasure();
-                break;
-            case SimMeasureNames.INNER_STMT_ELE_NAME:
-                measure = new InnerStmtEleNameMappingMeasure();
                 break;
             case SimMeasureNames.I_IMTR:
                 measure = new InnerStmtEleTokenDiceMeasure();

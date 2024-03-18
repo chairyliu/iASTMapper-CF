@@ -9,7 +9,6 @@ public class MatchRulesConfiguration {
     // match rule configuration for statement mapping
     private static final String[] STMT_RULE_CONFIGURATION = {
             MatchRuleNames.IDEN,          // same statement
-            MatchRuleNames.SAME_METHOD_BODY,   // methods with the same body
             MatchRuleNames.STMT_NAME,    // same name and same scope
             MatchRuleNames.BLOCK,              // block with parent element mapped
             MatchRuleNames.RETURN_STMT,               // return statement in the same method
@@ -29,10 +28,8 @@ public class MatchRulesConfiguration {
 
     // configuration for inner-stmt element mapping
     private static final String[] INNER_STMT_ELE_RULE_CONFIGURATION = {
-            MatchRuleNames.INNER_STMT_ELE_NAME,           // inner-stmt elements with mapped token representing their name.
             MatchRuleNames.I_IMTR,                        // inner-stmt elements with enough common tokens.
             MatchRuleNames.I_ABS,                         // inner-stmt elements with left and right tokens mapped.
-            MatchRuleNames.ANONYMOUS_DEC
     };
 
     /**

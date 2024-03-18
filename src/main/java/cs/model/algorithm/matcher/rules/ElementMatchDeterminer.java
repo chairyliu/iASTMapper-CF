@@ -3,8 +3,6 @@ package cs.model.algorithm.matcher.rules;
 import cs.model.algorithm.matcher.mappings.ElementMapping;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.measures.ElementSimMeasures;
-import cs.model.algorithm.matcher.rules.innerstmt.AnonymousDecRule;
-import cs.model.algorithm.matcher.rules.innerstmt.InnerStmtEleNameMappingRule;
 import cs.model.algorithm.matcher.rules.innerstmt.InnerStmtEleSandwichRule;
 import cs.model.algorithm.matcher.rules.innerstmt.InnerStmtEleTokenDiceRule;
 import cs.model.algorithm.matcher.rules.stmt.*;
@@ -63,9 +61,6 @@ public class ElementMatchDeterminer {
             case MatchRuleNames.IDEN:
                 rule = new IdenticalStmtMatchRule();
                 break;
-            case MatchRuleNames.SAME_METHOD_BODY:
-                rule = new SameMethodBodyMatchRule();
-                break;
             case MatchRuleNames.STMT_NAME:
                 rule = new StmtNameMatchRule();
                 break;
@@ -100,17 +95,11 @@ public class ElementMatchDeterminer {
             case MatchRuleNames.STMT_NAME_TOKEN:
                 rule = new StmtNameTokenRule();
                 break;
-            case MatchRuleNames.INNER_STMT_ELE_NAME:
-                rule = new InnerStmtEleNameMappingRule();
-                break;
             case MatchRuleNames.I_IMTR:
                 rule = new InnerStmtEleTokenDiceRule();
                 break;
             case MatchRuleNames.I_ABS:
                 rule = new InnerStmtEleSandwichRule();
-                break;
-            case MatchRuleNames.ANONYMOUS_DEC:
-                rule = new AnonymousDecRule();
                 break;
             default:
                 rule = null;

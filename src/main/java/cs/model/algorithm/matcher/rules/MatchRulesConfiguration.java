@@ -19,11 +19,8 @@ public class MatchRulesConfiguration {
 
     // match rule configuration for token mapping
     private static final String[] TOKEN_RULE_CONFIGURATION = {
-            MatchRuleNames.TOKEN_SAME_STRUCT,   // tokens in same multi-token structure
             MatchRuleNames.TOKEN_SAME_STMT,     // tokens in the same statement with same or renamed value
             MatchRuleNames.TOKEN_SANDWICH,      // tokens with the sandwich measure
-            MatchRuleNames.TOKEN_MOVE,          // move with neighbor token; same variable or literal moved intra same scope
-            MatchRuleNames.STMT_NAME_TOKEN,     // name of the statement can be mapped
     };
 
     // configuration for inner-stmt element mapping

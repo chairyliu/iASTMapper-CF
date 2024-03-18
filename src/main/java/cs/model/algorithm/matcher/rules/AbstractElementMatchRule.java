@@ -24,11 +24,6 @@ public abstract class AbstractElementMatchRule implements ElementMatchRule {
         return pm.getValue() == 1.0;
     }
 
-    protected static boolean moveIntraScope(ElementSimMeasures measures, ElementMappings eleMappings) {
-        SimMeasure measure = measures.getSimMeasure(SimMeasureNames.TOKEN_SCOPE, eleMappings);
-        return measure.getValue() == 1.0;
-    }
-
     // If a token is moved to another stmt and its neighbor token is mapped,
     // this token can also be mapped.
     protected static boolean moveWithNeighborToken(ElementSimMeasures measures, ElementMappings eleMappings){

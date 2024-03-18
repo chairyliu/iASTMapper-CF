@@ -80,20 +80,11 @@ public class ElementMatchDeterminer {
             case MatchRuleNames.IMTR:
                 rule = new StmtTokenDiceRule();
                 break;
-            case MatchRuleNames.TOKEN_SAME_STRUCT:
-                rule = new TokenSameStructureRule();
-                break;
             case MatchRuleNames.TOKEN_SAME_STMT:
                 rule = new TokenSameStmtRule();
                 break;
             case MatchRuleNames.TOKEN_SANDWICH:
                 rule = new TokenSandwichRule();
-                break;
-            case MatchRuleNames.TOKEN_MOVE:
-                rule = new TokenMoveAcrossStmtRule();
-                break;
-            case MatchRuleNames.STMT_NAME_TOKEN:
-                rule = new StmtNameTokenRule();
                 break;
             case MatchRuleNames.I_IMTR:
                 rule = new InnerStmtEleTokenDiceRule();

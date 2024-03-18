@@ -28,8 +28,6 @@ public class SimMeasureNames {
     public final static String TOKEN_NEIGHBOR = "TOKEN_NEIGHBOR";
     public final static String TOKEN_SAME_STRUCT = "TOKEN_SAME_STRUCT";
     public final static String TOKEN_SANDWICH = "TOKEN_SANDWICH";
-    public final static String TOKEN_SCOPE = "TOKEN_SCOPE";
-    public final static String STMT_NAME_TOKEN = "STMT_NAME_TOKEN";
     public final static String T_ABS = "T-ABS";
     public final static String INNERSTMT = "INNERSTMT";
 

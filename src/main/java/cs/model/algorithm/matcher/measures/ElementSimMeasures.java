@@ -185,15 +185,9 @@ public class ElementSimMeasures {
             case SimMeasureNames.I_ABS:
                 measure = new InnerStmtEleSandwichMeasure();
                 break;
-            case SimMeasureNames.TOKEN_SCOPE:
-                measure = new TokenScopeMeasure();
-                break;
             case SimMeasureNames.RETURN_STMT:
                 measure = new ReturnOrThrowStmtMeasure();
 //                System.out.println("=====RETURN_STMT=====");
-                break;
-            case SimMeasureNames.STMT_NAME_TOKEN:
-                measure = new StmtNameTokenMeasure();
                 break;
             default:
                 throw new RuntimeException("do not support such measure now.");

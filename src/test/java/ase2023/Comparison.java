@@ -123,7 +123,6 @@ public class Comparison {
 //        List<Integer> Diff_ASTEditScriptBlockIndex = new ArrayList<>();
         List<String> CodeEditScriptA_block = new ArrayList<>();
         List<String> CodeEditScriptB_block = new ArrayList<>();
-        List<String> isCheckedIndex = new ArrayList<>();
 
         /**
          * compare CodeEditScriptA_block and CodeEditScriptB_block, adding the diff into Diff_CodeEditScriptBlockIndex
@@ -212,6 +211,7 @@ public class Comparison {
                                             }
                                         }
                                     }
+//                                    System.out.println("0");
                                     break;
                                 }
                             }
@@ -274,12 +274,14 @@ public class Comparison {
         for (Integer blockIndex : blocksMapB.keySet()) {
             if (!blocksMapA.containsKey(blockIndex)) {
                 List<String> unMappedBlockB = blocksMapB.get(blockIndex);
-                tokensCountB += unMappedBlockB.size();
-                for (int j = 0; j < unMappedBlockB.size(); j++) {
-                    Diff_CodeEditScriptBlockIndex.add(j);
-                    String n = blocksMapB.get(blockIndex).get(j);
-                    Diff_CodeEditScriptList.add(n);
-                    changedTokensNumber++;
+                if (!isOffSetBlockMatching(blocksMapA, 0, unMappedBlockB)){
+                    tokensCountB += unMappedBlockB.size();
+                    for (int j = 0; j < unMappedBlockB.size(); j++) {
+                        Diff_CodeEditScriptBlockIndex.add(j);
+                        String n = blocksMapB.get(blockIndex).get(j);
+                        Diff_CodeEditScriptList.add(n);
+                        changedTokensNumber++;
+                    }
                 }
             }
         }
@@ -493,7 +495,7 @@ public class Comparison {
     public static void main(String[] args) {
         // project name
         String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_P1_1000\\activemq";
-        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240318115035\\activemq";
+        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_STMT_NAME\\activemq";
 //        System.out.println(projectPath);
         // we only need to compare the first 100 commits,
         // and projectA and projectB should have the same commits lists

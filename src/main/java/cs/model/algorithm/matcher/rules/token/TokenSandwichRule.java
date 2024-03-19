@@ -5,18 +5,12 @@ import cs.model.algorithm.element.InnerStmtElement;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.element.TokenElement;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
-import cs.model.algorithm.matcher.matchers.searchers.CandidateSetsAndMaps;
 import cs.model.algorithm.matcher.measures.ElementSimMeasures;
-import cs.model.algorithm.matcher.measures.SimMeasure;
-import cs.model.algorithm.matcher.measures.token.TokenNeighborMeasure;
-import cs.model.algorithm.matcher.measures.token.TokenSandwichMeasure;
 import cs.model.algorithm.matcher.rules.AbstractElementMatchRule;
 import cs.model.algorithm.matcher.rules.ElementMatchRule;
 import cs.model.algorithm.ttmap.TokenTypeCalculator;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Mapping rule for token.
@@ -130,31 +124,6 @@ public class TokenSandwichRule extends AbstractElementMatchRule implements Eleme
             }
         }
         return false;
-    }
-
-    public Set<ProgramElement> filterBadDstCandidateElements(ProgramElement srcEle, Set<ProgramElement> dstCandidates,
-                                                             CandidateSetsAndMaps candidateSetsAndMaps) {
-        if (!srcEle.isFromSrc())
-            return null;
-
-        SimMeasure neighborMeasure = new TokenNeighborMeasure();
-        neighborMeasure.setElementMappings(elementMappings);
-        Set<ProgramElement> neighborDstTokens = neighborMeasure
-                .filterBadDstCandidateElements(srcEle, dstCandidates, candidateSetsAndMaps);
-        Set<ProgramElement> ret = new HashSet<>();
-
-        if (neighborDstTokens.size() == 0)
-            return ret;
-
-        TokenElement srcToken = (TokenElement) srcEle;
-        for (ProgramElement dstToken : neighborDstTokens) {
-            SimMeasure measure = new TokenSandwichMeasure();
-            measure.setElementMappings(elementMappings);
-            measure.calSimMeasure(srcToken, dstToken);
-            if (measure.getValue() == 1.0)
-                ret.add(dstToken);
-        }
-        return ret;
     }
 
     @Override

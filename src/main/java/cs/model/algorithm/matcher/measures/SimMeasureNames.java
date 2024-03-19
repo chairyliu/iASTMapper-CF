@@ -25,7 +25,6 @@ public class SimMeasureNames {
     public final static String SAME_VALUE_RENAME = "SAME_VALUE_OR_RENAME";
     public final static String TOKEN_NEIGHBOR = "TOKEN_NEIGHBOR";
     public final static String TOKEN_SAME_STRUCT = "TOKEN_SAME_STRUCT";
-//    public final static String TOKEN_SANDWICH = "TOKEN_SANDWICH";
     public final static String T_ABS = "T-ABS";
     public final static String INNERSTMT = "INNERSTMT";
 

@@ -18,7 +18,6 @@ public class MatchRuleNames {
     // Token Rules
     public static final String TOKEN_SAME_STMT = "TokenSameStmt";
     public static final String TOKEN_SANDWICH = "TokenSandwich";
-    public static final String STMT_NAME_TOKEN = "StmtNameToken";
 
     // Rules for inner-stmt elements
     public static final String I_IMTR = "I-IMTR";

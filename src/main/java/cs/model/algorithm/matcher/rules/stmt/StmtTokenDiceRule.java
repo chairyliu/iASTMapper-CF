@@ -23,7 +23,7 @@ public class StmtTokenDiceRule extends AbstractElementMatchRule implements Eleme
             return dice >= stmtDiceThreshold0;
 //            return dice == 1;
 
-        if (isParentMapping(measures, eleMappings))
+        if (isParentMappingBasedPM(measures, eleMappings))
             return dice >= stmtDiceThreshold1;
         else
             return dice >= stmtDiceThreshold2;

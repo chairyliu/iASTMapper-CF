@@ -20,6 +20,6 @@ public class BlockMatchRule extends AbstractElementMatchRule implements ElementM
         ProgramElement srcElement = measures.getSrcEle();
         if (!typeChecker.isBlock(srcElement.getITreeNode()))
             return false;
-        return isParentMapping(measures, eleMappings);
+        return isParentMappingBasedPM(measures, eleMappings);
     }
 }

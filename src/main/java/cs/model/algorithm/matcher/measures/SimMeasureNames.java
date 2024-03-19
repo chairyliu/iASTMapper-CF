@@ -11,7 +11,6 @@ public class SimMeasureNames {
 
     // statement similarity measure
     public final static String IDEN = "IDEN";
-    public final static String SAME_METHOD_BODY = "SAME_METHOD_BODY";
 
     public final static String PM = "PM";
     public final static String STMT_NAME = "STMT_NAME";
@@ -22,7 +21,6 @@ public class SimMeasureNames {
     public final static String IMTR = "IMTR";
     public final static String IMSR = "IMSR";
     public final static String NGRAM = "NGRAM";
-    public final static String RETURN_STMT = "RETURN";
     public final static String T_MSIS = "T-MSIS";
     public final static String SAME_VALUE_RENAME = "SAME_VALUE_OR_RENAME";
     public final static String TOKEN_NEIGHBOR = "TOKEN_NEIGHBOR";

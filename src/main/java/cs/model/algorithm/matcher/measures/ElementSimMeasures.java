@@ -7,7 +7,6 @@ import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleSandwichMeasure
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleTokenDiceMeasure;
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtSameStmtMeasure;
 import cs.model.algorithm.matcher.measures.stmt.*;
-import cs.model.algorithm.matcher.measures.stmt.special.ReturnOrThrowStmtMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtIdenticalTokenMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtNgramDiceMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtTokenDiceMeasure;
@@ -184,10 +183,6 @@ public class ElementSimMeasures {
                 break;
             case SimMeasureNames.I_ABS:
                 measure = new InnerStmtEleSandwichMeasure();
-                break;
-            case SimMeasureNames.RETURN_STMT:
-                measure = new ReturnOrThrowStmtMeasure();
-//                System.out.println("=====RETURN_STMT=====");
                 break;
             default:
                 throw new RuntimeException("do not support such measure now.");

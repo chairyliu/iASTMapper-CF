@@ -11,8 +11,6 @@ public class SimMeasureNames {
 
     // statement similarity measure
     public final static String IDEN = "IDEN";
-
-    public final static String PM = "PM";
     public final static String NIT = "NIT";
     public final static String S_ABS = "S-ABS";
     public final static String IMTR = "IMTR";

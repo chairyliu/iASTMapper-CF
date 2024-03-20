@@ -124,9 +124,6 @@ public class ElementSimMeasures {
             case SimMeasureNames.IDEN:
                 measure = new IdenticalStmtMeasure();
                 break;
-            case SimMeasureNames.PM:
-                measure = new StmtParentMappingMeasure();
-                break;
             case SimMeasureNames.NIT:
                 measure = new StmtIdenticalTokenMeasure();
                 break;

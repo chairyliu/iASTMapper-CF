@@ -139,9 +139,6 @@ public class ElementSimMeasures {
             case SimMeasureNames.T_ABS:
                 measure = new Token_LRBMeasure();
                 break;
-            case SimMeasureNames.TOKEN_SAME_STRUCT:
-                measure = new TokenSameStructureMeasure();
-                break;
             case SimMeasureNames.ANCE:
                 measure = new ElementAncestorMeasure();
                 break;

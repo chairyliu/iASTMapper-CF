@@ -136,9 +136,6 @@ public class ElementSimMeasures {
             case SimMeasureNames.SAME_VALUE_RENAME:
                 measure = new TokenSameRenameValueMeasure();
                 break;
-            case SimMeasureNames.TOKEN_NEIGHBOR:
-                measure = new TokenNeighborMeasure();
-                break;
             case SimMeasureNames.T_ABS:
                 measure = new Token_LRBMeasure();
                 break;

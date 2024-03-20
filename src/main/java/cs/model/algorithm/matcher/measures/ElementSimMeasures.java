@@ -6,11 +6,14 @@ import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleSandwichMeasure;
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtEleTokenDiceMeasure;
 import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtSameStmtMeasure;
-import cs.model.algorithm.matcher.measures.stmt.*;
-import cs.model.algorithm.matcher.measures.stmt.textual.StmtIdenticalTokenMeasure;
+import cs.model.algorithm.matcher.measures.stmt.IdenticalStmtMeasure;
+import cs.model.algorithm.matcher.measures.stmt.StmtDescendantMappingMeasure;
+import cs.model.algorithm.matcher.measures.stmt.StmtExchangeMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtNgramDiceMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtTokenDiceMeasure;
-import cs.model.algorithm.matcher.measures.token.*;
+import cs.model.algorithm.matcher.measures.token.TokenSameRenameValueMeasure;
+import cs.model.algorithm.matcher.measures.token.TokenStmtMeasure;
+import cs.model.algorithm.matcher.measures.token.Token_LRBMeasure;
 import cs.model.algorithm.matcher.measures.util.ElementAncestorMeasure;
 import cs.model.algorithm.matcher.measures.util.ElementTypeMeasure;
 
@@ -124,9 +127,6 @@ public class ElementSimMeasures {
             case SimMeasureNames.IDEN:
                 measure = new IdenticalStmtMeasure();
                 break;
-            case SimMeasureNames.NIT:
-                measure = new StmtIdenticalTokenMeasure();
-                break;
             case SimMeasureNames.S_ABS:
                 measure = new StmtExchangeMeasure();
                 break;
@@ -220,12 +220,12 @@ public class ElementSimMeasures {
         // it is not necessary to use NAME, NIT, DICE and NGRAM to compare the measure
         // .. What do those 3 do here ?
         if (measures1.isSameStringValueForStmt() == 1 && measures2.isSameStringValueForStmt() == 1){
-            if (measureName.equals(SimMeasureNames.NIT))
-                return 0;
+//            if (measureName.equals(SimMeasureNames.NIT))
+//                return 0;
             if (measureName.equals(SimMeasureNames.IMTR))
                 return 0;
-            if (measureName.equals(SimMeasureNames.NGRAM))
-                return 0;
+//            if (measureName.equals(SimMeasureNames.NGRAM))
+//                return 0;
         }
 
         SimMeasure measure1 = measures1.getSimMeasure(measureName, eleMappings);

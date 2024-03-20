@@ -23,7 +23,6 @@ public class SimMeasureNames {
     public final static String TOKEN_NEIGHBOR = "TOKEN_NEIGHBOR";
     public final static String TOKEN_SAME_STRUCT = "TOKEN_SAME_STRUCT";
     public final static String T_ABS = "T-ABS";
-    public final static String INNERSTMT = "INNERSTMT";
 
     // similarity measures for inner-stmt element
     public final static String I_IMTR = "I-IMTR";

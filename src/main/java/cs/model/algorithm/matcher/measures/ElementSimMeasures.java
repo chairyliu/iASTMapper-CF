@@ -145,9 +145,6 @@ public class ElementSimMeasures {
             case SimMeasureNames.T_ABS:
                 measure = new Token_LRBMeasure();
                 break;
-            case SimMeasureNames.INNERSTMT:
-                measure = new InnerStmtMeasure();
-                break;
             case SimMeasureNames.TOKEN_SAME_STRUCT:
                 measure = new TokenSameStructureMeasure();
                 break;

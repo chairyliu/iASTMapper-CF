@@ -26,7 +26,7 @@ public class SimMeasureConfiguration {
     // comparison order for token
     public static final String[] TOKEN_MEASURE_CONFIGURATION = {
             SimMeasureNames.T_MSIS,
-            SimMeasureNames.INNERSTMT, // 添加-ZN
+//            SimMeasureNames.INNERSTMT, // 添加-ZN
 //            SimMeasureNames.STRUCT,
 //            SimMeasureNames.TOKEN_SANDWICH,
 //            SimMeasureNames.TOKEN_NEIGHBOR,

@@ -1,5 +1,6 @@
 package cs.model.algorithm.matcher.measures.token;
 
+import cs.model.algorithm.element.InnerStmtElement;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.element.TokenElement;
 import cs.model.algorithm.matcher.matchers.searchers.CandidateSetsAndMaps;
@@ -19,8 +20,11 @@ public class TokenStmtMeasure extends AbstractSimMeasure implements SimMeasure {
         double val = 0;
         ProgramElement srcStmtEle = srcEle.getStmtElement();
         ProgramElement dstStmtEle = dstEle.getStmtElement();
-        if (elementMappings.getDstForSrc(srcStmtEle) == dstStmtEle)
+        InnerStmtElement srcInnerStmtEle = ((TokenElement) srcEle).getNearestMultiTokenInnerStmtElement();
+        InnerStmtElement dstInnerStmtEle = ((TokenElement) dstEle).getNearestMultiTokenInnerStmtElement();
+        if (elementMappings.getDstForSrc(srcStmtEle) == dstStmtEle || elementMappings.getDstForSrc(srcInnerStmtEle) == dstInnerStmtEle){
             val = 1;
+        }
         return val;
     }
 

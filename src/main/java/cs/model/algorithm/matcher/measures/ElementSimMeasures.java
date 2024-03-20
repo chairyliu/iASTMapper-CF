@@ -43,7 +43,8 @@ public class ElementSimMeasures {
     private void initMeasure(){
         SimMeasure measure = new ElementTypeMeasure();
         measure.calSimMeasure(srcEle, dstEle);
-        measureMap.put(SimMeasureNames.E_TYPE, measure);
+        measureMap.put("E_TYPE", measure);
+//        System.out.println("4");
     }
 
     private int isSameStringValueForStmt() {
@@ -119,9 +120,6 @@ public class ElementSimMeasures {
     public static SimMeasure getSimMeasureObjByName(String measureName) {
         SimMeasure measure;
         switch(measureName){
-            case SimMeasureNames.E_TYPE:
-                measure = new ElementTypeMeasure();
-                break;
             case SimMeasureNames.IDEN:
                 measure = new IdenticalStmtMeasure();
                 break;

@@ -13,7 +13,6 @@ public class SimMeasureNames {
     public final static String IDEN = "IDEN";
 
     public final static String PM = "PM";
-    public final static String STMT_NAME = "STMT_NAME";
     public final static String NIT = "NIT";
     public final static String S_ABS = "S-ABS";
     public final static String MS = "MS";

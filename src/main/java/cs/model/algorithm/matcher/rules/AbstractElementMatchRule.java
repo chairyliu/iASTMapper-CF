@@ -13,11 +13,6 @@ public abstract class AbstractElementMatchRule implements ElementMatchRule {
 
     protected ElementMappings elementMappings;
 
-    protected static boolean isWithSameName(ElementSimMeasures measures, ElementMappings eleMappings) {
-        SimMeasure nameSameMeasure = measures.getSimMeasure(SimMeasureNames.STMT_NAME, eleMappings);
-        return nameSameMeasure.getValue() == 1.0;
-    }
-
     protected static boolean isParentMappingBasedPM(ElementSimMeasures measures, ElementMappings eleMappings) {
         SimMeasure pm = measures.getSimMeasure(SimMeasureNames.PM, eleMappings);
         return pm.getValue() == 1.0;

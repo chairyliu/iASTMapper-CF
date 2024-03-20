@@ -154,9 +154,6 @@ public class ElementSimMeasures {
             case SimMeasureNames.ANCE:
                 measure = new ElementAncestorMeasure();
                 break;
-            case SimMeasureNames.MS:
-                measure = new MethodSignatureMeasure();
-                break;
             case SimMeasureNames.IMTR:
                 measure = new StmtTokenDiceMeasure();
                 break;

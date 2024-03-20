@@ -39,25 +39,6 @@ public class StmtIdenticalTokenMeasure extends AbstractSimMeasure implements Sim
             srcTokenNumMap.put(tokenValue, num1 - minVal);
             dstTokenNumMap.put(tokenValue, num2 - minVal);
         }
-
-//        for (String tokenValue: srcTokenNumMap.keySet()) {
-//            Set<String> updateNames = elementMappings.getRenameStatistics().getDstNameForSrcName(tokenValue);
-//            int num1 = srcTokenNumMap.get(tokenValue);
-//            if (num1 == 0)
-//                continue;
-//            if (updateNames == null)
-//                continue;
-//            if (updateNames.size() == 1) {
-//                String updateName = updateNames.iterator().next();
-//                int num2 = 0;
-//                if (dstTokenNumMap.containsKey(updateName))
-//                    num2 = dstTokenNumMap.get(updateName);
-//                int minVal = Integer.min(num1, num2);
-//                val += minVal;
-//                srcTokenNumMap.put(tokenValue, num1 - minVal);
-//                dstTokenNumMap.put(tokenValue, num2 - minVal);
-//            }
-//        }
         return val;
     }
 }

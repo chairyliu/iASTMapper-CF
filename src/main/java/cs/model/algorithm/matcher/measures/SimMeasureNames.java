@@ -15,7 +15,6 @@ public class SimMeasureNames {
     public final static String PM = "PM";
     public final static String NIT = "NIT";
     public final static String S_ABS = "S-ABS";
-    public final static String MS = "MS";
     public final static String IMTR = "IMTR";
     public final static String IMSR = "IMSR";
     public final static String NGRAM = "NGRAM";

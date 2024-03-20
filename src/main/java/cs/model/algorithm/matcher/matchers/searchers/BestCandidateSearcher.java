@@ -27,7 +27,6 @@ public class BestCandidateSearcher {
     private Set<ProgramElement> bestGlobalCandidates;
     private Set<ProgramElement> bestLocalCandidates;
     private CandidateSetsAndMaps candidateSetsAndMaps;
-    protected Boolean [] usingSimilarity;
 
     public BestCandidateSearcher(ProgramElement element, Set<ProgramElement> candidateElements,
                                  ElementMappings eleMappings, ElementMatchDeterminer determiner,
@@ -64,10 +63,6 @@ public class BestCandidateSearcher {
 
     public Set<ProgramElement> getBestLocalCandidates() {
         return bestLocalCandidates;
-    }
-
-    public Boolean[] getUsingSimilarity() {
-        return this.usingSimilarity;
     }
 
     public Map<ElementMapping, ElementSimMeasures> getBestSimMeasuresMap() {

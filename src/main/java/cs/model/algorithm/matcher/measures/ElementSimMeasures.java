@@ -9,7 +9,6 @@ import cs.model.algorithm.matcher.measures.innerstmt.InnerStmtSameStmtMeasure;
 import cs.model.algorithm.matcher.measures.stmt.IdenticalStmtMeasure;
 import cs.model.algorithm.matcher.measures.stmt.StmtDescendantMappingMeasure;
 import cs.model.algorithm.matcher.measures.stmt.StmtExchangeMeasure;
-import cs.model.algorithm.matcher.measures.stmt.textual.StmtNgramDiceMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtTokenDiceMeasure;
 import cs.model.algorithm.matcher.measures.token.TokenSameRenameValueMeasure;
 import cs.model.algorithm.matcher.measures.token.TokenStmtMeasure;
@@ -147,9 +146,6 @@ public class ElementSimMeasures {
                 break;
             case SimMeasureNames.IMSR:
                 measure = new StmtDescendantMappingMeasure();
-                break;
-            case SimMeasureNames.NGRAM:
-                measure = new StmtNgramDiceMeasure();
                 break;
             case SimMeasureNames.I_IMTR:
                 measure = new InnerStmtEleTokenDiceMeasure();

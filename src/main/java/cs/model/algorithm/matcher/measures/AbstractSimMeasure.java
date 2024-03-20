@@ -7,8 +7,6 @@ import cs.model.algorithm.element.TokenElement;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.matchers.searchers.CandidateSetsAndMaps;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -60,41 +58,6 @@ public abstract class AbstractSimMeasure implements SimMeasure {
 
     protected int compareMeasureVal(double val1, double val2) {
         return Double.compare(val1, val2);
-    }
-
-    protected boolean isLeftStmtMapped(ProgramElement srcElement, ProgramElement dstElement) {
-        List<StmtElement> srcSiblingElements = srcElement.getParentElement().getNearestDescendantStmts();
-        List<StmtElement> dstSiblingElements = dstElement.getParentElement().getNearestDescendantStmts();
-        boolean leftMapped = false;
-        if (srcElement.getChildIdx() == 0 && dstElement.getChildIdx() == 0)
-            leftMapped = true;
-        else if (srcElement.getChildIdx() > 0 && dstElement.getChildIdx() > 0) {
-            ProgramElement srcEle1 = srcSiblingElements.get(srcElement.getChildIdx() - 1);
-            ProgramElement dstEle1 = dstSiblingElements.get(dstElement.getChildIdx() - 1);
-
-//            System.out.println("Left Src is " + srcElement + " " + srcEle1 + " Dst is " + dstElement + " " + dstEle1);
-            if (elementMappings.getDstForSrc(srcEle1) == dstEle1)
-                leftMapped = true;
-        }
-        return leftMapped;
-    }
-
-    protected boolean isRightStmtMapped(ProgramElement srcElement, ProgramElement dstElement) {
-        List<StmtElement> srcSiblingElements = srcElement.getParentElement().getNearestDescendantStmts();
-        List<StmtElement> dstSiblingElements = dstElement.getParentElement().getNearestDescendantStmts();
-        boolean rightMapped = false;
-        int srcSiblingSize = srcSiblingElements.size();
-        int dstSiblingSize = dstSiblingElements.size();
-        if (srcElement.getChildIdx() == srcSiblingSize - 1 && dstElement.getChildIdx() == dstSiblingSize - 1)
-            rightMapped = true;
-        else if (srcElement.getChildIdx() < srcSiblingSize - 1 && dstElement.getChildIdx() < dstSiblingSize - 1){
-            ProgramElement srcEle2 = srcSiblingElements.get(srcElement.getChildIdx() + 1);
-            ProgramElement dstEle2 = dstSiblingElements.get(dstElement.getChildIdx() + 1);
-//            System.out.println("Right Src is " + srcElement + " " + srcEle2 + " Dst is " + dstElement + " " + dstEle2);
-            if (elementMappings.getDstForSrc(srcEle2) == dstEle2)
-                rightMapped = true;
-        }
-        return rightMapped;
     }
 
     protected boolean isWithRename(ProgramElement srcElement, ProgramElement dstElement) {

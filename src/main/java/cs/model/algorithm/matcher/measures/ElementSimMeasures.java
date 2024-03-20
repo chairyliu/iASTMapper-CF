@@ -157,9 +157,6 @@ public class ElementSimMeasures {
             case SimMeasureNames.ANCE:
                 measure = new ElementAncestorMeasure();
                 break;
-            case SimMeasureNames.STMT_SANDWICH:
-                measure = new StmtSandwichMeasure();
-                break;
             case SimMeasureNames.MS:
                 measure = new MethodSignatureMeasure();
                 break;

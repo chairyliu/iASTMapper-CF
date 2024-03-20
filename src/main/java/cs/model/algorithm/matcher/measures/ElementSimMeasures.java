@@ -10,7 +10,6 @@ import cs.model.algorithm.matcher.measures.stmt.IdenticalStmtMeasure;
 import cs.model.algorithm.matcher.measures.stmt.StmtDescendantMappingMeasure;
 import cs.model.algorithm.matcher.measures.stmt.StmtExchangeMeasure;
 import cs.model.algorithm.matcher.measures.stmt.textual.StmtTokenDiceMeasure;
-import cs.model.algorithm.matcher.measures.token.TokenSameRenameValueMeasure;
 import cs.model.algorithm.matcher.measures.token.TokenStmtMeasure;
 import cs.model.algorithm.matcher.measures.token.Token_LRBMeasure;
 import cs.model.algorithm.matcher.measures.util.ElementAncestorMeasure;
@@ -131,9 +130,6 @@ public class ElementSimMeasures {
                 break;
             case SimMeasureNames.T_MSIS:
                 measure = new TokenStmtMeasure();
-                break;
-            case SimMeasureNames.SAME_VALUE_RENAME:
-                measure = new TokenSameRenameValueMeasure();
                 break;
             case SimMeasureNames.T_ABS:
                 measure = new Token_LRBMeasure();

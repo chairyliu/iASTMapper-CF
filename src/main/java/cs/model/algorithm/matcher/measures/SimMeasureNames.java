@@ -15,7 +15,6 @@ public class SimMeasureNames {
     public final static String IMTR = "IMTR";
     public final static String IMSR = "IMSR";
     public final static String T_MSIS = "T-MSIS";
-    public final static String SAME_VALUE_RENAME = "SAME_VALUE_OR_RENAME";
     public final static String T_ABS = "T-ABS";
 
     // similarity measures for inner-stmt element

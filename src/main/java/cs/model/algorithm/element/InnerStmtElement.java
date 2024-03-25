@@ -1,13 +1,10 @@
 package cs.model.algorithm.element;
 
 import com.github.gumtreediff.tree.ITree;
-import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.ttmap.TokenRange;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Inner-stmt elements are those that compose a statement.
@@ -157,29 +154,5 @@ public class InnerStmtElement extends AbstractElement implements ProgramElement 
             }
         }
         return nameToken;
-    }
-
-    /**
-     * Get dice coefficient of the mapped tokens between two inner-stmt elements
-     * @param mappings element mappings
-     * @param srcEle source inner-stmt element
-     * @param dstEle target inner-stmt element
-     * @return the dice coefficient value
-     */
-    public static double getDiceForMappedTokens(ElementMappings mappings, InnerStmtElement srcEle,
-                                                InnerStmtElement dstEle) {
-        Set<ProgramElement> srcTokens = new HashSet<>(srcEle.getTokenElements());
-        Set<ProgramElement> dstTokens = new HashSet<>(dstEle.getTokenElements());
-        double value = 0;
-        for (ProgramElement srcTokenEle: srcTokens) {
-            if (mappings.isMapped(srcTokenEle)) {
-                if (dstTokens.contains(mappings.getMappedElement(srcTokenEle)))
-                    value += 1.0;
-            }
-        }
-        if (value > 0)
-            value = value * 2 / (srcEle.getTokenElements().size() + dstEle.getTokenElements().size());
-//        System.out.println("The val " + value);
-        return value;
     }
 }

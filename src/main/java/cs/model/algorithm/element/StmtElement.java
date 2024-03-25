@@ -1,7 +1,6 @@
 package cs.model.algorithm.element;
 
 import com.github.gumtreediff.tree.ITree;
-import cs.model.algorithm.languageutils.typechecker.StaticNodeTypeChecker;
 import cs.model.algorithm.ttmap.TokenRange;
 
 import java.util.*;
@@ -91,7 +90,7 @@ public class StmtElement extends AbstractElement implements ProgramElement {
         return valueTokenElementMap;
     }
 
-    public Map<String, Integer> getTokenNumMap(boolean onlyNameAndLiteral) {
+    public Map<String, Integer> getTokenNumMap(boolean onlyNameAndLiteral) {//拿到每一个token以及它的数量
         if (tokenFreqMap == null || (this.onlyNameAndLiteral != onlyNameAndLiteral)){
             Map<String, Set<TokenElement>> valEleMap = getValueTokenElementMap(onlyNameAndLiteral);
             tokenFreqMap = new HashMap<>();

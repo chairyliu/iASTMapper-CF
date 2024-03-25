@@ -21,10 +21,10 @@ public class StmtIdenticalTokenMeasure extends AbstractSimMeasure implements Sim
             else
                 return ((StmtElement) srcEle).getNameAndLiteralNum();
         }
-        return calExtremeIdenticalTokenMappings((StmtElement) srcEle, (StmtElement) dstEle);
+        return calExtremeIdenticalToken((StmtElement) srcEle, (StmtElement) dstEle);
     }
 
-    private double calExtremeIdenticalTokenMappings(StmtElement srcEle, StmtElement dstEle){
+    private double calExtremeIdenticalToken(StmtElement srcEle, StmtElement dstEle){
         Map<String, Integer> srcTokenNumMap = new HashMap<>(srcEle.getTokenNumMap(onlyNameAndLiteral));
         Map<String, Integer> dstTokenNumMap = new HashMap<>(dstEle.getTokenNumMap(onlyNameAndLiteral));
 

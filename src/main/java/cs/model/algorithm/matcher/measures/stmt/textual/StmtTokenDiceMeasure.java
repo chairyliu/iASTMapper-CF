@@ -20,11 +20,16 @@ public class StmtTokenDiceMeasure extends AbstractSimMeasure implements SimMeasu
         if (srcTokenNum == 0 || dstTokenNum == 0)
             return 0;
 //        System.out.println("Src dice is " + srcStmtEle + " " + srcTokenNum + "   dst is " + dstStmtEle + " " + dstTokenNum);
-        SimMeasure measure = new StmtIdenticalTokenMeasure();
-        measure.setElementMappings(elementMappings);
-        measure.calSimMeasure(srcEle, dstEle);
-        double val = measure.getValue();
+        SimMeasure measureIdentical = new StmtIdenticalTokenMeasure();
+        SimMeasure measureMapping = new StmtMappingTokenMeasure();
+        measureMapping.setElementMappings(elementMappings);
+        measureIdentical.setElementMappings(elementMappings);
+        measureMapping.calSimMeasure(srcEle, dstEle);
+        measureIdentical.calSimMeasure(srcEle, dstEle);
+        double identicalValue = measureIdentical.getValue();
+        double mappingValue = measureMapping.getValue();
+        double val = identicalValue + mappingValue;
 //        System.out.println(2.0 * val / (srcTokenNum + dstTokenNum));
-        return 2.0 * val / (srcTokenNum + dstTokenNum);
+        return val / (srcTokenNum + dstTokenNum);
     }
 }

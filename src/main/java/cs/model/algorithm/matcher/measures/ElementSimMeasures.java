@@ -123,6 +123,15 @@ public class ElementSimMeasures {
             case SimMeasureNames.IDEN:
                 measure = new IdenticalStmtMeasure();
                 break;
+            case SimMeasureNames.ANCE:
+                measure = new ElementAncestorMeasure();
+                break;
+            case SimMeasureNames.IMSR:
+                measure = new StmtDescendantMappingMeasure();
+                break;
+            case SimMeasureNames.IMTR:
+                measure = new StmtTokenDiceMeasure();
+                break;
             case SimMeasureNames.S_ABS:
                 measure = new StmtExchangeMeasure();
                 break;
@@ -132,20 +141,11 @@ public class ElementSimMeasures {
             case SimMeasureNames.T_ABS:
                 measure = new Token_LRBMeasure();
                 break;
-            case SimMeasureNames.ANCE:
-                measure = new ElementAncestorMeasure();
-                break;
-            case SimMeasureNames.IMTR:
-                measure = new StmtTokenDiceMeasure();
-                break;
-            case SimMeasureNames.IMSR:
-                measure = new StmtDescendantMappingMeasure();
+            case SimMeasureNames.I_MSIS:
+                measure = new InnerStmtSameStmtMeasure();
                 break;
             case SimMeasureNames.I_IMTR:
                 measure = new InnerStmtEleTokenDiceMeasure();
-                break;
-            case SimMeasureNames.I_MSIS:
-                measure = new InnerStmtSameStmtMeasure();
                 break;
             case SimMeasureNames.I_ABS:
                 measure = new InnerStmtEleSandwichMeasure();

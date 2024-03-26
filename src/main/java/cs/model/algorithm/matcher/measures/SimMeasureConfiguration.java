@@ -15,11 +15,9 @@ public class SimMeasureConfiguration {
     // comparison order for stmt
     public static final String[] STMT_MEASURE_CONFIGURATION = {
             SimMeasureNames.IDEN,
-//            SimMeasureNames.SAME_METHOD_BODY,
             SimMeasureNames.ANCE,
-//            SimMeasureNames.NAME,
-            SimMeasureNames.IMTR,
             SimMeasureNames.IMSR,
+            SimMeasureNames.IMTR,
             SimMeasureNames.S_ABS,
     };
 
@@ -27,18 +25,11 @@ public class SimMeasureConfiguration {
     public static final String[] TOKEN_MEASURE_CONFIGURATION = {
             SimMeasureNames.T_MSIS,
 //            SimMeasureNames.INNERSTMT, // 添加-ZN
-//            SimMeasureNames.STRUCT,
-//            SimMeasureNames.TOKEN_SANDWICH,
-//            SimMeasureNames.TOKEN_NEIGHBOR,
             SimMeasureNames.T_ABS,
-//            SimMeasureNames.INNERSTMT, // 注释-ZN
-//            SimMeasureNames.ANCESTOR,
-//            SimMeasureNames.SAME_VALUE_RENAME,
     };
 
     // comparison order for inner-stmt element
     public static final String[] INNER_STMT_ELE_MEASURE_CONFIGURATION = {
-//            SimMeasureNames.INNER_STMT_ELE_NAME,
             SimMeasureNames.I_MSIS,
             SimMeasureNames.I_IMTR,
             SimMeasureNames.I_ABS,

@@ -9,8 +9,8 @@ public class SimMeasureNames {
     // similarity measures for statement
     public final static String IDEN = "IDEN";
     public final static String ANCE = "E_ANCESTOR";
-    public final static String IMTR = "IMTR";
     public final static String IMSR = "IMSR";
+    public final static String IMTR = "IMTR";
     public final static String S_ABS = "S-ABS";
 
 

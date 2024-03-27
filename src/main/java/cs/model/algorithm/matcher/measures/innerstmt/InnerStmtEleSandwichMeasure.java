@@ -3,10 +3,8 @@ package cs.model.algorithm.matcher.measures.innerstmt;
 import cs.model.algorithm.element.InnerStmtElement;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.element.TokenElement;
-import cs.model.algorithm.matcher.mappings.ElementMapping;
 import cs.model.algorithm.matcher.measures.AbstractSimMeasure;
 import cs.model.algorithm.matcher.measures.SimMeasure;
-
 
 import java.util.List;
 
@@ -14,6 +12,7 @@ public class InnerStmtEleSandwichMeasure extends AbstractSimMeasure implements S
 
     @Override
     protected double calMeasureValue(ProgramElement srcEle, ProgramElement dstEle) {
+        double val = 0;
         ProgramElement srcParentEle = srcEle.getParentElement();
         ProgramElement dstParentEle = dstEle.getParentElement();
 
@@ -25,6 +24,19 @@ public class InnerStmtEleSandwichMeasure extends AbstractSimMeasure implements S
             return 1;
         }
 
+        if (isLeftInnerEleMapped(srcEle, dstEle) && isRightInnerELeMapped(srcEle, dstEle))
+            val = 2;
+
+        if (isLeftInnerEleMapped(srcEle, dstEle) || isRightInnerELeMapped(srcEle, dstEle))
+            val = 1;
+
+        if (!isLeftInnerEleMapped(srcEle, dstEle) && !isRightInnerELeMapped(srcEle, dstEle))
+            val = 0;
+
+        return val;
+    }
+
+    private boolean isLeftInnerEleMapped(ProgramElement srcEle, ProgramElement dstEle){
         ProgramElement leftSrcInnerEle = srcEle.getLeftSibling();
         ProgramElement leftDstInnerEle = dstEle.getLeftSibling();
         boolean leftMapped = false;
@@ -33,9 +45,10 @@ public class InnerStmtEleSandwichMeasure extends AbstractSimMeasure implements S
         else if (leftSrcInnerEle != null && leftDstInnerEle != null)
             leftMapped = elementMappings.getMappedElement(leftSrcInnerEle) == leftDstInnerEle;
 
-        if (!leftMapped)
-            return 0;
+        return leftMapped;
+    }
 
+    private boolean isRightInnerELeMapped(ProgramElement srcEle, ProgramElement dstEle){
         ProgramElement rightSrcInnerEle = srcEle.getRightSibling();
         ProgramElement rightDstInnerEle = dstEle.getRightSibling();
         boolean rightMapped = false;
@@ -43,7 +56,7 @@ public class InnerStmtEleSandwichMeasure extends AbstractSimMeasure implements S
             rightMapped = true;
         else if (rightSrcInnerEle != null && rightDstInnerEle != null)
             rightMapped = elementMappings.getMappedElement(rightSrcInnerEle) == rightDstInnerEle;
-        return rightMapped ? 1 : 0;
+        return rightMapped;
     }
 
     protected boolean tokenSandwich(ProgramElement srcEle, ProgramElement dstEle) {

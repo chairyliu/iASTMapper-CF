@@ -15,36 +15,43 @@ public class StmtExchangeMeasure extends AbstractSimMeasure implements SimMeasur
     @Override
     protected double calMeasureValue(ProgramElement srcEle, ProgramElement dstEle) {
         double val = 0;
-//        System.out.println("123");
         if (srcEle.isDeclaration()) {
             val = 0;
             return val;
         }
-
-//        System.out.println("133");
         // We consider this measure when two statement have common parent nodes
         if (!isParentMapping(srcEle, dstEle))
             return val;
 
-//        System.out.println("1234");
         if (elementMappings.isMapped(srcEle) || elementMappings.isMapped(dstEle) )
             return val;
 
-//        System.out.println("12345");
+        if (isLeftEleMapped(srcEle, dstEle) && isRightEleMapped(srcEle, dstEle))
+            val = 2;
+
+        if (isLeftEleMapped(srcEle, dstEle) || isRightEleMapped(srcEle, dstEle))
+            val = 1;
+
+        if (!isLeftEleMapped(srcEle, dstEle) && !isRightEleMapped(srcEle, dstEle))
+            val = 0;
+
+        return val;
+    }
+
+    private boolean isLeftEleMapped(ProgramElement srcEle, ProgramElement dstEle){
         ProgramElement srcLeftEle = getLeftElement(srcEle);
         ProgramElement dstLeftEle = getLeftElement(dstEle);
 
-//        System.out.println(srcLeftEle + " " + dstLeftEle);
         boolean leftMapping;
         if (srcEle.getChildIdx() == 0 && dstEle.getChildIdx() == 0)
             leftMapping = true;
         else
             leftMapping = isMapped(srcLeftEle, dstLeftEle);
 
-        if (!leftMapping)
-            return 0;
+        return leftMapping;
+    }
 
-//        System.out.println("123456");
+    private boolean isRightEleMapped(ProgramElement srcEle, ProgramElement dstEle){
         ProgramElement srcRightEle = getRightElement(srcEle, dstEle);
         ProgramElement dstRightEle = getRightElement(dstEle, srcEle);
 
@@ -56,11 +63,7 @@ public class StmtExchangeMeasure extends AbstractSimMeasure implements SimMeasur
         else
             rightMapping = isMapped(srcRightEle, dstRightEle);
 
-        if (rightMapping)
-            val = 1;
-//        System.out.println("1234567");
-//        System.out.println("Src " + srcEle + " dst " + dstEle);
-        return val;
+        return rightMapping;
     }
 
     private boolean isMapped(ProgramElement srcEle, ProgramElement dstEle) {

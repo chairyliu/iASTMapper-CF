@@ -306,10 +306,7 @@ public class StmtElement extends AbstractElement implements ProgramElement {
     }
 
     public void calTokensOfInnerStmtElements() {
-//        for (TokenElement tokenEle: getTokenElements())
-//            System.out.println("The token Ele is " + tokenEle);
         for (TokenElement tokenEle: getTokenElements()) {
-//            System.out.println("The token Ele is " + tokenEle);
             tokenEle.createInnerStmtElementsWithToken(treeInnerStmtEleMap);
         }
     }

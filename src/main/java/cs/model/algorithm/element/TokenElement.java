@@ -164,7 +164,7 @@ public class TokenElement extends InnerStmtElement implements ProgramElement {
     }
 
     public InnerStmtElement getNearestMultiTokenInnerStmtElement() {
-        if (nearestMultiTokenElement != null)
+        if (nearestMultiTokenElement != null)//最邻近的多token内部语句元素
             return nearestMultiTokenElement;
         if (innerStmtElementsWithToken == null)
             getStmtElement().calTokensOfInnerStmtElements();

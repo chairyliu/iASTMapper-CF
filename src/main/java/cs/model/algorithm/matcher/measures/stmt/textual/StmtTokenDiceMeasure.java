@@ -30,6 +30,6 @@ public class StmtTokenDiceMeasure extends AbstractSimMeasure implements SimMeasu
         double mappingValue = measureMapping.getValue();
         double val = identicalValue + mappingValue;
 //        System.out.println(2.0 * val / (srcTokenNum + dstTokenNum));
-        return val / (srcTokenNum + dstTokenNum);
+        return 2 * val / (srcTokenNum + dstTokenNum);
     }
 }

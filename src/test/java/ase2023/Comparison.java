@@ -494,8 +494,8 @@ public class Comparison {
 
     public static void main(String[] args) {
         // project name
-        String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_P3_1000\\activemq";
-        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_IMTR\\activemq";
+        String projectPathA = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res_I-IMTR\\activemq";
+        String projectPathB = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_res20240406153009\\activemq";
 //        System.out.println(projectPath);
         // we only need to compare the first 100 commits,
         // and projectA and projectB should have the same commits lists
@@ -518,10 +518,10 @@ public class Comparison {
         }
 //        System.out.println("Total difference: " + count +" [" + (double)count + "%]");
         System.out.println("Total difference: " + count +" [" + (double)(100*count/commits.size()) + "%]");
-        System.out.println("the total statement of A is: " + totalBlocksA);
-        System.out.println("the total statement of B is: " + totalBlocksB);
-        System.out.println("the total tokens of A is: " + totalTokensA);
-        System.out.println("the total tokens of B is: " + totalTokensB);
-        System.out.println("the changed tokens number is: " + totalChangedTokens);
+        System.out.println("the total statements of A are: " + totalBlocksA);
+        System.out.println("the total statements of B are: " + totalBlocksB);
+        System.out.println("the total tokens of A are: " + totalTokensA);
+        System.out.println("the total tokens of B are: " + totalTokensB);
+        System.out.println("the changed tokens are: " + totalChangedTokens);
     }
 }

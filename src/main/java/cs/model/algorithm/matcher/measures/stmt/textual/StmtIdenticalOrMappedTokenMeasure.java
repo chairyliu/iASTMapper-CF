@@ -11,7 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class StmtMappingTokenMeasure extends AbstractSimMeasure implements SimMeasure {
+/**
+ * Mechanism: mapped statements should have similar content.
+ */
+public class StmtIdenticalOrMappedTokenMeasure extends AbstractSimMeasure implements SimMeasure {
 
     @Override
     protected double calMeasureValue(ProgramElement srcEle, ProgramElement dstEle) {
@@ -21,7 +24,25 @@ public class StmtMappingTokenMeasure extends AbstractSimMeasure implements SimMe
             else
                 return ((StmtElement) srcEle).getNameAndLiteralNum();
         }
-        return calExtremeMappingToken((StmtElement) srcEle, (StmtElement) dstEle);
+        return calExtremeIdenticalToken((StmtElement) srcEle, (StmtElement) dstEle) + calExtremeMappingToken((StmtElement) srcEle, (StmtElement) dstEle);
+    }
+
+    private double calExtremeIdenticalToken(StmtElement srcEle, StmtElement dstEle){
+        Map<String, Integer> srcTokenNumMap = new HashMap<>(srcEle.getTokenNumMap(onlyNameAndLiteral));
+        Map<String, Integer> dstTokenNumMap = new HashMap<>(dstEle.getTokenNumMap(onlyNameAndLiteral));
+
+        double val = 0;
+        for (String tokenValue: srcTokenNumMap.keySet()) {
+            int num1 = srcTokenNumMap.get(tokenValue);
+            if (!dstTokenNumMap.containsKey(tokenValue))
+                continue;
+            int num2 = dstTokenNumMap.get(tokenValue);
+            int minVal = Integer.min(num1, num2);
+            val += minVal;
+            srcTokenNumMap.put(tokenValue, num1 - minVal);
+            dstTokenNumMap.put(tokenValue, num2 - minVal);
+        }
+        return val;
     }
 
     private double calExtremeMappingToken(StmtElement srcEle, StmtElement dstEle) {
@@ -35,12 +56,12 @@ public class StmtMappingTokenMeasure extends AbstractSimMeasure implements SimMe
             if (!dstMappingTokenNumMap.containsKey(mappingValue))
                 continue;
             Set<TokenElement> dstMappingEle = dstMappingTokenNumMap.get(mappingValue);
-            val += getSetSameValue(srcMappingEle, dstMappingEle, elementMappings);
+            val += getMappedToeknsValue(srcMappingEle, dstMappingEle, elementMappings);
         }
         return val;
     }
 
-    public static double getSetSameValue(Set<TokenElement> srcTokens, Set<TokenElement> dstTokens, ElementMappings elementMappings){
+    public static double getMappedToeknsValue(Set<TokenElement> srcTokens, Set<TokenElement> dstTokens, ElementMappings elementMappings){
         int tmpNum = 0;
         for (TokenElement srcToken : srcTokens){
             if (elementMappings.isMapped(srcToken)){

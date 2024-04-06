@@ -16,20 +16,6 @@ import java.util.Set;
  */
 public class ElementAncestorMeasure extends AbstractSimMeasure implements SimMeasure {
 
-//    @Override
-//    protected double calMeasureValue(ProgramElement srcEle, ProgramElement dstEle) {
-//        if (isParentMapping(srcEle, dstEle))
-//            return Double.MAX_VALUE;
-//        double val = 0;
-//        Pair<ProgramElement, ProgramElement> elePair = calMappedAncestorElement(srcEle, dstEle);
-//        if (elePair != null) {
-//            List<ProgramElement> srcAncestors = elePair.first.getAncestors();
-//            List<ProgramElement> dstAncestors = elePair.second.getAncestors();
-//            val = srcAncestors.size() + dstAncestors.size() + 2;
-//        }
-//        return val;
-//    }
-
     @Override
     protected double calMeasureValue(ProgramElement srcEle, ProgramElement dstEle) {
         double val = Double.MAX_VALUE;
@@ -40,10 +26,7 @@ public class ElementAncestorMeasure extends AbstractSimMeasure implements SimMea
             List<ProgramElement> srcAncestors2 = srcEle.getAncestors();
             List<ProgramElement> dstAncestors2 = dstEle.getAncestors();
             val = srcAncestors2.size() + dstAncestors2.size() - srcAncestors1.size() - dstAncestors1.size();
-//            System.out.println("Src ancestor " + srcAncestors1 + " " + srcAncestors2);
-//            System.out.println("Dst ancestor " + dstAncestors1 + " " + dstAncestors2);
         }
-//        System.out.println("Src : " + srcEle + " Dst : " + dstEle +"Ancestor " + val);
         return val;
     }
 

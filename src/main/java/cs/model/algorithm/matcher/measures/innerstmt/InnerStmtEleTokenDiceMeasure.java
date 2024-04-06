@@ -36,9 +36,6 @@ public class InnerStmtEleTokenDiceMeasure extends AbstractSimMeasure implements 
                     value += 1.0;
             }
         }
-//        if (value > 0)
-//            value = value * 2 / (srcEle.getTokenElements().size() + dstEle.getTokenElements().size());
-//        System.out.println("The val " + value);
         return value;
     }
 

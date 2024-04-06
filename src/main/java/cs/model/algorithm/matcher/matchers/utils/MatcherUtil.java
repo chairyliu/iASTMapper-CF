@@ -1,7 +1,6 @@
 package cs.model.algorithm.matcher.matchers.utils;
 
 import cs.model.algorithm.element.ProgramElement;
-import cs.model.algorithm.element.TokenElement;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 
 import java.util.Collection;
@@ -19,10 +18,10 @@ public class MatcherUtil {
     public static Set<ProgramElement> getUnmappedProgramElements(Collection<? extends ProgramElement> elements,
                                                                  ElementMappings eleMappings){
         Set<ProgramElement> ret = new HashSet<>();
-        if (elements != null) {
+        if (elements != null) {//elements是指传入的候选集
             for (ProgramElement element : elements) {
                 if (!eleMappings.isMapped(element))
-                    ret.add(element);
+                    ret.add(element);//如果候选集中的元素还没有被映射，则加入ret，并返回，作为局部最优
             }
         }
         return ret;

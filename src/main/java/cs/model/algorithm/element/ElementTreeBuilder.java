@@ -43,7 +43,7 @@ public class ElementTreeBuilder {
                         treeElementMap, trtMap, rootEle);
                 treeElementMap.put(t, stmtEle);//将语句元素和树节点对应起来
             } else {
-                if (isJavadocRelated(t))
+                if (isJavadocRelated(t))//不考虑javadoc
                     continue;
                 ITree stmt = findNearestAncestorStmt(t);//查找最近的祖先语句节点
                 if (stmt != null) {
@@ -52,8 +52,8 @@ public class ElementTreeBuilder {
 
                     ITree parent = t.getParent();//内部语句的父节点
                     ProgramElement parentEle = treeElementMap.get(parent);//内部语句的父元素
-                    element.setParentElement(parentEle);
-                    element.setChildIdx(parentEle.getInnerStmtElements().size());//设置内部语句元素在父元素中的索引
+                    element.setParentElement(parentEle);//将stmt的父节点也设置成对应的innerstmt的父节点
+                    element.setChildIdx(parentEle.getInnerStmtElements().size());//获取父元素的内部语句的大小，并将该索引赋值给当前的内部语句，相当于将当前内部语句添加到父元素的末尾
                     parentEle.addInnerStmtElement(element);//将内部语句元素添加到父元素的内部语句元素列表中
                     element.setStartLine(ttMap.getStartLineOfNode(t.getPos()));//设置内部语句元素的起始行
                     treeElementMap.put(t, element);

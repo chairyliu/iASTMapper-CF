@@ -36,11 +36,11 @@ public class TreePositionIndex {
         posTreesMap = new HashMap<>();
         posRawTreesMap = new HashMap<>();
 
-        for (ITree t: postOrderTrees){
-            posSet.add(t.getPos());
-            if (!posTreesMap.containsKey(t.getPos()))
-                posTreesMap.put(t.getPos(), new ArrayList<>());
-            posTreesMap.get(t.getPos()).add(t);
+        for (ITree t: postOrderTrees){//遍历每一个树节点
+            posSet.add(t.getPos());//获取该树节点的开始位置
+            if (!posTreesMap.containsKey(t.getPos()))//如果posTreesMap中不含有这个开始位置
+                posTreesMap.put(t.getPos(), new ArrayList<>());//就将这个开始位置存入map集合中，作为键，初始化一个list集合作为值
+            posTreesMap.get(t.getPos()).add(t);//将t这个节点添加到开始位置（键）对应的值列表中
         }
 
         for (ITree t: postOrderRawTrees){
@@ -50,8 +50,8 @@ public class TreePositionIndex {
             posRawTreesMap.get(t.getPos()).add(t);
         }
 
-        nodeStartPositions = new ArrayList<>(posSet);
-        Collections.sort(nodeStartPositions);
+        nodeStartPositions = new ArrayList<>(posSet);//将set集合中存储的所有posSet都取出来存到nodeStartPositions中
+        Collections.sort(nodeStartPositions);//按从小到大排序
 
         rawNodeStartPositions = new ArrayList<>(rawPosSet);
         Collections.sort(rawNodeStartPositions);

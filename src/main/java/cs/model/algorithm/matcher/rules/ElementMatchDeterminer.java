@@ -35,6 +35,7 @@ public class ElementMatchDeterminer {
      * @param simMeasures the similarity measures containing value of different similarity measures.
      * @return whether the mapping is reasonable
      */
+    //主要是根据第一套规则进行过滤，determineCanBeMapped返回布尔值，只要当前的匹配对满足第一套的任一规则，则返回true，并且将当前匹配对加入合法映射的集合中
     public boolean determine(ElementSimMeasures simMeasures) {
         if (legalMappings.contains(simMeasures.getElementMapping()))
             return true;

@@ -10,16 +10,16 @@ import java.util.*;
 
 public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛选出来，并将这三种element与他们的type相对应，构成集合
     private final Set<ProgramElement> allSrcStmts;
-    private final Set<ProgramElement> srcStmtsToMap;
-    private final Set<ProgramElement> srcTokensToMap;
-    private final Set<ProgramElement> srcinnerStmtsToMap;
+    private final Set<ProgramElement> srcStmtsToMap; //在快速映射阶段没有映射的src中的stmt元素
+    private final Set<ProgramElement> srcTokensToMap;//在快速映射阶段没有映射的src中的token元素
+    private final Set<ProgramElement> srcinnerStmtsToMap;//在快速映射阶段没有映射的src中的inner-stmt元素
     private final Set<ProgramElement> dstStmtsToMap;
     private final Set<ProgramElement> dstTokensToMap;
     private final Set<ProgramElement> dstinnerStmtsToMap;
 
     private final Map<ProgramElementType, Set<ProgramElement>> dstTypeElementMap;
-    private final Map<String, Set<ProgramElement>> dstValTokenMap;
-    private final Map<String, Set<ProgramElement>> dstValMultiTokenElementMap;
+    private final Map<String, Set<ProgramElement>> dstValTokenMap;//键是token的value，值是token元素，一个value值可能对应多个token元素
+    private final Map<String, Set<ProgramElement>> dstValMultiTokenElementMap;//键是innerstmt的类型与value值的拼接，值是所有的innerstmt集合
 
     private final ElementMappings fastEleMappings;
 
@@ -41,7 +41,7 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
         initMap();
     }
 
-    private void initStmtsAndTokens(List<ProgramElement> srcStmts, List<ProgramElement> dstStmts) {
+    private void initStmtsAndTokens(List<ProgramElement> srcStmts, List<ProgramElement> dstStmts) {//将快速映射阶段没有映射的stmt、token、inner都存入各自的集合中，方便后续映射
         for (ProgramElement srcStmt: srcStmts) {
             if (!fastEleMappings.isMapped(srcStmt)) {
                 this.srcStmtsToMap.add(srcStmt);//在快速映射阶段没有映射的语句存入srcStmtsToMap集合
@@ -68,15 +68,15 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
                         dstValTokenMap.put(value, new HashSet<>());
                     dstValTokenMap.get(value).add(tokenEle);
                 }
-                for (ProgramElement innerStmtEle: ((TokenElement) tokenEle).getInnerStmtElementsWithToken()) {
+                for (ProgramElement innerStmtEle: ((TokenElement) tokenEle).getInnerStmtElementsWithToken()) {//为什么dst对应的token还对token的内部语句进行了检查，token还有内部语句？
                     if (!fastEleMappings.isMapped(innerStmtEle))
                         this.dstinnerStmtsToMap.add(innerStmtEle);
                 }
             }
-            addrecursive(dstStmt.getInnerStmtElements());
+            addrecursive(dstStmt.getInnerStmtElements());//传入当前遍历的这条dstStmt，对其下面的内部语句检查，如果在快速映射阶段没有被映射，则添加到对应的inner-stmt集合中
         }
     }
-    //递归，在快速映射阶段 语句的内部语句 没有映射的要被存入dstinnerStmtsToMap集合中，继续递归 内部语句的内部语句
+    //递归，在快速映射阶段 语句的内部语句 没有映射的要被存入dstInnerStmtsToMap集合中，继续递归 内部语句的内部语句
     private void addrecursive(List<InnerStmtElement> innerStmtElementList){
         if(innerStmtElementList == null)
             return;
@@ -109,7 +109,7 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
     private void initMap() {
         // target value stmt map
         for (ProgramElement dstStmt: dstStmtsToMap)
-            addElementTypeToMap(dstStmt, dstTypeElementMap);//将目标stmt和其类型对应起来
+            addElementTypeToMap(dstStmt, dstTypeElementMap);//将dststmt和其类型对应起来，map套map
 
         // target value token map
         for (ProgramElement dstToken: dstTokensToMap)
@@ -122,11 +122,11 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
     }
 
     private void addElementTypeToMap(ProgramElement element, Map<ProgramElementType, Set<ProgramElement>> typeEleMap) {
-        ProgramElementType type = element.getElementType();
+        ProgramElementType type = element.getElementType();//获取传入元素的类型
 //        System.out.println("Type is " + type + " " + element);
         if (!typeEleMap.containsKey(type))
             typeEleMap.put(type, new HashSet<>());
-        typeEleMap.get(type).add(element);
+        typeEleMap.get(type).add(element);//typeEleMap中的键指类型，值指的是是这个类型的所有元素集合
     }
 
     public Set<ProgramElement> getAllSrcStmts() {

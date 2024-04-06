@@ -217,11 +217,11 @@ public class TreeTokensMap {
         int start = node.getPos();
 //        System.out.println("Scanner Index " + scannerIndex + " end is " + end + " start " + start);
         while (scannerIndex < end){
-            if (removedPositions.contains(scannerIndex)){
+            if (removedPositions.contains(scannerIndex)){//如果当前节点是注释或者Javadoc，不考虑，顺序到下一节点
                 scannerIndex ++;
                 continue;
             }
-            ITree tmp = findLiteralByPos(scannerIndex);
+            ITree tmp = findLiteralByPos(scannerIndex);//返回的是一个ITree类型的token元素
             if (tmp != null) {
                 if (!token.equals(""))
                     addTokenRange(tokenRanges, allTokenTreeMap, start, scannerIndex, null);
@@ -302,8 +302,8 @@ public class TreeTokensMap {
         return false;
     }
 
-    private ITree findLiteralByPos(int pos){
-        return posLiteralMap.get(pos);
+    private ITree findLiteralByPos(int pos){//返回一个ITree类型的token
+        return posLiteralMap.get(pos);//posLiteralMap的键表示一个ITree节点的位置（pos），值是对应的ITree节点也是一个token元素
     }
 
     private void initAllLiterals(ITree node){//遍历给定树节点node的所有子节点，分辨不同类型的节点，并将它们与节点本身关联，方便后续快速访问

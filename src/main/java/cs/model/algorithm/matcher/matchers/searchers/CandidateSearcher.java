@@ -76,16 +76,17 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
         return candidateSetsAndMaps.getDstTypeElementMap();
     }
 
+    //stmt的候选集就是从前一阶段CandidateSetsAndMaps中拿到的map集合（<srcele,<type,set<dstele>>）中直接get，没有用别的方法
     private Set<ProgramElement> getDstCandidateStmtElements(StmtElement srcStmt) {
-        return getDstTypeElementMap().get(srcStmt.getElementType());
+        return getDstTypeElementMap().get(srcStmt.getElementType());//获取srcstmt类型（键）对应的所有element列表，将其作为候选集
     }
 
-    //获取内部语句下的token（源），遍历srcTokens，找到对应的elementMappings中映射的dstToken，获取和该token相关联的内部语句
-    //连同内部语句的类型一起存入ret。再将原内部语句已经映射父元素的所有内部语句都存入ret，返回ret
+    //获取内部语句下的token（源），遍历srcTokens，找到对应的elementMappings中映射的dstToken，获取和该dstToken相关联的内部语句，再对这些内部语句进行遍历，如果内部语句的类型和传入的srcInner类型相同，则存入ret
+    //ret的第二部分是，将传入的src内部语句已经映射了的父元素下的所有内部语句都存入ret
     private Set<ProgramElement> getDstCandidateInnerStmtElements(InnerStmtElement srcInnerStmtEle) {
         List<TokenElement> srcTokens = srcInnerStmtEle.getTokenElements();//获取源InnerStmtElement关联的token元素列表
         Set<ProgramElement> ret = new HashSet<>();
-        ProgramElementType srcEleType = srcInnerStmtEle.getElementType();//获取内部语句的类型
+        ProgramElementType srcEleType = srcInnerStmtEle.getElementType();//获取源内部语句的类型
 
         for (TokenElement token: srcTokens) {
             ProgramElement dstToken = elementMappings.getMappedElement(token);//对于每个token元素，通过elementMappings获取其映射的目标token
@@ -112,9 +113,9 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
                 candidateSetsAndMaps);
         //通过searcher获取具有 相同结构 的多令牌候选集合
         Set<ProgramElement> candidatesWithSameStructure = searcher.getCandidatesWithIdenticalMultiTokenForSrcToken();
-        //获取 相同语句 中的令牌候选集合
+        //获取 相同语句 中的令牌候选集合（T-MSIS）
         Set<ProgramElement> sameStmtCandidates = searcher.getSameStmtCandidateTokensForSrcToken();
-        //获取在相同语句中的候选集合，并存储在tmp中
+        //将上一步得到的sameStmtCandidates进一步通过determine筛选，得到新的候选集tmp
         Set<ProgramElement> tmp = getDstCandidateTokenElementsInSameStmt(srcToken, sameStmtCandidates);
         if (tmp.size() > 0) {
             Set<ProgramElement> tmp2 = new HashSet<>(tmp);
@@ -131,6 +132,7 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
                 return candidatesWithSameStructure;
         }
 
+        //上述条件都不满足，执行下面的语句，返回三个小候选集的并集
         Set<ProgramElement> neighborCandidates = searcher.getNeighborCandidateTokensForSrcToken();
         Set<ProgramElement> sameOrRenameValCandidates = searcher.getSameValOrRenameCandidateTokensForSrcToken();
         Set<ProgramElement> ret = new HashSet<>();
@@ -146,8 +148,9 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
         ElementMatchDeterminer determiner = new ElementMatchDeterminer(elementMappings);
         Set<ProgramElement> ret = new HashSet<>();
         for (ProgramElement element: sameStmtCandidates) {
+            //实例化一个ElementSimMeasures对象用于计算srcToken与当前element之间的相似度度量（计算）
             ElementSimMeasures measures = new ElementSimMeasures(srcToken, element);
-            if (determiner.determine(measures))
+            if (determiner.determine(measures))//determine方法判断是否第一套规则中的一些条件（过滤）
                 ret.add(element);
         }
         return ret;
@@ -159,7 +162,7 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
             return candidates.contains(dstToken);
         } else {
             for (ProgramElement dst: candidates) {
-                if (!elementMappings.isMapped(dst))
+                if (!elementMappings.isMapped(dst))//候选集中只要有没有映射的dstToken，就返回true
                     return true;
             }
             return false;

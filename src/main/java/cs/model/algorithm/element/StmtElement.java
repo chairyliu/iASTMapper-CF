@@ -307,7 +307,7 @@ public class StmtElement extends AbstractElement implements ProgramElement {
 
     public void calTokensOfInnerStmtElements() {
         for (TokenElement tokenEle: getTokenElements()) {
-            tokenEle.createInnerStmtElementsWithToken(treeInnerStmtEleMap);
+            tokenEle.createInnerStmtElementsWithToken(treeInnerStmtEleMap);//传入的是innerstmt的树节点和element元素对应的map
         }
     }
 

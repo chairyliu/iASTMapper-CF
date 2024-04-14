@@ -26,17 +26,17 @@ public class CommitAnalysis {
     private boolean stmtOrToken;
 
     public CommitAnalysis(String project, String commitId,
-                          Set<String> filesToAnalyze, boolean stmtOrToken) {
+                          Set<String> filesToAnalyze, boolean stmtOrToken) {//如果是跨文件，这里可以删去filesToAnalyze
         this.project = project;
         this.commitId = commitId;
-        this.filesToAnalyze = filesToAnalyze;
+        this.filesToAnalyze = filesToAnalyze;//删，因为后面的pathMap可以获取到每个commitId下的所以file路径对，原来的一对一需要将pathMap筛选到只分析当前的文件，所以设置了这样一个参数
         this.resultMap = new HashMap<>();
         this.comparisonResultMap = new HashMap<>();//后期去掉
         this.evaluationMap = new HashMap<>();//后期去掉
         this.stmtOrToken = stmtOrToken;
     }
 
-    public void calResultMappings(boolean doComparison, boolean doEvaluation){
+    public void calResultMappings(boolean doComparison, boolean doEvaluation){//可以获取pathMap后将整个map传入RevisionAnalysis中
         String baseCommitId = GitUtils.getBaseCommitId(project, commitId);//提到进入这个函数之前
         if (baseCommitId == null)
             return;
@@ -44,12 +44,12 @@ public class CommitAnalysis {
 //        System.out.println(pathMap);
         if (pathMap == null || pathMap.size() == 0)
             return;
-//        System.out.println("Commit is " + commitId);
-//        System.out.println("The size is " + pathMap.size());
+        //这个for进行了一对一分析的筛选
         for (String oldPath: pathMap.keySet()){
 //            System.out.println("oldPath is " + oldPath);
             if (filesToAnalyze != null && !filesToAnalyze.contains(oldPath))//为空不在这里判断，在这个方法体calResultMappings之前判断
-                continue;
+                continue;//这个if直接删
+            //这三个if可以移动到拿到一对一之后再判断
             String newPath = pathMap.get(oldPath);
             if (newPath == null)
                 continue;

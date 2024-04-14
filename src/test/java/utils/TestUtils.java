@@ -21,8 +21,8 @@ public class TestUtils {
     public static void testiASTMapper(String project, String commitId, String file) throws IOException {
         Set<String> filePaths = null;
         filePaths = new HashSet<>();
-        filePaths.add(file);
-        CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filePaths, false);
+        filePaths.add(file);//其实filePaths里面每次都只存了传入的这一条file路径，跨文件这三行可以删去
+        CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filePaths, false);//这里不用传filePaths
         long time1 = System.currentTimeMillis();
         mappingResult.calResultMappings(false, false);
         Map<String, RevisionAnalysis> resultMap = mappingResult.getRevisionAnalysisResultMap();

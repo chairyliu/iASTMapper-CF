@@ -77,8 +77,8 @@ public class iASTMapper {
 
     public static Set<String> used_rules = new HashSet<>();  // 添加-ZN
 
-
-    public iASTMapper(String srcFileContent, String dstFileContent) throws IOException {
+    //这里可以加一个if判断是否是对应的文件路径（与前面遍历pathMap合并），如果是，则执行，如果不是，则跳过，后面调用存好的快速映射阶段后的语句进行内外层循环
+    public iASTMapper(String srcFileContent, String dstFileContent) throws IOException {//这些src的步骤都可以提前计算，这样在for遍历的时候就不用重复算好几次
         used_rules.clear(); // 添加-ZN
         // We use gumtree's AST in SE-Mapping algorithm
         long time1 = System.currentTimeMillis();

@@ -33,12 +33,14 @@ public class RevisionAnalysis {
     private ElementMappings eleMappings;
 
     public RevisionAnalysis(String project, String commitId, String baseCommitId,
-                            String srcFilePath, String dstFilePath) throws Exception{
+                            String srcFilePath, String dstFilePath) throws Exception{//这里删除后两个参数
         this.project = project;
         this.commitId = commitId;
-        this.srcFilePath = srcFilePath;
-        this.dstFilePath = dstFilePath;
+        this.srcFilePath = srcFilePath;//删
+        this.dstFilePath = dstFilePath;//删
 
+        //这里根据传入的pathMap进行for遍历,可以先把<srcFileContent, dstFileContent>都存下来，然后进iASTMapper之前用for遍历每个srcFileContent对应的所有dstFileContent
+        //iASTMapper中的步骤如果有重复也可以提前计算，避免太高的时间复杂度
         try {
             ByteArrayOutputStream srcFileStream = GitUtils
                     .getFileContentOfCommitFile(project, baseCommitId, srcFilePath);//获取源文件和修订后文件的内容

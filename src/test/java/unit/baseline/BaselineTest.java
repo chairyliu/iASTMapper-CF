@@ -2,9 +2,6 @@ package unit.baseline;
 
 import utils.TestUtils;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class BaselineTest {
     public static void main(String[] args) throws Exception {
 //        test1();
@@ -23,9 +20,9 @@ public class BaselineTest {
     private static void test2() throws Exception {
         String project = "junit4";
         String commitId = "890b7b977e42360aa8975c8535fc66bfd8d8cb3e";
-        String file = "src/org/junit/internal/runners/TestIntrospector.java";
+//        String file = "src/org/junit/internal/runners/TestIntrospector.java";
 
-        TestUtils.testiASTMapper(project, commitId, file);
+        TestUtils.testiASTMapper(project, commitId);
     }
 
 }

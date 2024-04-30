@@ -15,7 +15,6 @@ import java.util.*;
 
 public class iASTMapper100_runner {
 
-
     public static void run(String project_commits_path, String method_errors_file, String resPath){
 
         Set<String> erroredFRs = new HashSet<>();
@@ -67,15 +66,16 @@ public class iASTMapper100_runner {
                         try {
                             filePaths.clear();
                             filePaths.add(oldPath);
-                            CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filePaths, false);
+                            CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, false);
                             long time1 = System.currentTimeMillis();
-                            mappingResult.calResultMappings(false, false);
+                            mappingResult.calResultMapping(false, false);
                             long time2 = System.currentTimeMillis();
                             long time = time2 - time1;
 
                             bw1 = new BufferedWriter(new FileWriter(
                                     projectPath + File.separator + commitId + ".txt",true));
                             Map<String, RevisionAnalysis> resultMap = mappingResult.getRevisionAnalysisResultMap();
+//                            System.out.println(resultMap);
 
                             if (resultMap.size() == 0) {
                                 /**
@@ -88,8 +88,9 @@ public class iASTMapper100_runner {
                             }
 
                             for (String filePath: resultMap.keySet()){
+//                                System.out.println(filePath);
                                 RevisionAnalysis m = resultMap.get(filePath);
-                                MappingStore ms = m.getMatcher().getMs();
+                                MappingStore ms = m.getMatcher(filePath).getMs();
                                 List<StmtTokenAction> actionList = m.generateActions();
                                 List<TreeEditAction> treeEditActions = m.generateEditActions();
 
@@ -102,10 +103,10 @@ public class iASTMapper100_runner {
                                 for (TreeEditAction action: treeEditActions)
                                     bw1.write(action.toString());
 
-                                int ASTNodeMappings_num = ms.size();
-                                int eleMappings_num = m.getMatcher().getEleMappings().asSet().size();
-                                int ASTESSize = treeEditActions.size();
-                                int CodeESSize = actionList.size();
+                                int ASTNodeMappings_num = ms.size();//AST 节点之间的映射数量
+                                int eleMappings_num = m.getMatcher(filePath).getEleMappings().asSet().size();//元素之间的映射数量
+                                int ASTESSize = treeEditActions.size();//AST编辑操作数量
+                                int CodeESSize = actionList.size();//code编辑操作数量
                                 String record = commitId + " " + filePath + " -> " +
                                         ASTNodeMappings_num + " " + eleMappings_num + " " + ASTESSize +
                                         " " + CodeESSize + " " + time;

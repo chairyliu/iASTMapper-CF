@@ -3,9 +3,9 @@ package cs.model.main.script;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.analysis.CommitAnalysis;
 import cs.model.analysis.RevisionEvaluation;
+import cs.model.evaluation.csvrecord.eval.AutoEvaluationRecord;
 import cs.model.evaluation.csvrecord.eval.ManualEvaluationRecord;
 import cs.model.evaluation.utils.MappingMethodNames;
-import cs.model.evaluation.csvrecord.eval.AutoEvaluationRecord;
 import cs.model.main.analysis.StmtMappingCompareAnalysis;
 import cs.model.utils.CsvOperationsUtil;
 import cs.model.utils.FileRevision;
@@ -127,8 +127,8 @@ public class EvaluationScriptGenerator {
         Set<String> filesToAnalyze = new HashSet<>();
         filesToAnalyze.add(filePath);
 
-        CommitAnalysis commitResult = new CommitAnalysis(project, commitId, filesToAnalyze, true);
-        commitResult.calResultMappings(false, true);
+        CommitAnalysis commitResult = new CommitAnalysis(project, commitId, true);
+        commitResult.calResultMapping(false, false);
 
         Map<String, RevisionEvaluation> comparisonMap = commitResult.getEvaluationMap();
         RevisionEvaluation comparison = comparisonMap.get(filePath);

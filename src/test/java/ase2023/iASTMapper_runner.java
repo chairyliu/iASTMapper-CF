@@ -7,8 +7,6 @@ import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.iASTMapper;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.measures.ElementSimMeasures;
-import cs.model.algorithm.matcher.measures.SimMeasure;
-import cs.model.algorithm.matcher.measures.SimMeasureConfiguration;
 import cs.model.algorithm.matcher.rules.ElementMatchDeterminer;
 import cs.model.algorithm.matcher.rules.ElementMatchRule;
 import cs.model.algorithm.matcher.rules.MatchRulesConfiguration;
@@ -20,7 +18,6 @@ import java.util.*;
 
 
 public class iASTMapper_runner {
-
 
     public static void run(String project_commits_path, String method_errors_file, String resPath){
 
@@ -78,9 +75,9 @@ public class iASTMapper_runner {
 
                                 filePaths.clear();
                                 filePaths.add(oldPath);
-                                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filePaths, false);
+                                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, false);
                                 long time1 = System.currentTimeMillis();
-                                mappingResult.calResultMappings(false, false);
+                                mappingResult.calResultMapping(false, false);
                                 long time2 = System.currentTimeMillis();
                                 long time = time2 - time1;
 
@@ -100,7 +97,7 @@ public class iASTMapper_runner {
 
                                 for (String filePath: resultMap.keySet()){
                                     RevisionAnalysis m = resultMap.get(filePath);
-                                    MappingStore ms = m.getMatcher().getMs();
+                                    MappingStore ms = m.getMatcher(filePath).getMs();
                                     List<StmtTokenAction> actionList = m.generateActions();
                                     List<TreeEditAction> treeEditActions = m.generateEditActions();
 
@@ -114,7 +111,7 @@ public class iASTMapper_runner {
                                         bw1.write(action.toString());
 
                                     int ASTNodeMappings_num = ms.size();
-                                    int eleMappings_num = m.getMatcher().getEleMappings().asSet().size();
+                                    int eleMappings_num = m.getMatcher(filePath).getEleMappings().asSet().size();
                                     int ASTESSize = treeEditActions.size();
                                     int CodeESSize = actionList.size();
                                     String record = commitId + " " + filePath + " -> " +
@@ -179,8 +176,8 @@ public class iASTMapper_runner {
                             try {
                                 filePaths.clear();
                                 filePaths.add(oldPath);
-                                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filePaths, false);
-                                mappingResult.calResultMappings(false, false);
+                                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, false);
+                                mappingResult.calResultMapping(false, false);
                                 for (String ruleName : iASTMapper.used_rules) {
                                     if (!ruleFreqMap.containsKey(ruleName))
                                         ruleFreqMap.put(ruleName, 0);

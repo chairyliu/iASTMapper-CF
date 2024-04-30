@@ -2,6 +2,7 @@ package cs.model.algorithm.matcher.measures.token;
 
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.matcher.matchers.searchers.CandidateSetsAndMaps;
+import cs.model.algorithm.matcher.matchers.searchers.FilterDstCandidates;
 import cs.model.algorithm.matcher.measures.AbstractSimMeasure;
 import cs.model.algorithm.matcher.measures.SimMeasure;
 
@@ -21,7 +22,7 @@ public class TokenSameRenameValueMeasure extends AbstractSimMeasure implements S
 
     @Override
     public Set<ProgramElement> filterBadDstCandidateElements(ProgramElement srcEle, Set<ProgramElement> dstCandidates,
-                                                             CandidateSetsAndMaps candidateSetsAndMaps) {
+                                                             FilterDstCandidates filterDstCandidates, CandidateSetsAndMaps candidateSetsAndMaps) {
         if (!srcEle.isFromSrc())
             return null;
 
@@ -30,12 +31,12 @@ public class TokenSameRenameValueMeasure extends AbstractSimMeasure implements S
             return ret;
 
         String tokenValue = srcEle.getStringValue();
-        ret.addAll(candidateSetsAndMaps.getSameValDstCandidates(tokenValue));
+        ret.addAll(filterDstCandidates.getSameValDstCandidates(tokenValue));
 
         Set<String> renameValues = elementMappings.getRenameStatistics().getDstNameForSrcName(tokenValue);
         if (renameValues != null) {
             for (String renameValue: renameValues) {
-                ret.addAll(candidateSetsAndMaps.getSameValDstCandidates(renameValue));
+                ret.addAll(filterDstCandidates.getSameValDstCandidates(renameValue));
             }
         }
 

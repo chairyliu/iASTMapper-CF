@@ -6,13 +6,13 @@ import cs.model.algorithm.element.ElementTreeBuilder;
 import cs.model.algorithm.element.ElementTreeUtils;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.element.TokenElement;
-import cs.model.algorithm.matcher.matchers.InnerStmtEleMatcher;
-import cs.model.algorithm.matcher.matchers.searchers.BestMappingSearcher;
 import cs.model.algorithm.ttmap.TokenRange;
 import cs.model.algorithm.ttmap.TokenRangeTypeMap;
 import cs.model.algorithm.ttmap.TreeTokensMap;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Transformer between mappings of tree nodes and mappings of program elements.
@@ -31,6 +31,7 @@ public class MappingTransformer {
      * @param dstTtMap tree token map of target file
      * @return the generated element mappings
      */
+    //应该对应code Edit Script的输出
     public static ElementMappings getElementMappingsFromTreeMappings(MappingStore ms, ITree srcRoot, ITree dstRoot,
                                                                      TokenRangeTypeMap srcTrtMap, TokenRangeTypeMap dstTrtMap,
                                                                      TreeTokensMap srcTtMap, TreeTokensMap dstTtMap){

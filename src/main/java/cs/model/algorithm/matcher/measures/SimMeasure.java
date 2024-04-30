@@ -5,6 +5,7 @@ import cs.model.algorithm.languageutils.typechecker.JavaNodeTypeChecker;
 import cs.model.algorithm.languageutils.typechecker.StaticNodeTypeChecker;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.matchers.searchers.CandidateSetsAndMaps;
+import cs.model.algorithm.matcher.matchers.searchers.FilterDstCandidates;
 
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public interface SimMeasure {
      * @return the good candidates or empty list if no good candidates are found.
      */
     Set<ProgramElement> filterBadDstCandidateElements(ProgramElement srcEle, Set<ProgramElement> dstCandidates,
-                                                      CandidateSetsAndMaps candidateSetsAndMaps);
+                                                      FilterDstCandidates filterDstCandidates,CandidateSetsAndMaps candidateSetsAndMaps);
 
     /**
      * Compare value of similarity

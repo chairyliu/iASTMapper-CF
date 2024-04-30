@@ -3,10 +3,10 @@ package cs.model.main.analysis;
 import cs.model.analysis.CommitAnalysis;
 import cs.model.analysis.RevisionAnalysis;
 import cs.model.evaluation.csvrecord.measure.StmtMappingAndMeasureRecord;
-import cs.model.gitops.CommitOps;
-import cs.model.gitops.GitUtils;
 import cs.model.evaluation.csvrecord.running.RunningBlueMapRecord;
 import cs.model.evaluation.csvrecord.running.RunningRecord;
+import cs.model.gitops.CommitOps;
+import cs.model.gitops.GitUtils;
 import cs.model.utils.CsvOperationsUtil;
 import cs.model.utils.FileOperations;
 import cs.model.utils.PathResolver;
@@ -64,8 +64,8 @@ public class StmtMappingSingleAnalysis {
             System.out.println(commitId);
             try {
                 Set<String> filesToAnalyze = runningBlueMap.get(commitId);
-                CommitAnalysis commitResult = new CommitAnalysis(project, commitId, filesToAnalyze, true);
-                commitResult.calResultMappings(false, false);
+                CommitAnalysis commitResult = new CommitAnalysis(project, commitId, true);
+                commitResult.calResultMapping(false, false);
                 Map<String, RevisionAnalysis> resultMap = commitResult.getRevisionAnalysisResultMap();
 
                 String[] runningRecord = new RunningRecord(commitId).toRecord();

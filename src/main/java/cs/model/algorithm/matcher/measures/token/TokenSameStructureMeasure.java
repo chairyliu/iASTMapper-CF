@@ -5,6 +5,7 @@ import cs.model.algorithm.element.InnerStmtElement;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.element.TokenElement;
 import cs.model.algorithm.matcher.matchers.searchers.CandidateSetsAndMaps;
+import cs.model.algorithm.matcher.matchers.searchers.FilterDstCandidates;
 import cs.model.algorithm.matcher.measures.AbstractSimMeasure;
 import cs.model.algorithm.matcher.measures.SimMeasure;
 
@@ -93,7 +94,7 @@ public class TokenSameStructureMeasure extends AbstractSimMeasure implements Sim
 
     @Override
     public Set<ProgramElement> filterBadDstCandidateElements(ProgramElement srcEle, Set<ProgramElement> dstCandidates,
-                                                             CandidateSetsAndMaps candidateSetsAndMaps) {
+                                                             FilterDstCandidates filterDstCandidates,CandidateSetsAndMaps candidateSetsAndMaps) {
         if (!srcEle.isFromSrc())
             return null;
 

@@ -115,7 +115,7 @@ public class BestMappingSearcher {
             return;
         //使用BestCandidateSearcher找到与srcElement最相似的目标元素，并将结果存储在globalBestDstCandidates变量中。
         BestCandidateSearcher searcher = new BestCandidateSearcher(srcElement, candidateElements,
-                eleMappings, determiner, candidateSearcher.getCandidateSetsAndMaps());
+                eleMappings, determiner, candidateSearcher.getFilterDstCandidates(),candidateSearcher.getCandidateSetsAndMaps());
         Set<ProgramElement> globalBestDstCandidates = searcher.getBestGlobalCandidates();
         //如果srcElement未被映射，也就说明上两行没有找到全局最佳元素，所以获取局部最佳目标元素候选集合，并将其和srcElement绑定存到局部的map集合中
         if (!eleMappings.isMapped(srcElement)) {
@@ -170,7 +170,8 @@ public class BestMappingSearcher {
             //如果目标元素有多个源候选项，则使用BestCandidateSearcher找到最佳的源元素候选项
             Set<ProgramElement> candidates = dstToGlobalSrcCandidateMap.get(dstElement);
             BestCandidateSearcher searcher = new BestCandidateSearcher(dstElement, candidates,
-                    eleMappings, measuresMap, determiner, candidateSearcher.getCandidateSetsAndMaps());
+                    eleMappings, measuresMap, determiner, candidateSearcher.getFilterDstCandidates(),candidateSearcher.getCandidateSetsAndMaps());
+//            System.out.println(searcher);
             //存储最佳的源元素候选项映射
             Set<ProgramElement> bestSrcCandidates = searcher.getBestGlobalCandidates();
             if (bestSrcCandidates != null) {

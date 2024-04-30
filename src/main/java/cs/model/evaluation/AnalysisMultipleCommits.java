@@ -52,9 +52,8 @@ public class AnalysisMultipleCommits {
             try{
                 Set<String> filesToAnalyze = null;
 //                EvalASTMatchForCommit eval = new EvalASTMatchForCommit(project, commitId, methods, filesToAnalyze);
-
-                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filesToAnalyze, true);
-                mappingResult.calResultMappings(false, true);
+                CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, true);
+                mappingResult.calResultMapping(false, false);
                 Map<String, RevisionEvaluation> evaluationMap = mappingResult.getEvaluationMap();
                 for (String filePath: evaluationMap.keySet()) {
                     System.out.println(filePath);

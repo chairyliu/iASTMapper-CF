@@ -22,6 +22,8 @@ import cs.model.gitops.GitUtils;
 import java.io.*;
 import java.util.*;
 
+import static cs.model.analysis.RevisionAnalysis.dstPathToRoot;
+
 
 /**
  * Perform the differential testing evaluation for our method
@@ -69,6 +71,7 @@ public class RevisionEvaluation {
     private long mtdActionTime;
     private long ijmMappingTime;
     private long ijmActionTime;
+    public Map<String, List<ProgramElement>> srcStmtsToMap;
 
     public RevisionEvaluation(String project, String commitId, String baseCommitId,
                               String srcFilePath, String dstFilePath) throws Exception {
@@ -97,8 +100,12 @@ public class RevisionEvaluation {
             return;
         }
         // build mappings using my method
-        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent);
-        this.myMatcher.buildMappingsOuterLoop();
+        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot);
+        //下面三行-新增-ljy
+//        srcStmtsToMap = myMatcher.getSrcStmtsToMap();
+        List<ProgramElement> srcStmts = new ArrayList<>();
+        srcStmts = srcStmtsToMap.get(srcFilePath);
+        this.myMatcher.buildMappingsOuterLoop(srcStmts,srcFilePath,dstFilePath);
         this.myMappings = this.myMatcher.getEleMappings();
         this.myActions = this.myMatcher.getTreeEditActions();
 

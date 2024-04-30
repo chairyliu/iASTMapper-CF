@@ -13,10 +13,9 @@ import cs.model.evaluation.utils.PairwiseComparison;
 import cs.model.gitops.GitUtils;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static cs.model.analysis.RevisionAnalysis.dstPathToRoot;
 
 public class RevisionComparison {
     private String project;
@@ -43,6 +42,7 @@ public class RevisionComparison {
 
     private List<ProgramElement> srcElements;
     private List<ProgramElement> dstElements;
+    public Map<String, List<ProgramElement>> srcStmtsToMap;
 
     public RevisionComparison(String project, String commitId, String baseCommitId,
                               String srcFilePath, String dstFilePath, boolean stmtOrToken) throws Exception {
@@ -72,8 +72,12 @@ public class RevisionComparison {
             return;
         }
         // build mappings using our method
-        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent);
-        this.myMatcher.buildMappingsOuterLoop();
+        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot);
+        //下三行新增-ljy
+//        srcStmtsToMap = myMatcher.getSrcStmtsToMap();
+        List<ProgramElement> srcStmts = new ArrayList<>();
+        srcStmts = srcStmtsToMap.get(srcFilePath);
+        this.myMatcher.buildMappingsOuterLoop(srcStmts,srcFilePath,dstFilePath);
         this.myMappings = this.myMatcher.getEleMappings();
 
         // build mappings using gumtree, mtdiff and ijm

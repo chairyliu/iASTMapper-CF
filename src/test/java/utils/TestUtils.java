@@ -12,19 +12,17 @@ import cs.model.utils.Pair;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class TestUtils {
-    public static void testiASTMapper(String project, String commitId, String file) throws IOException {
-        Set<String> filePaths = null;
-        filePaths = new HashSet<>();
-        filePaths.add(file);//其实filePaths里面每次都只存了传入的这一条file路径，跨文件这三行可以删去
-        CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, filePaths, false);//这里不用传filePaths
+    public static void testiASTMapper(String project, String commitId) throws IOException {
+//        Set<String> filePaths = null;
+//        filePaths = new HashSet<>();
+//        filePaths.add(file);//其实filePaths里面每次都只存了传入的这一条file路径，跨文件这三行可以删去
+        CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, false);//这里不用传filePaths
         long time1 = System.currentTimeMillis();
-        mappingResult.calResultMappings(false, false);
+        mappingResult.calResultMapping(false, false);
         Map<String, RevisionAnalysis> resultMap = mappingResult.getRevisionAnalysisResultMap();
 
         for (String filePath: resultMap.keySet()){

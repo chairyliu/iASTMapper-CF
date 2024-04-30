@@ -1,15 +1,15 @@
 package cs.model.main.analysis;
 
 import cs.model.analysis.CommitAnalysis;
-import cs.model.analysis.RevisionEvaluation;
 import cs.model.analysis.RevisionComparison;
+import cs.model.analysis.RevisionEvaluation;
 import cs.model.evaluation.csvrecord.compare.StmtComparisonRecord;
-import cs.model.evaluation.csvrecord.eval.AutoEvaluationRecord;
 import cs.model.evaluation.csvrecord.eval.ActionAndRunningTimeRecord;
-import cs.model.gitops.CommitOps;
-import cs.model.gitops.GitUtils;
+import cs.model.evaluation.csvrecord.eval.AutoEvaluationRecord;
 import cs.model.evaluation.csvrecord.running.RunningBlueMapRecord;
 import cs.model.evaluation.csvrecord.running.RunningRecord;
+import cs.model.gitops.CommitOps;
+import cs.model.gitops.GitUtils;
 import cs.model.utils.CsvOperationsUtil;
 import cs.model.utils.FileOperations;
 import cs.model.utils.PathResolver;
@@ -85,8 +85,8 @@ public class StmtMappingCompareAnalysis {
             System.out.println(commitId);
             try {
                 Set<String> filesToAnalyze = runningBlueMap.get(commitId);
-                CommitAnalysis commitResult = new CommitAnalysis(project, commitId, filesToAnalyze, true);
-                commitResult.calResultMappings(!doEval, doEval);
+                CommitAnalysis commitResult = new CommitAnalysis(project, commitId, true);
+                commitResult.calResultMapping(false, false);
                 String[] runningRecord = new RunningRecord(commitId).toRecord();
 
                 if (doEval) {

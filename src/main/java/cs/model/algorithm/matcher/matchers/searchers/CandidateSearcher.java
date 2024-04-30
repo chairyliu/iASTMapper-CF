@@ -17,14 +17,19 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
 
     private CandidateSetsAndMaps candidateSetsAndMaps;
     private ElementMappings elementMappings;
+    private FilterDstCandidates filterDstCandidates;
 
 
-    public CandidateSearcher(CandidateSetsAndMaps candidateSetsAndMaps, ElementMappings elementMappings) {
+    public CandidateSearcher(FilterDstCandidates filterDstCandidates, CandidateSetsAndMaps candidateSetsAndMaps, ElementMappings elementMappings) {
+        this.filterDstCandidates = filterDstCandidates;
         this.candidateSetsAndMaps = candidateSetsAndMaps;
         this.elementMappings = elementMappings;
     }
     public CandidateSetsAndMaps getCandidateSetsAndMaps() {
         return candidateSetsAndMaps;
+    }
+    public FilterDstCandidates getFilterDstCandidates(){
+        return filterDstCandidates;
     }
 
     /**
@@ -41,7 +46,8 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
      * @return the set of target candidates
      */
     //获取给定源元素的目标候选项，并强制转换为与srcElement对应的类型（三种）
-    public Set<ProgramElement> getDstCandidateElements(ProgramElement srcElement) {
+    //为每一个srcEle找到其对应的候选dstEle
+    public Set<ProgramElement> getDstCandidateElements(ProgramElement srcElement) {//追踪这里传入的srcEle，是寻找初始候选集中得到的过滤好的src三个层次元素
         if (srcElement.isStmt())
             return getDstCandidateStmtElements((StmtElement) srcElement);
         else if (srcElement.isToken())
@@ -67,7 +73,7 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
     /**
      * Get all the source statements in the file
      */
-    public Set<ProgramElement> getAllSrcStmts() {
+    public Set<ProgramElement> getAllSrcStmts() {//所有的src元素，没有经过快速映射阶段的筛选，也没有经过候选集中的筛选
         return candidateSetsAndMaps.getAllSrcStmts();
     }
 
@@ -110,7 +116,7 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
 
     private Set<ProgramElement> getDstCandidateTokenElements(TokenElement srcToken) {
         FastTokenCandidateSearcher searcher = new FastTokenCandidateSearcher(srcToken, elementMappings,
-                candidateSetsAndMaps);
+                filterDstCandidates,candidateSetsAndMaps);//好像是src的，传modifiedEle没有用
         //通过searcher获取具有 相同结构 的多令牌候选集合
         Set<ProgramElement> candidatesWithSameStructure = searcher.getCandidatesWithIdenticalMultiTokenForSrcToken();
         //获取 相同语句 中的令牌候选集合（T-MSIS）

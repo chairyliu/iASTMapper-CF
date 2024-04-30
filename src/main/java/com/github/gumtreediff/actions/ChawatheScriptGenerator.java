@@ -104,26 +104,30 @@ public class ChawatheScriptGenerator implements EditScriptGenerator {
                 actions.add(ins);
                 copyToOrig.put(w, x);
                 cpyMappings.addMapping(w, x);
-                z.insertChild(w, k);
+                if (z != null){
+                    z.insertChild(w, k);
+                }
             } else {
                 w = cpyMappings.getSrcForDst(x);
-                if (!x.equals(origDst)) { // TODO => x != origDst // Case of the root
+                if (!x.equals(origDst) && w != null) {// TODO => x != origDst // Case of the root
                     ITree v = w.getParent();
                     if (!w.getLabel().equals(x.getLabel())) {
                         actions.add(new Update(copyToOrig.get(w), x.getLabel()));
                         w.setLabel(x.getLabel());
                     }
-                    if (!z.equals(v)) {
-                        int k = findPos(x);
-                        Action mv = new Move(copyToOrig.get(w), copyToOrig.get(z), k);
-                        actions.add(mv);
-                        int oldk = w.positionInParent();
-                        w.getParent().getChildren().remove(oldk);
-                        z.insertChild(w, k);
+                    if (z != null){
+                        if (!z.equals(v)) {
+                            int k = findPos(x);
+                            Action mv = new Move(copyToOrig.get(w), copyToOrig.get(z), k);
+                            actions.add(mv);
+                            int oldk = w.positionInParent();
+                            w.getParent().getChildren().remove(oldk);
+                            z.insertChild(w, k);
+                        }
                     }
+
                 }
             }
-
             srcInOrder.add(w);
             dstInOrder.add(x);
             alignChildren(w, x);
@@ -138,18 +142,22 @@ public class ChawatheScriptGenerator implements EditScriptGenerator {
     }
 
     private void alignChildren(ITree w, ITree x) {
-        srcInOrder.removeAll(w.getChildren());
+        if (w != null){
+            srcInOrder.removeAll(w.getChildren());
+        }
         dstInOrder.removeAll(x.getChildren());
 
         List<ITree> s1 = new ArrayList<>();
-        for (ITree c: w.getChildren())
-            if (cpyMappings.isSrcMapped(c))
-                if (x.getChildren().contains(cpyMappings.getDstForSrc(c)))
-                    s1.add(c);
+        if (w != null){
+            for (ITree c: w.getChildren())
+                if (cpyMappings.isSrcMapped(c))
+                    if (x.getChildren().contains(cpyMappings.getDstForSrc(c)))
+                        s1.add(c);
+        }
 
         List<ITree> s2 = new ArrayList<>();
         for (ITree c: x.getChildren())
-            if (cpyMappings.isDstMapped(c))
+            if (cpyMappings.isDstMapped(c) && w != null)
                 if (w.getChildren().contains(cpyMappings.getSrcForDst(c)))
                     s2.add(c);
 
@@ -168,7 +176,10 @@ public class ChawatheScriptGenerator implements EditScriptGenerator {
                         Action mv = new Move(copyToOrig.get(a), copyToOrig.get(w), k);
                         actions.add(mv);
                         int oldk = a.positionInParent();
-                        w.getChildren().add(k, a);
+                        if (w != null) {
+                            w.getChildren().add(k, a);
+                        }
+
                         if (k  < oldk ) // FIXME this is an ugly way to patch the index
                             oldk ++;
                         a.getParent().getChildren().remove(oldk);
@@ -205,6 +216,7 @@ public class ChawatheScriptGenerator implements EditScriptGenerator {
         ITree u = cpyMappings.getSrcForDst(v);
         // siblings = u.getParent().getChildren();
         // int upos = siblings.indexOf(u);
+        if (u == null) return 0;
         int upos = u.positionInParent();
         // int r = 0;
         // for (int i = 0; i <= upos; i++)

@@ -27,10 +27,11 @@ public class BestCandidateSearcher {
     private Set<ProgramElement> bestGlobalCandidates;
     private Set<ProgramElement> bestLocalCandidates;
     private CandidateSetsAndMaps candidateSetsAndMaps;
+    private FilterDstCandidates filterDstCandidates;
 
     public BestCandidateSearcher(ProgramElement element, Set<ProgramElement> candidateElements,
                                  ElementMappings eleMappings, ElementMatchDeterminer determiner,
-                                 CandidateSetsAndMaps candidateSetsAndMaps) {
+                                 FilterDstCandidates filterDstCandidates, CandidateSetsAndMaps candidateSetsAndMaps) {
         this.element = element;
         this.candidateElements = candidateElements;
         this.eleMappings = eleMappings;
@@ -38,6 +39,7 @@ public class BestCandidateSearcher {
         this.determiner = determiner;
         this.candidateSetsAndMaps = candidateSetsAndMaps;
         this.measuresMap = new HashMap<>();
+        this.filterDstCandidates = filterDstCandidates;//新增
         findBestCandidates();
     }
 
@@ -46,7 +48,7 @@ public class BestCandidateSearcher {
                                  ElementMappings eleMappings,
                                  Map<ElementMapping, ElementSimMeasures> measuresMap,
                                  ElementMatchDeterminer determiner,
-                                 CandidateSetsAndMaps candidateSetsAndMaps) {
+                                 FilterDstCandidates filterDstCandidates, CandidateSetsAndMaps candidateSetsAndMaps) {
         this.element = element;
         this.candidateElements = candidateElements;
         this.eleMappings = eleMappings;
@@ -54,6 +56,7 @@ public class BestCandidateSearcher {
         this.determiner = determiner;
         this.simMeasureConfiguration = SimMeasureConfiguration.getSimilarityMeasureConfiguration(element);
         this.candidateSetsAndMaps = candidateSetsAndMaps;
+        this.filterDstCandidates = filterDstCandidates;
         findBestCandidates();
     }
 

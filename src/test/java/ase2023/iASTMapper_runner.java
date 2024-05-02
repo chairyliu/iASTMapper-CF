@@ -70,9 +70,7 @@ public class iASTMapper_runner {
 //                            if (!commitId.equals("f3ef1a9a31c14e24c2c4587095be7191228af041") &&
 //                                    !commitId.equals("262a5596d9300b7aded14d550cf8f5ee80d7ac0f"))
 //                                continue;
-
                             try {
-
                                 filePaths.clear();
                                 filePaths.add(oldPath);
                                 CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, false);

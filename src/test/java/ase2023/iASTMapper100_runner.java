@@ -22,6 +22,7 @@ public class iASTMapper100_runner {
             erroredFRs = iASTMapper100_runner.getErroredFRs(method_errors_file);
 
         Set<String> filePaths = new HashSet<>();
+        String previousCommitId = null;
 
         try {
 
@@ -60,8 +61,15 @@ public class iASTMapper100_runner {
 //                        else{continue;}
                         String oldPath = sa[2];
                         String FR = commitId + " " + oldPath;
+//                        System.out.println(FR);
                         if (analyzedFRs.contains(FR) || erroredFRs.contains(FR))
                             continue;
+
+                        if (previousCommitId != null){
+                            if (previousCommitId.equals(commitId))
+                                continue;
+                        }
+                        previousCommitId = commitId;
 
                         try {
                             filePaths.clear();
@@ -82,7 +90,8 @@ public class iASTMapper100_runner {
                                  * If the content of oldPath or newPath is "" (e.g., no longer exist)
                                  * OR there is runtime error happened during the execution, then the resultMap is empty!
                                  */
-                                ebw.write(commitId + " " + oldPath + " -> No Result!\n");
+//                                ebw.write(commitId + " " + oldPath + " -> No Result!\n");
+                                ebw.write(commitId + " " + " -> No Result!\n");
                                 ebw.flush();
                                 continue;
                             }
@@ -110,14 +119,15 @@ public class iASTMapper100_runner {
                                 String record = commitId + " " + filePath + " -> " +
                                         ASTNodeMappings_num + " " + eleMappings_num + " " + ASTESSize +
                                         " " + CodeESSize + " " + time;
-                                System.out.println(record);
+                                System.out.println(record);//输出框输出的内容
                                 bw.write(record + "\n");
                                 bw1.flush();
                                 bw.flush();
                             }
                             bw1.close();
                         } catch (Exception e) {
-                            ebw.write(commitId + " " + oldPath + " -> " + e.getMessage() + "\n");
+//                            ebw.write(commitId + " " + oldPath + " -> " + e.getMessage() + "\n");
+                            ebw.write(commitId + " " + " -> " + e.getMessage() + "\n");
                             ebw.flush();
                         }
                     }

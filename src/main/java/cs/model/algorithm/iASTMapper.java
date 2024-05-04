@@ -13,6 +13,7 @@ import cs.model.algorithm.matcher.fastmatchers.BaseFastMatcher;
 import cs.model.algorithm.matcher.fastmatchers.MultiFastMatcher;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.mappings.MappingTransformer;
+import cs.model.algorithm.matcher.mappings.SelectCrossFileMapping;
 import cs.model.algorithm.matcher.matchers.BaseMatcher;
 import cs.model.algorithm.matcher.matchers.InnerStmtEleMatcher;
 import cs.model.algorithm.matcher.matchers.StmtMatcher;
@@ -79,9 +80,9 @@ public class iASTMapper {
     public Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
     public Map<String, Set<ProgramElement>> AllSrcPathToTokensMap;
     public Map<String, Set<ProgramElement>> AllSrcPathToinnerStmtsMap;
-    public Map<String, Set<ProgramElement>> allDstPathToStmtsMap = new HashMap<>();
-    public Map<String, Set<ProgramElement>> allDstPathToTokensMap = new HashMap<>();
-    public Map<String, Set<ProgramElement>> allDstPathToinnerStmtsMap = new HashMap<>();
+    public Map<Set<ProgramElement>, String> allDstPathToStmtsMap = new HashMap<>();
+    public Map<Set<ProgramElement>, String> allDstPathToTokensMap = new HashMap<>();
+    public Map<Set<ProgramElement>, String> allDstPathToinnerStmtsMap = new HashMap<>();
     public List<ProgramElement> AllSrcStmtsToMap;
     public List<ProgramElement> AllSrcTokensToMap;
     public List<ProgramElement> AllSrcinnerStmtsToMap;
@@ -95,8 +96,10 @@ public class iASTMapper {
 
     //这里可以加一个if判断是否是对应的文件路径（与前面遍历pathMap合并），如果是，则执行，如果不是，则跳过，后面调用存好的快速映射阶段后的语句进行内外层循环
     public iASTMapper(String srcFileContent, String dstFileContent, String srcPath, String dstPath,
-                      Map<String, List<ProgramElement>> srcStmtsToMap,Map<String, ProgramElement> dstPathToRoot) throws IOException {//这些src的步骤都可以提前计算，这样在for遍历的时候就不用重复算好几次
+                      Map<String, List<ProgramElement>> srcStmtsToMap,Map<String, ProgramElement> dstPathToRoot,
+                      Set<ProgramElement> allDstStmts) throws IOException {//这些src的步骤都可以提前计算，这样在for遍历的时候就不用重复算好几次
         this.dstPathToRoot = dstPathToRoot;
+        this.allDstStmts = allDstStmts;
         used_rules.clear(); // 添加-ZN
         // We use gumtree's AST in SE-Mapping algorithm
         long time1 = System.currentTimeMillis();
@@ -129,17 +132,13 @@ public class iASTMapper {
         this.dstStmts = ElementTreeUtils.getAllStmtsPreOrder(dstRootEle);
 
         dstPathToRoot.put(dstPath,this.dstRootEle);
-//        System.out.println(dstPathToRoot);
+
         srcStmtsToMap.put(srcPath, this.srcStmts);
-//        System.out.println(srcStmtsToMap);
-        if (allDstStmts == null) {
-            allDstStmts = new HashSet<>(this.dstStmts);
-        } else {
-            allDstStmts.addAll(this.dstStmts);
-        }
+
+        allDstStmts.addAll(this.dstStmts);
 
         this.eleMappings = new ElementMappings();
-        this.eleMappings.addMapping(srcRootEle, dstRootEle);//建立了根节点之间的映射
+        this.eleMappings.addMapping(srcRootEle, dstRootEle);//建立了根节点之间的映射,这里先把一对一的根元素匹配在一起了，是否有问题
     }
 
     public void multiFastMapped(){
@@ -151,9 +150,9 @@ public class iASTMapper {
     //另外写一个类调用modifiele的dstPathToStmtMap存入All中，然后revison中写一个传all参数的方法，并用this和commit绑定
     public void preStoreAllDstCandidates(String srcPath, String dstPath, boolean isLastPath, List<ProgramElement> AllDstStmtsToMap,
                                          List<ProgramElement> AllDstTokensToMap, List<ProgramElement> AllDstinnerStmtsToMap,
-                                         Map<String, Set<ProgramElement>> AllDstPathToStmtsMap,
-                                         Map<String, Set<ProgramElement>> AllDstPathToTokensMap,
-                                         Map<String, Set<ProgramElement>> AllDstPathToinnerStmtsMap,
+                                         Map<Set<ProgramElement>, String> AllDstPathToStmtsMap,
+                                         Map<Set<ProgramElement>, String> AllDstPathToTokensMap,
+                                         Map<Set<ProgramElement>, String> AllDstPathToinnerStmtsMap,
                                          Map<String, Set<ProgramElement>> AllDstValTokenMap){
         FilterDstCandidates filterDstCandidates = new FilterDstCandidates(eleMappings, srcStmts, dstStmts, srcPath, dstPath,AllDstStmtsToMap, AllDstTokensToMap,
                 AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,AllDstValTokenMap);
@@ -220,18 +219,24 @@ public class iASTMapper {
             if (!findMappings2)
                 break;
         }
+//        System.out.println(eleMappings);
 
         //筛选跨文件的映射
+        SelectCrossFileMapping selectCrossFileMapping = new SelectCrossFileMapping(eleMappings, srcPath,
+                allDstPathToStmtsMap, allDstPathToTokensMap, allDstPathToinnerStmtsMap);
 
+        //ms和matcher和srcpath一起绑定
         // map all inner-stmt elements
         //元素映射转换为AST节点映射（AST code mapping）
-        for (String dstToPath : dstPathToRoot.keySet()){
-            ProgramElement dstRoot = dstPathToRoot.get(dstToPath);
-            ms = MappingTransformer.elementMappingsToTreeMappings(eleMappings, srcRootEle, dstRoot);
-            dstPathToMs.put(dstToPath, ms);//这个集合里面存的dstRoot是对的，但是srcToDst这些内容没变
-//            System.out.println(dstPathToMs);
-        }
+//        for (String dstToPath : dstPathToRoot.keySet()){
+//            ProgramElement dstRoot = dstPathToRoot.get(dstToPath);
+//            ms = MappingTransformer.elementMappingsToTreeMappings(eleMappings, srcRootEle, dstRoot);
+//            dstPathToMs.put(dstToPath, ms);//这个集合里面存的dstRoot是对的，但是srcToDst这些内容没变
+////            System.out.println(dstPathToMs);
+//        }//这里想拿到一条srcPath对应所有dstPath的ms，但是ms不能累加
 
+        ProgramElement dstRoot = dstPathToRoot.get(dstPath);
+        ms = MappingTransformer.elementMappingsToTreeMappings(eleMappings, srcRootEle, dstRoot);
         long time2 = System.currentTimeMillis();
         mappingTime = time2 - time1;
 

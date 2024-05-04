@@ -72,6 +72,7 @@ public class RevisionEvaluation {
     private long ijmMappingTime;
     private long ijmActionTime;
     public Map<String, List<ProgramElement>> srcStmtsToMap;
+    public Set<ProgramElement> allDstStmts;
 
     public RevisionEvaluation(String project, String commitId, String baseCommitId,
                               String srcFilePath, String dstFilePath) throws Exception {
@@ -100,7 +101,7 @@ public class RevisionEvaluation {
             return;
         }
         // build mappings using my method
-        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot);
+        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot,allDstStmts);
         //下面三行-新增-ljy
 //        srcStmtsToMap = myMatcher.getSrcStmtsToMap();
         List<ProgramElement> srcStmts = new ArrayList<>();

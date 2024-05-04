@@ -1,12 +1,13 @@
 package cs.model.analysis;
 
+import cs.model.algorithm.element.ProgramElement;
+import cs.model.algorithm.iASTMapper;
 import cs.model.gitops.GitHunk;
 import cs.model.gitops.GitInfoRetrieval;
 import cs.model.gitops.GitUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.io.ByteArrayOutputStream;
+import java.util.*;
 
 /**
  * Perform analysis for a commit.
@@ -25,6 +26,25 @@ public class CommitAnalysis {
     private Map<String, RevisionEvaluation> evaluationMap;
     private boolean stmtOrToken;
 
+    protected String srcFilePath;
+    protected String dstFilePath;
+    protected String srcFileContent;
+    protected String dstFileContent;
+    protected Map<String, String> pathMap;
+    private iASTMapper matcher;
+
+    public static Map<String, List<ProgramElement>> srcStmtsToMap;
+    public static Map<String, ProgramElement> dstPathToRoot;
+    public static List<ProgramElement> AllDstStmtsToMap;
+    public static List<ProgramElement> AllDstTokensToMap;
+    public static List<ProgramElement> AllDstinnerStmtsToMap;
+    public static Map<Set<ProgramElement>, String> AllDstPathToStmtsMap;
+    public static Map<Set<ProgramElement>, String> AllDstPathToTokensMap;
+    public static Map<Set<ProgramElement>, String> AllDstPathToinnerStmtsMap;
+    public Map<String, Set<ProgramElement>> AllDstValTokenMap;
+    public Map<String, iASTMapper> srcPathToMatcher = new HashMap<>();
+    public Set<ProgramElement> allDstStmts;
+
 
     public CommitAnalysis(String project, String commitId, boolean stmtOrToken) {//如果是跨文件，这里可以删去filesToAnalyze
         this.project = project;
@@ -34,6 +54,17 @@ public class CommitAnalysis {
         this.comparisonResultMap = new HashMap<>();//后期去掉
         this.evaluationMap = new HashMap<>();//后期去掉
         this.stmtOrToken = stmtOrToken;
+
+        srcStmtsToMap = new HashMap<>();
+        dstPathToRoot = new HashMap<>();
+        this.AllDstPathToStmtsMap = new HashMap<>();
+        this.AllDstPathToTokensMap = new HashMap<>();
+        this.AllDstPathToinnerStmtsMap = new HashMap<>();
+        this.AllDstStmtsToMap = new ArrayList<>();
+        this.AllDstTokensToMap = new ArrayList<>();
+        this.AllDstinnerStmtsToMap = new ArrayList<>();
+        this.AllDstValTokenMap = new HashMap<>();
+        allDstStmts = new HashSet<>();
     }
 
     public void calResultMapping(boolean doComparison, boolean doEvaluation) {//可以获取pathMap后将整个map传入RevisionAnalysis中
@@ -43,7 +74,47 @@ public class CommitAnalysis {
         Map<String, String> pathMap = GitInfoRetrieval.getOldModifiedFileMap(project, commitId);//获取“原文件-修订文件”对
         if (pathMap == null || pathMap.size() == 0)
             return;
-//        System.out.println(pathMap);
+
+        boolean isLastPath = false;
+        int i = 0;
+        for (String srcFilePath : pathMap.keySet()){
+            i++;
+            if (i == pathMap.size()) isLastPath = true;
+            String dstFilePath = pathMap.get(srcFilePath);
+            if (dstFilePath == null)
+                continue;
+            if (checkOnlyRenameOperation(project, baseCommitId, commitId, srcFilePath, dstFilePath))
+                continue;
+            if (checkAddedOrDeletedLines(srcFilePath, dstFilePath))
+                continue;
+            try {
+                ByteArrayOutputStream srcFileStream = GitUtils
+                        .getFileContentOfCommitFile(project, baseCommitId, srcFilePath);//获取源文件和修订后文件的内容
+                srcFileContent = srcFileStream.toString("UTF-8");
+                if (srcFileContent.equals("")){
+                    this.srcFilePath = null;
+                    return;
+                }
+                ByteArrayOutputStream dstFileStream = GitUtils
+                        .getFileContentOfCommitFile(project, commitId, dstFilePath);
+                dstFileContent = dstFileStream.toString("UTF-8");
+                if (dstFileContent.equals("")) {
+                    this.dstFilePath = null;
+                    return;
+                }
+                matcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath,
+                        srcStmtsToMap, dstPathToRoot, allDstStmts);//创建iASTMapper对象
+                matcher.multiFastMapped();
+                matcher.preStoreAllDstCandidates(srcFilePath, dstFilePath, isLastPath,AllDstStmtsToMap, AllDstTokensToMap,
+                        AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,AllDstValTokenMap);
+                srcPathToMatcher.put(srcFilePath,matcher);
+            }catch (Exception e){
+                e.printStackTrace();
+                this.srcFilePath = null;
+                this.dstFilePath = null;
+                throw new RuntimeException(e.getMessage());
+            }
+        }
 
         try {
             if (doComparison){//去掉
@@ -70,11 +141,18 @@ public class CommitAnalysis {
                   Case 3:
                   directly analyze mappings generated by our method.
                  */
-                RevisionAnalysis result = new RevisionAnalysis(project, commitId, baseCommitId,
-                        pathMap);//建立oldPath与newPath之间的映射结果
+                for (String srcToPath : srcStmtsToMap.keySet()){
+                    List<ProgramElement> srcStmts = new ArrayList<>();
+                    srcStmts = srcStmtsToMap.get(srcToPath);
+                    iASTMapper mc = srcPathToMatcher.get(srcToPath);
+                    RevisionAnalysis result = new RevisionAnalysis(project, commitId, srcToPath, mc, srcPathToMatcher, srcStmts);
+                    resultMap.put(srcToPath, result);
+                }
+//                RevisionAnalysis result = new RevisionAnalysis(project, commitId, baseCommitId,
+//                        pathMap);//建立oldPath与newPath之间的映射结果
 //                if (result.getSrcFilePath() != null && result.getDstFilePath() != null){
-                String oldPath = result.getSrcFilePath();//修改输出srcPath的位置
-                resultMap.put(oldPath, result);//并将oldPath的结果存于resultMap中
+//                String oldPath = result.getSrcFilePath();//修改输出srcPath的位置
+//                resultMap.put(oldPath, result);//并将oldPath的结果存于resultMap中
 //                    }
 
 //                }

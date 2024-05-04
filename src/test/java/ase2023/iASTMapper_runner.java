@@ -95,7 +95,7 @@ public class iASTMapper_runner {
 
                                 for (String filePath: resultMap.keySet()){
                                     RevisionAnalysis m = resultMap.get(filePath);
-                                    MappingStore ms = m.getMatcher(filePath).getMs();
+                                    MappingStore ms = m.getMatcher().getMs();
                                     List<StmtTokenAction> actionList = m.generateActions();
                                     List<TreeEditAction> treeEditActions = m.generateEditActions();
 
@@ -109,7 +109,7 @@ public class iASTMapper_runner {
                                         bw1.write(action.toString());
 
                                     int ASTNodeMappings_num = ms.size();
-                                    int eleMappings_num = m.getMatcher(filePath).getEleMappings().asSet().size();
+                                    int eleMappings_num = m.getMatcher().getEleMappings().asSet().size();
                                     int ASTESSize = treeEditActions.size();
                                     int CodeESSize = actionList.size();
                                     String record = commitId + " " + filePath + " -> " +

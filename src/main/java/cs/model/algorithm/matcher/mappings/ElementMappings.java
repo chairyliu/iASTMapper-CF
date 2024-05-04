@@ -27,7 +27,7 @@ public class ElementMappings implements Iterable<ElementMapping> {
 
     public Map<ProgramElement,ProgramElement> getSrcToDst(){
         return this.srcToDst;
-    }
+    }//其实没用到
 
     public void addMapping(ProgramElement srcEle, ProgramElement dstEle){
         removeMapping(srcEle);
@@ -76,6 +76,14 @@ public class ElementMappings implements Iterable<ElementMapping> {
 
     public ProgramElement getDstForSrc(ProgramElement srcEle){
         return srcToDst.get(srcEle);
+    }
+
+    public Map<ProgramElement, ProgramElement> getSrcToDstMap() {
+        return Collections.unmodifiableMap(srcToDst);
+    }
+
+    public Map<ProgramElement, ProgramElement> getDstToSrcMap() {
+        return Collections.unmodifiableMap(dstToSrc);
     }
 
     private boolean isSrcMapped(ProgramElement srcEle){

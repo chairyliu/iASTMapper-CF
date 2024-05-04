@@ -43,6 +43,7 @@ public class RevisionComparison {
     private List<ProgramElement> srcElements;
     private List<ProgramElement> dstElements;
     public Map<String, List<ProgramElement>> srcStmtsToMap;
+    public Set<ProgramElement> allDstStmts;
 
     public RevisionComparison(String project, String commitId, String baseCommitId,
                               String srcFilePath, String dstFilePath, boolean stmtOrToken) throws Exception {
@@ -72,7 +73,7 @@ public class RevisionComparison {
             return;
         }
         // build mappings using our method
-        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot);
+        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot,allDstStmts);
         //下三行新增-ljy
 //        srcStmtsToMap = myMatcher.getSrcStmtsToMap();
         List<ProgramElement> srcStmts = new ArrayList<>();

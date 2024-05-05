@@ -2,8 +2,8 @@ package cs.model.analysis;
 
 import cs.model.algorithm.element.ElementTreeUtils;
 import cs.model.algorithm.element.ProgramElement;
-import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.iASTMapper;
+import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.baseline.BaselineMatcher;
 import cs.model.evaluation.config.MyConfig;
 import cs.model.evaluation.csvrecord.compare.ComparisonRecord;
@@ -14,8 +14,6 @@ import cs.model.gitops.GitUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.util.*;
-
-import static cs.model.analysis.RevisionAnalysis.dstPathToRoot;
 
 public class RevisionComparison {
     private String project;
@@ -44,6 +42,9 @@ public class RevisionComparison {
     private List<ProgramElement> dstElements;
     public Map<String, List<ProgramElement>> srcStmtsToMap;
     public Set<ProgramElement> allDstStmts;
+    public static Map<String, ProgramElement> dstPathToRoot;
+    public Map<String, ProgramElement> srcPathToRoot;
+    protected Map<String, String> pathMap;
 
     public RevisionComparison(String project, String commitId, String baseCommitId,
                               String srcFilePath, String dstFilePath, boolean stmtOrToken) throws Exception {
@@ -73,12 +74,12 @@ public class RevisionComparison {
             return;
         }
         // build mappings using our method
-        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot,allDstStmts);
+        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot, srcPathToRoot, allDstStmts);
         //下三行新增-ljy
 //        srcStmtsToMap = myMatcher.getSrcStmtsToMap();
         List<ProgramElement> srcStmts = new ArrayList<>();
         srcStmts = srcStmtsToMap.get(srcFilePath);
-        this.myMatcher.buildMappingsOuterLoop(srcStmts,srcFilePath,dstFilePath);
+        this.myMatcher.buildMappingsOuterLoop(srcStmts,srcFilePath,pathMap);
         this.myMappings = this.myMatcher.getEleMappings();
 
         // build mappings using gumtree, mtdiff and ijm

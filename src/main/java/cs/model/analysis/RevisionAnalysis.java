@@ -34,7 +34,7 @@ public class RevisionAnalysis {
     private List<StmtTokenAction> actionList = null;
     private ElementMappings eleMappings;
     public static Map<String, List<ProgramElement>> srcStmtsToMap;
-    public static Map<String, ProgramElement> dstPathToRoot;
+//    public static Map<String, ProgramElement> dstPathToRoot;
     public static List<ProgramElement> AllDstStmtsToMap;
     public static List<ProgramElement> AllDstTokensToMap;
     public static List<ProgramElement> AllDstinnerStmtsToMap;
@@ -46,7 +46,7 @@ public class RevisionAnalysis {
 
 //    public RevisionAnalysis(String project, String commitId,
 //                            String baseCommitId, Map<String, String> pathMap) throws Exception{
-    public RevisionAnalysis(String project, String commitId, String srcToPath,iASTMapper matcher,
+    public RevisionAnalysis(String project, String commitId, String srcToPath,Map<String, String> pathMap,iASTMapper matcher,
                             Map<String, iASTMapper> srcPathToMatcher,List<ProgramElement> srcStmts){
         this.project = project;
         this.commitId = commitId;
@@ -112,13 +112,12 @@ public class RevisionAnalysis {
 //            srcStmts = srcStmtsToMap.get(srcToPath);
 //            iASTMapper mc = srcPathToMatcher.get(srcToPath);
 
-            matcher.buildMappingsOuterLoop(srcStmts, srcToPath,srcToPath);//执行外层循环，建立元素映射及节点映射
+            matcher.buildMappingsOuterLoop(srcStmts, srcToPath, pathMap);//执行外层循环，建立元素映射及节点映射
             this.eleMappings = matcher.getEleMappings();
             srcRootEle = matcher.getSrcRootEle();
             calMappingRecords();
         } catch (Exception e){
             e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
         }
 //        for (String srcToPath : srcStmtsToMap.keySet()){
 //            srcPath = srcToPath;

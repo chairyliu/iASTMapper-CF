@@ -13,16 +13,16 @@ import cs.model.algorithm.utils.GumTreeUtil;
 import cs.model.baseline.BaselineMatcher;
 import cs.model.evaluation.config.MyConfig;
 import cs.model.evaluation.csvrecord.eval.ActionAndRunningTimeRecord;
-import cs.model.evaluation.utils.PairwiseComparison;
+import cs.model.evaluation.csvrecord.eval.AutoEvaluationRecord;
 import cs.model.evaluation.csvrecord.eval.ManualEvaluationRecord;
 import cs.model.evaluation.utils.MappingMethodNames;
-import cs.model.evaluation.csvrecord.eval.AutoEvaluationRecord;
+import cs.model.evaluation.utils.PairwiseComparison;
 import cs.model.gitops.GitUtils;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
-
-import static cs.model.analysis.RevisionAnalysis.dstPathToRoot;
 
 
 /**
@@ -73,6 +73,9 @@ public class RevisionEvaluation {
     private long ijmActionTime;
     public Map<String, List<ProgramElement>> srcStmtsToMap;
     public Set<ProgramElement> allDstStmts;
+    public static Map<String, ProgramElement> dstPathToRoot;
+    public Map<String, ProgramElement> srcPathToRoot;
+    protected Map<String, String> pathMap;
 
     public RevisionEvaluation(String project, String commitId, String baseCommitId,
                               String srcFilePath, String dstFilePath) throws Exception {
@@ -101,12 +104,12 @@ public class RevisionEvaluation {
             return;
         }
         // build mappings using my method
-        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot,allDstStmts);
+        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot, srcPathToRoot, allDstStmts);
         //下面三行-新增-ljy
 //        srcStmtsToMap = myMatcher.getSrcStmtsToMap();
         List<ProgramElement> srcStmts = new ArrayList<>();
         srcStmts = srcStmtsToMap.get(srcFilePath);
-        this.myMatcher.buildMappingsOuterLoop(srcStmts,srcFilePath,dstFilePath);
+        this.myMatcher.buildMappingsOuterLoop(srcStmts,srcFilePath, pathMap);
         this.myMappings = this.myMatcher.getEleMappings();
         this.myActions = this.myMatcher.getTreeEditActions();
 

@@ -92,14 +92,17 @@ public class iASTMapper {
     public Map<String, Set<ProgramElement>> allDstValTokenMap;
 //    public Map<String, List<ProgramElement>> srcStmtsToMap;
     public Map<String, ProgramElement> dstPathToRoot;
+    public Map<String, ProgramElement> srcPathToRoot;
     public Map<String, MappingStore> dstPathToMs = new HashMap<>();
+    protected Map<String, String> pathMap;
 
     //这里可以加一个if判断是否是对应的文件路径（与前面遍历pathMap合并），如果是，则执行，如果不是，则跳过，后面调用存好的快速映射阶段后的语句进行内外层循环
     public iASTMapper(String srcFileContent, String dstFileContent, String srcPath, String dstPath,
                       Map<String, List<ProgramElement>> srcStmtsToMap,Map<String, ProgramElement> dstPathToRoot,
-                      Set<ProgramElement> allDstStmts) throws IOException {//这些src的步骤都可以提前计算，这样在for遍历的时候就不用重复算好几次
+                      Map<String, ProgramElement> srcPathToRoot,Set<ProgramElement> allDstStmts) throws IOException {//这些src的步骤都可以提前计算，这样在for遍历的时候就不用重复算好几次
         this.dstPathToRoot = dstPathToRoot;
         this.allDstStmts = allDstStmts;
+        this.srcPathToRoot = srcPathToRoot;
         used_rules.clear(); // 添加-ZN
         // We use gumtree's AST in SE-Mapping algorithm
         long time1 = System.currentTimeMillis();
@@ -131,6 +134,7 @@ public class iASTMapper {
         this.srcStmts = ElementTreeUtils.getAllStmtsPreOrder(srcRootEle);
         this.dstStmts = ElementTreeUtils.getAllStmtsPreOrder(dstRootEle);
 
+        srcPathToRoot.put(srcPath,this.srcRootEle);
         dstPathToRoot.put(dstPath,this.dstRootEle);
 
         srcStmtsToMap.put(srcPath, this.srcStmts);
@@ -174,7 +178,7 @@ public class iASTMapper {
     /**
      * Build element mappings and tree mappings.
      */
-    public void buildMappingsOuterLoop(List<ProgramElement> srcStmts,String srcPath,String dstPath) throws IOException {
+    public void buildMappingsOuterLoop(List<ProgramElement> srcStmts,String srcPath,Map<String, String> pathMap) throws IOException {
 
         long time1 = System.currentTimeMillis();
 
@@ -186,6 +190,7 @@ public class iASTMapper {
         // Build candidate searcher and best mapping searcher
         CandidateSetsAndMaps candidateSetsAndMaps = new CandidateSetsAndMaps(eleMappings, srcStmts, allDstStmts,
                 allDstStmtsToMap, allDstTokensToMap, allDstinnerStmtsToMap);
+        String dstPath = pathMap.get(srcPath);
         FilterDstCandidates filterDstCandidates = new FilterDstCandidates(eleMappings, srcStmts, dstStmts, srcPath, dstPath,allDstStmtsToMap, allDstTokensToMap,
                 allDstinnerStmtsToMap,allDstPathToStmtsMap, allDstPathToTokensMap, allDstPathToinnerStmtsMap, allDstValTokenMap);
 //        System.out.println("Before: " + candidateSetsAndMaps);
@@ -219,24 +224,16 @@ public class iASTMapper {
             if (!findMappings2)
                 break;
         }
-//        System.out.println(eleMappings);
 
-        //筛选跨文件的映射
         SelectCrossFileMapping selectCrossFileMapping = new SelectCrossFileMapping(eleMappings, srcPath,
                 allDstPathToStmtsMap, allDstPathToTokensMap, allDstPathToinnerStmtsMap);
 
-        //ms和matcher和srcpath一起绑定
         // map all inner-stmt elements
         //元素映射转换为AST节点映射（AST code mapping）
-//        for (String dstToPath : dstPathToRoot.keySet()){
-//            ProgramElement dstRoot = dstPathToRoot.get(dstToPath);
-//            ms = MappingTransformer.elementMappingsToTreeMappings(eleMappings, srcRootEle, dstRoot);
-//            dstPathToMs.put(dstToPath, ms);//这个集合里面存的dstRoot是对的，但是srcToDst这些内容没变
-////            System.out.println(dstPathToMs);
-//        }//这里想拿到一条srcPath对应所有dstPath的ms，但是ms不能累加
-
+        ProgramElement srcRoot = srcPathToRoot.get(srcPath);
         ProgramElement dstRoot = dstPathToRoot.get(dstPath);
-        ms = MappingTransformer.elementMappingsToTreeMappings(eleMappings, srcRootEle, dstRoot);
+        if (dstRoot != null)
+            ms = MappingTransformer.elementMappingsToTreeMappings(eleMappings, srcRoot, dstRoot);
         long time2 = System.currentTimeMillis();
         mappingTime = time2 - time1;
 

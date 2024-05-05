@@ -90,8 +90,8 @@ public class iASTMapper100_runner {
                                  * If the content of oldPath or newPath is "" (e.g., no longer exist)
                                  * OR there is runtime error happened during the execution, then the resultMap is empty!
                                  */
-//                                ebw.write(commitId + " " + oldPath + " -> No Result!\n");
-                                ebw.write(commitId + " " + " -> No Result!\n");
+                                ebw.write(commitId + " " + oldPath + " -> No Result!\n");
+//                                ebw.write(commitId + " " + " -> No Result!\n");
                                 ebw.flush();
                                 continue;
                             }
@@ -125,8 +125,8 @@ public class iASTMapper100_runner {
                             }
                             bw1.close();
                         } catch (Exception e) {
-//                            ebw.write(commitId + " " + oldPath + " -> " + e.getMessage() + "\n");
-                            ebw.write(commitId + " " + " -> " + e.getMessage() + "\n");
+                            ebw.write(commitId + " " + oldPath + " -> " + e.getMessage() + "\n");
+//                            ebw.write(commitId + " " + " -> " + e.getMessage() + "\n");
                             ebw.flush();
                         }
                     }

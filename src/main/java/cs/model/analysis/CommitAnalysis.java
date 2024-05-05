@@ -35,6 +35,7 @@ public class CommitAnalysis {
 
     public static Map<String, List<ProgramElement>> srcStmtsToMap;
     public static Map<String, ProgramElement> dstPathToRoot;
+    public static Map<String, ProgramElement> srcPathToRoot;
     public static List<ProgramElement> AllDstStmtsToMap;
     public static List<ProgramElement> AllDstTokensToMap;
     public static List<ProgramElement> AllDstinnerStmtsToMap;
@@ -57,6 +58,7 @@ public class CommitAnalysis {
 
         srcStmtsToMap = new HashMap<>();
         dstPathToRoot = new HashMap<>();
+        srcPathToRoot = new HashMap<>();
         this.AllDstPathToStmtsMap = new HashMap<>();
         this.AllDstPathToTokensMap = new HashMap<>();
         this.AllDstPathToinnerStmtsMap = new HashMap<>();
@@ -103,7 +105,7 @@ public class CommitAnalysis {
                     return;
                 }
                 matcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath,
-                        srcStmtsToMap, dstPathToRoot, allDstStmts);//创建iASTMapper对象
+                        srcStmtsToMap, dstPathToRoot, srcPathToRoot,allDstStmts);//创建iASTMapper对象
                 matcher.multiFastMapped();
                 matcher.preStoreAllDstCandidates(srcFilePath, dstFilePath, isLastPath,AllDstStmtsToMap, AllDstTokensToMap,
                         AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,AllDstValTokenMap);
@@ -145,7 +147,7 @@ public class CommitAnalysis {
                     List<ProgramElement> srcStmts = new ArrayList<>();
                     srcStmts = srcStmtsToMap.get(srcToPath);
                     iASTMapper mc = srcPathToMatcher.get(srcToPath);
-                    RevisionAnalysis result = new RevisionAnalysis(project, commitId, srcToPath, mc, srcPathToMatcher, srcStmts);
+                    RevisionAnalysis result = new RevisionAnalysis(project, commitId, srcToPath, pathMap,mc, srcPathToMatcher, srcStmts);
                     resultMap.put(srcToPath, result);
                 }
 //                RevisionAnalysis result = new RevisionAnalysis(project, commitId, baseCommitId,

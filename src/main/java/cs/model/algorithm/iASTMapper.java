@@ -76,7 +76,7 @@ public class iASTMapper {
 
     public static Set<String> used_rules = new HashSet<>();  // 添加-ZN
     public Set<ProgramElement> AllSrcStmts;
-    public Set<ProgramElement> allDstStmts;
+    public List<ProgramElement> allDstStmts;
     public Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
     public Map<String, Set<ProgramElement>> AllSrcPathToTokensMap;
     public Map<String, Set<ProgramElement>> AllSrcPathToinnerStmtsMap;
@@ -99,7 +99,7 @@ public class iASTMapper {
     //这里可以加一个if判断是否是对应的文件路径（与前面遍历pathMap合并），如果是，则执行，如果不是，则跳过，后面调用存好的快速映射阶段后的语句进行内外层循环
     public iASTMapper(String srcFileContent, String dstFileContent, String srcPath, String dstPath,
                       Map<String, List<ProgramElement>> srcStmtsToMap,Map<String, ProgramElement> dstPathToRoot,
-                      Map<String, ProgramElement> srcPathToRoot,Set<ProgramElement> allDstStmts) throws IOException {//这些src的步骤都可以提前计算，这样在for遍历的时候就不用重复算好几次
+                      Map<String, ProgramElement> srcPathToRoot,List<ProgramElement> allDstStmts) throws IOException {//这些src的步骤都可以提前计算，这样在for遍历的时候就不用重复算好几次
         this.dstPathToRoot = dstPathToRoot;
         this.allDstStmts = allDstStmts;
         this.srcPathToRoot = srcPathToRoot;
@@ -162,18 +162,18 @@ public class iASTMapper {
                 AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,AllDstValTokenMap);
         filterDstCandidates.initStmtsAndTokens(srcStmts, dstStmts, srcPath, dstPath,AllDstStmtsToMap, AllDstTokensToMap,
                 AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,AllDstValTokenMap);
-
-        if (isLastPath == true){
-            allDstStmtsToMap = filterDstCandidates.getAllDstStmtsToMap();
+//        System.out.println(filterDstCandidates);
+//        if (isLastPath == true){
+        allDstStmtsToMap = filterDstCandidates.getAllDstStmtsToMap();
 //            System.out.println(allDstStmtsToMap);
-            allDstTokensToMap = filterDstCandidates.getAllDstTokensToMap();
-            allDstinnerStmtsToMap = filterDstCandidates.getAllDstinnerStmtsToMap();
-            allDstPathToStmtsMap = filterDstCandidates.getAllDstPathToStmtsMap();
+        allDstTokensToMap = filterDstCandidates.getAllDstTokensToMap();
+        allDstinnerStmtsToMap = filterDstCandidates.getAllDstinnerStmtsToMap();
+        allDstPathToStmtsMap = filterDstCandidates.getAllDstPathToStmtsMap();
 //            System.out.println(allDstPathToStmtsMap);
-            allDstPathToTokensMap = filterDstCandidates.getAllDstPathToTokensMap();
-            allDstPathToinnerStmtsMap = filterDstCandidates.getAllDstPathToinnerStmtsMap();
-            allDstValTokenMap = filterDstCandidates.getAllDstValTokenMap();
-        }
+        allDstPathToTokensMap = filterDstCandidates.getAllDstPathToTokensMap();
+        allDstPathToinnerStmtsMap = filterDstCandidates.getAllDstPathToinnerStmtsMap();
+        allDstValTokenMap = filterDstCandidates.getAllDstValTokenMap();
+//        }
     }
     /**
      * Build element mappings and tree mappings.
@@ -347,7 +347,7 @@ public class iASTMapper {
      * It is more convenient to visualize the mappings of statements and tokens.
      */
     public List<StmtTokenAction> generateStmtTokenEditActions(){
-        StmtTokenActionGenerator generator = new StmtTokenActionGenerator(srcStmts, dstStmts, eleMappings);
+        StmtTokenActionGenerator generator = new StmtTokenActionGenerator(srcStmts, allDstStmts, eleMappings);
         List<StmtTokenAction> actionList = generator.generateActions(false);
         return generator.reorderActions(actionList);
     }

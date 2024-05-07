@@ -44,7 +44,7 @@ public class CommitAnalysis {
     public static Map<Set<ProgramElement>, String> AllDstPathToinnerStmtsMap;
     public Map<String, Set<ProgramElement>> AllDstValTokenMap;
     public Map<String, iASTMapper> srcPathToMatcher = new HashMap<>();
-    public Set<ProgramElement> allDstStmts;
+    public List<ProgramElement> allDstStmts;
 
 
     public CommitAnalysis(String project, String commitId, boolean stmtOrToken) {//如果是跨文件，这里可以删去filesToAnalyze
@@ -66,7 +66,7 @@ public class CommitAnalysis {
         this.AllDstTokensToMap = new ArrayList<>();
         this.AllDstinnerStmtsToMap = new ArrayList<>();
         this.AllDstValTokenMap = new HashMap<>();
-        allDstStmts = new HashSet<>();
+        allDstStmts = new ArrayList<>();
     }
 
     public void calResultMapping(boolean doComparison, boolean doEvaluation) {//可以获取pathMap后将整个map传入RevisionAnalysis中

@@ -41,7 +41,7 @@ public class RevisionComparison {
     private List<ProgramElement> srcElements;
     private List<ProgramElement> dstElements;
     public Map<String, List<ProgramElement>> srcStmtsToMap;
-    public Set<ProgramElement> allDstStmts;
+    public List<ProgramElement> allDstStmts;
     public static Map<String, ProgramElement> dstPathToRoot;
     public Map<String, ProgramElement> srcPathToRoot;
     protected Map<String, String> pathMap;

@@ -72,7 +72,7 @@ public class RevisionEvaluation {
     private long ijmMappingTime;
     private long ijmActionTime;
     public Map<String, List<ProgramElement>> srcStmtsToMap;
-    public Set<ProgramElement> allDstStmts;
+    public List<ProgramElement> allDstStmts;
     public static Map<String, ProgramElement> dstPathToRoot;
     public Map<String, ProgramElement> srcPathToRoot;
     protected Map<String, String> pathMap;

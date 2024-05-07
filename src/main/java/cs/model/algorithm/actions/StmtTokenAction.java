@@ -60,7 +60,7 @@ public class StmtTokenAction {
     /**
      * Get a map between element and action type
      */
-    public Map<ProgramElement, String> getElementActionMap(){
+    public Map<ProgramElement, String> getElementActionMap(){//没用到
         Map<ProgramElement, String> eleActionMap = new HashMap<>();
         String stmtActionType = getStmtActionType();
         if (srcStmtEle != null){
@@ -97,8 +97,8 @@ public class StmtTokenAction {
     }
 
     @Override
-    public String toString() {
-        String stmtActionType = getStmtActionType();
+    public String toString() {//输入文件的格式
+        String stmtActionType = getStmtActionType();//stmtActionType指增删改查
         if (stmtActionType.equals("***"))
             return "***";
         String ret = "==================================================";

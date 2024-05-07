@@ -59,9 +59,7 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
     /**
      * Get source statements that are not mapped by fast matchers
      */
-    public Set<ProgramElement> getSrcStmtsToMap() {
-        return candidateSetsAndMaps.getSrcStmtsToMap();
-    }
+    public Set<ProgramElement> getSrcStmtsToMap() { return candidateSetsAndMaps.getSrcStmtsToMap(); }
 
     /**
      * Get source tokens that are not mapped by fast matchers
@@ -116,7 +114,7 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
 
     private Set<ProgramElement> getDstCandidateTokenElements(TokenElement srcToken) {
         FastTokenCandidateSearcher searcher = new FastTokenCandidateSearcher(srcToken, elementMappings,
-                filterDstCandidates,candidateSetsAndMaps);//好像是src的，传modifiedEle没有用
+                filterDstCandidates,candidateSetsAndMaps);
         //通过searcher获取具有 相同结构 的多令牌候选集合
         Set<ProgramElement> candidatesWithSameStructure = searcher.getCandidatesWithIdenticalMultiTokenForSrcToken();
         //获取 相同语句 中的令牌候选集合（T-MSIS）

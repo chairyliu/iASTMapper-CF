@@ -24,7 +24,7 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
     private final ElementMappings fastEleMappings;
 
     public CandidateSetsAndMaps(ElementMappings fastEleMappings, List<ProgramElement> srcStmts,
-                                Set<ProgramElement> allDstStmts, List<ProgramElement> AllDstStmtsToMap,
+                                List<ProgramElement> allDstStmts, List<ProgramElement> AllDstStmtsToMap,
                                 List<ProgramElement> AllDstTokensToMap, List<ProgramElement> AllDstinnerStmtsToMap) {//全部的src和dst元素
         this.fastEleMappings = fastEleMappings;
         this.dstTypeElementMap = new HashMap<>();
@@ -89,7 +89,7 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
 //        }
 //    }
     //初始化token元素与其字符串值匹配的集合
-    private void initMultiTokenElementMap(Set<ProgramElement> allDstStmts) {
+    private void initMultiTokenElementMap(List<ProgramElement> allDstStmts) {
         for (ProgramElement dstStmt: allDstStmts) {
             for (TokenElement tokenEle: dstStmt.getTokenElements()) {//获取语句元素的token集合
                 if (fastEleMappings.isMapped(tokenEle))//如果token已经在快速映射阶段被映射了，结束

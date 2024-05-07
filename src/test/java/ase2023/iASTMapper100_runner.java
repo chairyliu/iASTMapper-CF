@@ -99,7 +99,7 @@ public class iASTMapper100_runner {
                             for (String filePath: resultMap.keySet()){
                                 RevisionAnalysis m = resultMap.get(filePath);
                                 MappingStore ms = m.getMatcher().getMs();
-                                List<StmtTokenAction> actionList = m.generateActions();
+                                List<StmtTokenAction> actionList = m.generateActions();//如果这个只包含对应文件的action，那么可以再单独创建一个跨文件的输出
                                 List<TreeEditAction> treeEditActions = m.generateEditActions();
 
                                 bw1.write("\n\nFile: " + filePath + "\n\n");
@@ -118,8 +118,8 @@ public class iASTMapper100_runner {
                                 String record = commitId + " " + filePath + " -> " +
                                         ASTNodeMappings_num + " " + eleMappings_num + " " + ASTESSize +
                                         " " + CodeESSize + " " + time;
-                                System.out.println(record);//输出框输出的内容
-                                bw.write(record + "\n");
+//                                System.out.println(record);//输出框输出的内容
+//                                bw.write(record + "\n");
                                 bw1.flush();
                                 bw.flush();
                             }

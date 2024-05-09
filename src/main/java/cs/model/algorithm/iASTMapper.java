@@ -95,6 +95,7 @@ public class iASTMapper {
     public Map<String, ProgramElement> srcPathToRoot;
     public Map<String, MappingStore> dstPathToMs = new HashMap<>();
     protected Map<String, String> pathMap;
+    public Map<Map<String, String>, String> crossFileMap;
 
     //这里可以加一个if判断是否是对应的文件路径（与前面遍历pathMap合并），如果是，则执行，如果不是，则跳过，后面调用存好的快速映射阶段后的语句进行内外层循环
     public iASTMapper(String srcFileContent, String dstFileContent, String srcPath, String dstPath,
@@ -227,6 +228,8 @@ public class iASTMapper {
 
         SelectCrossFileMapping selectCrossFileMapping = new SelectCrossFileMapping(eleMappings, srcPath,
                 allDstPathToStmtsMap, allDstPathToTokensMap, allDstPathToinnerStmtsMap);
+        crossFileMap = selectCrossFileMapping.getCrossFileMap();
+//        System.out.println(crossFileMap);
 
         // map all inner-stmt elements
         //元素映射转换为AST节点映射（AST code mapping）
@@ -254,6 +257,9 @@ public class iASTMapper {
 //    public Map<String, List<ProgramElement>> getSrcStmtsToMap(){
 //        return srcStmtsToMap;
 //    }
+    public Map<Map<String, String>, String> getCrossFileMap(){
+        return crossFileMap;
+}
     public MappingStore getMs(){return ms;};
     /**
      * Get the generated element mappings

@@ -33,7 +33,7 @@ public class iASTMapper100_runner {
                 String fn = f.getName();
                 String project = fn.replace(".txt", "");
 
-                String projectPath = resPath + File.separator + project;
+                String projectPath = resPath + File.separator + project;//project就是activemq
                 File fo = new File(projectPath);
                 if (!fo.exists())
                     fo.mkdirs();
@@ -46,8 +46,9 @@ public class iASTMapper100_runner {
 
                 String line;
                 BufferedReader br = new BufferedReader(new FileReader(f));
-                BufferedWriter bw = new BufferedWriter(new FileWriter(project_resFile, true));
-                BufferedWriter bw1;
+                BufferedWriter bw = new BufferedWriter(new FileWriter(project_resFile, true));//activemq.txt这样的文件
+                BufferedWriter bw1;//带commitId.txt的文件
+                BufferedWriter bw2;//新增跨文件的输出（暂时）
                 int num = 0;
                 while((line = br.readLine())!=null) {
                     if (num++ >= 1000)
@@ -82,8 +83,9 @@ public class iASTMapper100_runner {
 
                             bw1 = new BufferedWriter(new FileWriter(
                                     projectPath + File.separator + commitId + ".txt",true));
+                            bw2 = new BufferedWriter(new FileWriter(
+                                    resPath + File.separator + "cross-file output" + ".txt", true));
                             Map<String, RevisionAnalysis> resultMap = mappingResult.getRevisionAnalysisResultMap();
-//                            System.out.println(resultMap);
 
                             if (resultMap.size() == 0) {
                                 /**
@@ -111,6 +113,24 @@ public class iASTMapper100_runner {
                                 for (TreeEditAction action: treeEditActions)
                                     bw1.write(action.toString());
 
+                                //新增
+                                iASTMapper matcher = m.getMatcher();
+                                Map<Map<String, String>, String> crossFileMap = matcher.getCrossFileMap();
+                                if (crossFileMap.size() != 0){
+//                                    System.out.println(crossFileMap);
+                                    bw2.write("\ncommitId: " + commitId + "\n");
+                                    for (Map<String, String> pathToSrcStmt : crossFileMap.keySet()){
+                                        String dstStmt = crossFileMap.get(pathToSrcStmt);
+                                        for (String path : pathToSrcStmt.keySet()){
+                                            String[] parts = path.split("\\+");
+                                            bw2.write("srcFile: " + parts[0] + "\n");
+                                            bw2.write("dstFile: " + parts[1] + "\n");
+                                            String srcStmt = pathToSrcStmt.get(path);
+                                            bw2.write(srcStmt + " —> " + dstStmt + "\n\n");
+                                        }
+                                    }
+                                }
+
                                 int ASTNodeMappings_num = ms.size();//AST 节点之间的映射数量
                                 int eleMappings_num = m.getMatcher().getEleMappings().asSet().size();//元素之间的映射数量
                                 int ASTESSize = treeEditActions.size();//AST编辑操作数量
@@ -118,8 +138,8 @@ public class iASTMapper100_runner {
                                 String record = commitId + " " + filePath + " -> " +
                                         ASTNodeMappings_num + " " + eleMappings_num + " " + ASTESSize +
                                         " " + CodeESSize + " " + time;
-//                                System.out.println(record);//输出框输出的内容
-//                                bw.write(record + "\n");
+                                System.out.println(record);//输出框输出的内容
+                                bw.write(record + "\n");
                                 bw1.flush();
                                 bw.flush();
                             }

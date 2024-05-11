@@ -111,8 +111,12 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
     private void initMap(List<ProgramElement> AllDstStmtsToMap, List<ProgramElement> AllDstTokensToMap,
                          List<ProgramElement> AllDstinnerStmtsToMap) {
         // target value stmt map
-        for (ProgramElement dstStmt: AllDstStmtsToMap)
+        for (ProgramElement dstStmt: AllDstStmtsToMap){
+//            if (dstStmt.getNodeType().equals("PackageDeclaration"))
+////            if (dstStmt.getStringValue().equals("package org activeio packet sync jxta"))
+//                System.out.println(dstStmt);
             addElementTypeToMap(dstStmt, dstTypeElementMap);//将dststmt和其类型对应起来，map套map
+        }
 
         // target value token map
         for (ProgramElement dstToken: AllDstTokensToMap)
@@ -124,11 +128,34 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
             addElementTypeToMap(dstInnerStmt, dstTypeElementMap);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CandidateSetsAndMaps that = (CandidateSetsAndMaps) o;
+        return Objects.equals(dstTypeElementMap, that.dstTypeElementMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dstTypeElementMap);
+    }
+
     private void addElementTypeToMap(ProgramElement element, Map<ProgramElementType, Set<ProgramElement>> typeEleMap) {
         ProgramElementType type = element.getElementType();//获取传入元素的类型
 //        System.out.println("Type is " + type + " " + element);
         if (!typeEleMap.containsKey(type))
             typeEleMap.put(type, new HashSet<>());
+//        if (element.getNodeType().equals("PackageDeclaration"))
+//            System.out.println(typeEleMap);
+//            Set<ProgramElement> elements = typeEleMap.get(type);
+////            System.out.println("Hashcode of element: " + element.hashCode());
+////            System.out.println("Type: " + element.getITreeNode().getType());
+////            System.out.println("Position: " + element.getITreeNode().getPos());
+////            System.out.println("End Position: " + element.getITreeNode().getEndPos());
+//            elements.add(element);
+//            typeEleMap.put(type, elements);
+//        }
         typeEleMap.get(type).add(element);//typeEleMap中的键指类型，值指的是是这个类型的所有元素集合
     }
 

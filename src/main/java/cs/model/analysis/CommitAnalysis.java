@@ -39,9 +39,9 @@ public class CommitAnalysis {
     public static List<ProgramElement> AllDstStmtsToMap;
     public static List<ProgramElement> AllDstTokensToMap;
     public static List<ProgramElement> AllDstinnerStmtsToMap;
-    public static Map<Set<ProgramElement>, String> AllDstPathToStmtsMap;
-    public static Map<Set<ProgramElement>, String> AllDstPathToTokensMap;
-    public static Map<Set<ProgramElement>, String> AllDstPathToinnerStmtsMap;
+    public static Map<String, Set<ProgramElement>> AllDstPathToStmtsMap;
+    public static Map<String, Set<ProgramElement>> AllDstPathToTokensMap;
+    public static Map<String, Set<ProgramElement>> AllDstPathToinnerStmtsMap;
     public Map<String, Set<ProgramElement>> AllDstValTokenMap;
     public Map<String, iASTMapper> srcPathToMatcher = new HashMap<>();
     public List<ProgramElement> allDstStmts;

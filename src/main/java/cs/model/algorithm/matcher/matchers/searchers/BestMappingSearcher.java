@@ -117,6 +117,8 @@ public class BestMappingSearcher {
         BestCandidateSearcher searcher = new BestCandidateSearcher(srcElement, candidateElements,
                 eleMappings, determiner, candidateSearcher.getFilterDstCandidates(),candidateSearcher.getCandidateSetsAndMaps());
         Set<ProgramElement> globalBestDstCandidates = searcher.getBestGlobalCandidates();
+//        if (srcElement.getStringValue().equals("package org activeio net"))
+//            System.out.println(globalBestDstCandidates);
         //如果srcElement未被映射，也就说明上两行没有找到全局最佳元素，所以获取局部最佳目标元素候选集合，并将其和srcElement绑定存到局部的map集合中
         if (!eleMappings.isMapped(srcElement)) {
             Set<ProgramElement> localBestDstCandidates = searcher.getBestLocalCandidates();

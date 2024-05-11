@@ -11,37 +11,54 @@ public class SelectCrossFileMapping {
     private Map<ProgramElement, ProgramElement> dstToSrcMap;
     public final Map<Map<String, String>, String> crossFileMap = new HashMap<>();
 
-    public SelectCrossFileMapping(ElementMappings eleMappings, String srcPath,
-                                  Map<Set<ProgramElement>, String> allDstPathToStmtsMap,
-                                  Map<Set<ProgramElement>, String> allDstPathToTokensMap,
-                                  Map<Set<ProgramElement>, String> allDstPathToinnerStmtsMap){
+    public SelectCrossFileMapping(ElementMappings eleMappings, String srcPath, Map<String, String> pathMap,
+                                  Map<String, Set<ProgramElement>> allDstPathToStmtsMap,
+                                  Map<String, Set<ProgramElement>> allDstPathToTokensMap,
+                                  Map<String, Set<ProgramElement>> allDstPathToinnerStmtsMap){
         srcToDstMap = eleMappings.getSrcToDstMap();
         dstToSrcMap = eleMappings.getDstToSrcMap();
 //        System.out.println(dstToSrcMap);
 //        Map<String, String> srcAndDstPathToSrcStmtMap = new HashMap<>();
-//        List<ProgramElement> tmp_crossFileDstStmts = new ArrayList<>();
         for (ProgramElement srcEle : srcToDstMap.keySet()){
-            if (srcEle.isStmt()){
+            if (srcEle.isStmt() && !srcEle.getStringValue().equals("")){
+//                String src = srcEle.getStringValue();
+//                if (src.equals("package org activeio net")){
+//                    ProgramElement dst = srcToDstMap.get(srcEle);
+//                    System.out.println(dst);
+//                }
                 ProgramElement dstEle = srcToDstMap.get(srcEle);
-                for (Set<ProgramElement> dstStmtSet : allDstPathToStmtsMap.keySet()){
-                    String dstPath = allDstPathToStmtsMap.get(dstStmtSet);
-                    if (dstPath.equals(srcPath)){
-                        continue;
+//                System.out.println(dstEle);
+                if (dstEle.getStringValue().equals(""))
+                    continue;
+                String dstPath = pathMap.get(srcPath);
+                Set<ProgramElement> samePathDstStmts = allDstPathToStmtsMap.get(dstPath);
+                boolean isCrossFileMapping = true;
+                if (samePathDstStmts != null){
+                    for (ProgramElement dstStmt : samePathDstStmts){
+                        if (dstStmt.equals(dstEle)) {
+                            isCrossFileMapping = false;
+                            break;
+                        }
                     }
-                    for (ProgramElement dstStmt : dstStmtSet){
-                        if (dstEle.equals(dstStmt)) {
+                }
+                if (isCrossFileMapping){
+                    for (String everyDstPath : allDstPathToStmtsMap.keySet()){
+                        if (everyDstPath.equals(dstPath))
+                            continue;
+                        Set<ProgramElement> dstStmtSet = allDstPathToStmtsMap.get(everyDstPath);
+                        for (ProgramElement dstStmt : dstStmtSet){
+                            if (dstEle.equals(dstStmt)) {
 //                            srcToDstMap.remove(srcEle);
 //                            dstToSrcMap.remove(dstStmt);
-                            Map<String, String> srcAndDstPathToSrcStmtMap = new HashMap<>();
-                            String path = srcPath + "+" + dstPath;
-                            String srcValue = srcEle.getStringValue();
-                            String dstValue = dstEle.getStringValue();
-//                            System.out.println(dstValue);
-                            srcAndDstPathToSrcStmtMap.put(path, srcValue);
-                            crossFileMap.put(srcAndDstPathToSrcStmtMap, dstValue);
-//                            System.out.println(crossFileMap);
+                                Map<String, String> srcAndDstPathToSrcStmtMap = new HashMap<>();
+                                String path = srcPath + "+" + everyDstPath;
+                                String srcValue = srcEle.getStringValue();
+                                String dstValue = dstEle.getStringValue();
+                                srcAndDstPathToSrcStmtMap.put(path, srcValue);
+                                crossFileMap.put(srcAndDstPathToSrcStmtMap, dstValue);
+//                                System.out.println(crossFileMap);
+                            }
                         }
-//                        srcAndDstPathToSrcStmtMap.clear();
                     }
                 }
             }

@@ -172,8 +172,15 @@ public class StmtElement extends AbstractElement implements ProgramElement {
 
         if (this.isFromSrc() != element.isFromSrc())
             return false;
+//        if (element.getNodeType().equals("PackageDeclaration")) {
+//            System.out.println("the node type is: " + element.getITreeNode().getType());
+//            System.out.println("the node pos is: " + element.getITreeNode().getPos());
+//            System.out.println("the node label is: " + element.getITreeNode().getLabel());
+//            System.out.println("the node length is: " + element.getITreeNode().getLength());
+//        }
         if (this.node.getType() != element.getITreeNode().getType() ||
-                this.node.getPos() != element.getITreeNode().getPos())
+                this.node.getPos() != element.getITreeNode().getPos() ||
+                this.node.getLength() != element.getITreeNode().getLength())
             return false;
         return true;
     }
@@ -184,6 +191,8 @@ public class StmtElement extends AbstractElement implements ProgramElement {
         hash = hash * 31 + Boolean.hashCode(isFromSrc());
         hash = hash * 31 + this.node.getType().hashCode();
         hash = hash * 31 + Integer.hashCode(this.node.getPos());
+        hash = hash * 31 + Integer.hashCode(this.node.getLength());
+//        hash = hash * 31 + Integer.hashCode(this.node.getEndPos());
         return hash;
     }
 

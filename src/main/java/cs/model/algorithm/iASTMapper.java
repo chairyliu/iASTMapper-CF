@@ -80,9 +80,9 @@ public class iASTMapper {
     public Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
     public Map<String, Set<ProgramElement>> AllSrcPathToTokensMap;
     public Map<String, Set<ProgramElement>> AllSrcPathToinnerStmtsMap;
-    public Map<Set<ProgramElement>, String> allDstPathToStmtsMap = new HashMap<>();
-    public Map<Set<ProgramElement>, String> allDstPathToTokensMap = new HashMap<>();
-    public Map<Set<ProgramElement>, String> allDstPathToinnerStmtsMap = new HashMap<>();
+    public Map<String, Set<ProgramElement>> allDstPathToStmtsMap = new HashMap<>();
+    public Map<String, Set<ProgramElement>> allDstPathToTokensMap = new HashMap<>();
+    public Map<String, Set<ProgramElement>> allDstPathToinnerStmtsMap = new HashMap<>();
     public List<ProgramElement> AllSrcStmtsToMap;
     public List<ProgramElement> AllSrcTokensToMap;
     public List<ProgramElement> AllSrcinnerStmtsToMap;
@@ -155,9 +155,9 @@ public class iASTMapper {
     //另外写一个类调用modifiele的dstPathToStmtMap存入All中，然后revison中写一个传all参数的方法，并用this和commit绑定
     public void preStoreAllDstCandidates(String srcPath, String dstPath, boolean isLastPath, List<ProgramElement> AllDstStmtsToMap,
                                          List<ProgramElement> AllDstTokensToMap, List<ProgramElement> AllDstinnerStmtsToMap,
-                                         Map<Set<ProgramElement>, String> AllDstPathToStmtsMap,
-                                         Map<Set<ProgramElement>, String> AllDstPathToTokensMap,
-                                         Map<Set<ProgramElement>, String> AllDstPathToinnerStmtsMap,
+                                         Map<String, Set<ProgramElement>> AllDstPathToStmtsMap,
+                                         Map<String, Set<ProgramElement>> AllDstPathToTokensMap,
+                                         Map<String, Set<ProgramElement>> AllDstPathToinnerStmtsMap,
                                          Map<String, Set<ProgramElement>> AllDstValTokenMap){
         FilterDstCandidates filterDstCandidates = new FilterDstCandidates(eleMappings, srcStmts, dstStmts, srcPath, dstPath,AllDstStmtsToMap, AllDstTokensToMap,
                 AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,AllDstValTokenMap);
@@ -226,7 +226,7 @@ public class iASTMapper {
                 break;
         }
 
-        SelectCrossFileMapping selectCrossFileMapping = new SelectCrossFileMapping(eleMappings, srcPath,
+        SelectCrossFileMapping selectCrossFileMapping = new SelectCrossFileMapping(eleMappings, srcPath, pathMap,
                 allDstPathToStmtsMap, allDstPathToTokensMap, allDstPathToinnerStmtsMap);
         crossFileMap = selectCrossFileMapping.getCrossFileMap();
 //        System.out.println(crossFileMap);

@@ -128,19 +128,6 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
             addElementTypeToMap(dstInnerStmt, dstTypeElementMap);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CandidateSetsAndMaps that = (CandidateSetsAndMaps) o;
-        return Objects.equals(dstTypeElementMap, that.dstTypeElementMap);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(dstTypeElementMap);
-    }
-
     private void addElementTypeToMap(ProgramElement element, Map<ProgramElementType, Set<ProgramElement>> typeEleMap) {
         ProgramElementType type = element.getElementType();//获取传入元素的类型
 //        System.out.println("Type is " + type + " " + element);

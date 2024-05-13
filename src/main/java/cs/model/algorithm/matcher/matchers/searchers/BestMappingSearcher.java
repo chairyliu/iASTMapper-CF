@@ -91,6 +91,8 @@ public class BestMappingSearcher {
         // 1. consider all the target candidates
         // 2. consider candidates excluding current mappings
         for (ProgramElement srcElement: allSrcElements)//allSrcElements是在快速映射阶段没有被映射的所有stmt集合
+//            if (srcElement.getStringValue().equals("package org activeio net"))
+//                System.out.println(srcElement);
             findBestDstCandidates(srcElement);//获取srcElement的最佳目标候选集，全局没有就局部
         // Then, we find the one-to-one and multi-to-multi best mappings of elements.
         if (!excludeCurMappings) {//false代表全局，true代表局部
@@ -110,6 +112,8 @@ public class BestMappingSearcher {
 
     private void findBestDstCandidates(ProgramElement srcElement) {//获取传入元素的候选集，搜寻是否有全局最佳匹配，若没有找局部最佳的集合，并将<<src,dst>,sim>存入map中
         //获取与源元素（srcElement）相关的目标元素候选集合（上一阶段的产物），表示如果该元素都没有最初始的候选集，就不需要进行后续的判断了，直接返回
+//        if (srcElement.getStringValue().equals("org.activeio.adapter;"))
+//            System.out.println(srcElement);
         Set<ProgramElement> candidateElements = candidateSearcher.getDstCandidateElements(srcElement);
         if (candidateElements == null || candidateElements.size() == 0)
             return;

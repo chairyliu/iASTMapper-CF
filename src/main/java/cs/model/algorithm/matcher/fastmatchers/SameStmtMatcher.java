@@ -36,6 +36,9 @@ public class SameStmtMatcher extends BaseFastMatcher {
         buildValueStmtMap(dstStmts, dstTtMap, dstValueStmtMap);
 
         for (String value: srcValueStmtMap.keySet()){
+//            System.out.println(value);
+//            if (value.equals("org.activeio.adapter;"))
+//                System.out.println(value);
             Set<ProgramElement> srcStmts = srcValueStmtMap.get(value);
 //            System.out.println("elemen " + srcStmts);
 //            System.out.println("elemen " + srcStmts + " |And| " + value + " |size| " + srcStmts.size());

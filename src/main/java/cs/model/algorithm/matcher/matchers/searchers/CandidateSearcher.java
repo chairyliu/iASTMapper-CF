@@ -82,13 +82,6 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
 
     //stmt的候选集就是从前一阶段CandidateSetsAndMaps中拿到的map集合（<srcele,<type,set<dstele>>）中直接get，没有用别的方法
     private Set<ProgramElement> getDstCandidateStmtElements(StmtElement srcStmt) {
-//        if (srcStmt.getStringValue().equals("package org activeio net")) {
-//            Set<ProgramElement> q = getDstTypeElementMap().get(srcStmt.getElementType());
-//            System.out.println(q);
-//        }
-//            System.out.println(getDstTypeElementMap().get(srcStmt.getElementType()));
-//        if (srcStmt.getNodeType().equals("PackageDeclaration"))
-//            System.out.println(getDstTypeElementMap().get(srcStmt.getElementType()));
         return getDstTypeElementMap().get(srcStmt.getElementType());//获取srcstmt类型（键）对应的所有element列表，将其作为候选集
     }
 

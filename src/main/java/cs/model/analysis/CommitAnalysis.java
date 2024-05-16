@@ -45,6 +45,8 @@ public class CommitAnalysis {
     public Map<String, Set<ProgramElement>> AllDstValTokenMap;
     public Map<String, iASTMapper> srcPathToMatcher = new HashMap<>();
     public List<ProgramElement> allDstStmts;
+    public static List<ProgramElement> AllSrcStmtsToMap;
+    public static Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
 
 
     public CommitAnalysis(String project, String commitId, boolean stmtOrToken) {//如果是跨文件，这里可以删去filesToAnalyze
@@ -67,6 +69,8 @@ public class CommitAnalysis {
         this.AllDstinnerStmtsToMap = new ArrayList<>();
         this.AllDstValTokenMap = new HashMap<>();
         allDstStmts = new ArrayList<>();
+        this.AllSrcStmtsToMap = new ArrayList<>();
+        this.AllSrcPathToStmtsMap = new HashMap<>();
     }
 
     public void calResultMapping(boolean doComparison, boolean doEvaluation) {//可以获取pathMap后将整个map传入RevisionAnalysis中
@@ -110,7 +114,8 @@ public class CommitAnalysis {
                         srcStmtsToMap, dstPathToRoot, srcPathToRoot,allDstStmts);//创建iASTMapper对象
                 matcher.multiFastMapped();
                 matcher.preStoreAllDstCandidates(srcFilePath, dstFilePath, isLastPath,AllDstStmtsToMap, AllDstTokensToMap,
-                        AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,AllDstValTokenMap);
+                        AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,
+                        AllDstValTokenMap, AllSrcPathToStmtsMap);
                 srcPathToMatcher.put(srcFilePath,matcher);
             }catch (Exception e){
                 e.printStackTrace();
@@ -151,7 +156,8 @@ public class CommitAnalysis {
                     List<ProgramElement> srcStmts = new ArrayList<>();
                     srcStmts = srcStmtsToMap.get(srcToPath);
                     iASTMapper mc = srcPathToMatcher.get(srcToPath);
-                    RevisionAnalysis result = new RevisionAnalysis(project, commitId, srcToPath, pathMap,mc, srcPathToMatcher, srcStmts);
+                    RevisionAnalysis result = new RevisionAnalysis(project, commitId, srcToPath, pathMap,mc, srcPathToMatcher,
+                            srcStmts, AllSrcStmtsToMap, AllSrcPathToStmtsMap);
                     resultMap.put(srcToPath, result);
                 }
 //                RevisionAnalysis result = new RevisionAnalysis(project, commitId, baseCommitId,

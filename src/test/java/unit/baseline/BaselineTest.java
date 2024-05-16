@@ -20,7 +20,6 @@ public class BaselineTest {
     private static void test2() throws Exception {
         String project = "junit4";
         String commitId = "890b7b977e42360aa8975c8535fc66bfd8d8cb3e";
-//        String file = "src/org/junit/internal/runners/TestIntrospector.java";
 
         TestUtils.testiASTMapper(project, commitId);
     }

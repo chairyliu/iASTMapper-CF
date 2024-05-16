@@ -22,10 +22,14 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
     private final Map<String, Set<ProgramElement>> dstValMultiTokenElementMap;//键是innerstmt的类型与value值的拼接，值是所有的innerstmt集合
 
     private final ElementMappings fastEleMappings;
+    public static List<ProgramElement> AllSrcStmtsToMap;
+    public static Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
+    public Map<String, Set<ProgramElement>> srcPathToStmtsMap;
 
-    public CandidateSetsAndMaps(ElementMappings fastEleMappings, List<ProgramElement> srcStmts,
+    public CandidateSetsAndMaps(ElementMappings fastEleMappings, List<ProgramElement> srcStmts, String srcPath,
                                 List<ProgramElement> allDstStmts, List<ProgramElement> AllDstStmtsToMap,
-                                List<ProgramElement> AllDstTokensToMap, List<ProgramElement> AllDstinnerStmtsToMap) {//全部的src和dst元素
+                                List<ProgramElement> AllDstTokensToMap, List<ProgramElement> AllDstinnerStmtsToMap,
+                                List<ProgramElement> AllSrcStmtsToMap, Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap) {
         this.fastEleMappings = fastEleMappings;
         this.dstTypeElementMap = new HashMap<>();
         this.dstValTokenMap = new HashMap<>();
@@ -34,15 +38,18 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
         this.srcStmtsToMap = new HashSet<>();
         this.srcTokensToMap = new HashSet<>();
         this.srcinnerStmtsToMap = new HashSet<>();
+        this.AllSrcStmtsToMap = AllSrcStmtsToMap;
+        this.AllSrcPathToStmtsMap = AllSrcPathToStmtsMap;
+        this.srcPathToStmtsMap = new HashMap<>();
 //        this.dstStmtsToMap = new HashSet<>();
 //        this.dstTokensToMap = new HashSet<>();
 //        this.dstinnerStmtsToMap = new HashSet<>();
-        initStmtsAndTokens(srcStmts);
+        initStmtsAndTokens(srcStmts, srcPath);
         initMultiTokenElementMap(allDstStmts);
         initMap(AllDstStmtsToMap, AllDstTokensToMap, AllDstinnerStmtsToMap);
     }
 
-    private void initStmtsAndTokens(List<ProgramElement> srcStmts) {//将快速映射阶段没有映射的stmt、token、inner都存入各自的集合中，方便后续映射
+    private void initStmtsAndTokens(List<ProgramElement> srcStmts, String srcPath) {//将快速映射阶段没有映射的stmt、token、inner都存入各自的集合中，方便后续映射
         for (ProgramElement srcStmt : srcStmts) {
             if (!fastEleMappings.isMapped(srcStmt)) {
                 this.srcStmtsToMap.add(srcStmt);//在快速映射阶段没有映射的语句存入srcStmtsToMap集合
@@ -56,6 +63,9 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
                     this.srcinnerStmtsToMap.add(innerStmtEle);
             }
         }
+//        srcPathToStmtsMap.put(srcPath, this.srcStmtsToMap);
+//        AllSrcPathToStmtsMap.putAll(srcPathToStmtsMap);
+//        System.out.println(AllSrcPathToStmtsMap);
     }
 //
 //        for (ProgramElement dstStmt: dstStmts) {
@@ -111,12 +121,8 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
     private void initMap(List<ProgramElement> AllDstStmtsToMap, List<ProgramElement> AllDstTokensToMap,
                          List<ProgramElement> AllDstinnerStmtsToMap) {
         // target value stmt map
-        for (ProgramElement dstStmt: AllDstStmtsToMap){
-//            if (dstStmt.getNodeType().equals("PackageDeclaration"))
-////            if (dstStmt.getStringValue().equals("package org activeio packet sync jxta"))
-//                System.out.println(dstStmt);
+        for (ProgramElement dstStmt: AllDstStmtsToMap)
             addElementTypeToMap(dstStmt, dstTypeElementMap);//将dststmt和其类型对应起来，map套map
-        }
 
         // target value token map
         for (ProgramElement dstToken: AllDstTokensToMap)
@@ -133,17 +139,11 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
 //        System.out.println("Type is " + type + " " + element);
         if (!typeEleMap.containsKey(type))
             typeEleMap.put(type, new HashSet<>());
-//        if (element.getNodeType().equals("PackageDeclaration"))
-//            System.out.println(typeEleMap);
-//            Set<ProgramElement> elements = typeEleMap.get(type);
-////            System.out.println("Hashcode of element: " + element.hashCode());
-////            System.out.println("Type: " + element.getITreeNode().getType());
-////            System.out.println("Position: " + element.getITreeNode().getPos());
-////            System.out.println("End Position: " + element.getITreeNode().getEndPos());
-//            elements.add(element);
-//            typeEleMap.put(type, elements);
-//        }
         typeEleMap.get(type).add(element);//typeEleMap中的键指类型，值指的是是这个类型的所有元素集合
+    }
+
+    public Map<String, Set<ProgramElement>> getAllSrcPathToStmtsMap() {
+        return AllSrcPathToStmtsMap;
     }
 
     public Set<ProgramElement> getAllSrcStmts() {

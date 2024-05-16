@@ -29,13 +29,17 @@ public class FilterDstCandidates {
     public List<ProgramElement> AllDstTokensToMap;
     public List<ProgramElement> AllDstinnerStmtsToMap;
     public Map<String, Set<ProgramElement>> AllDstValTokenMap;
+    public Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
+    private final Set<ProgramElement> SrcStmtsToMap;
+    public Map<String, Set<ProgramElement>> srcPathToStmtsMap;
     public FilterDstCandidates(ElementMappings fastEleMappings, List<ProgramElement> srcStmts,
                                List<ProgramElement> dstStmts, String srcPath, String dstPath, List<ProgramElement> AllDstStmtsToMap,
                                List<ProgramElement> AllDstTokensToMap, List<ProgramElement> AllDstinnerStmtsToMap,
                                Map<String, Set<ProgramElement>> AllDstPathToStmtsMap,
                                Map<String, Set<ProgramElement>> AllDstPathToTokensMap,
                                Map<String, Set<ProgramElement>> AllDstPathToinnerStmtsMap,
-                               Map<String, Set<ProgramElement>> AllDstValTokenMap){
+                               Map<String, Set<ProgramElement>> AllDstValTokenMap,
+                               Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap){
         this.fastEleMappings = fastEleMappings;
 //        this.srcStmtsToMap = new HashSet<>();
 //        this.srcTokensToMap = new HashSet<>();
@@ -50,6 +54,10 @@ public class FilterDstCandidates {
         this.dstPathToStmtsMap = new HashMap<>();
         this.dstPathToTokensMap = new HashMap<>();
         this.dstPathToinnerStmtsMap = new HashMap<>();
+
+        this.SrcStmtsToMap = new HashSet<>();
+        this.srcPathToStmtsMap = new HashMap<>();
+
         this.AllDstStmtsToMap = AllDstStmtsToMap;
         this.AllDstTokensToMap = AllDstTokensToMap;
         this.AllDstinnerStmtsToMap = AllDstinnerStmtsToMap;
@@ -57,6 +65,7 @@ public class FilterDstCandidates {
         this.AllDstPathToTokensMap = AllDstPathToTokensMap;
         this.AllDstPathToinnerStmtsMap = AllDstPathToinnerStmtsMap;
         this.AllDstValTokenMap = AllDstValTokenMap;
+        this.AllSrcPathToStmtsMap = AllSrcPathToStmtsMap;
 //        initStmtsAndTokens(srcStmts, dstStmts, srcPath, dstPath,AllDstStmtsToMap, AllDstTokensToMap,
 //                AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap);
     }
@@ -67,11 +76,14 @@ public class FilterDstCandidates {
                                    Map<String, Set<ProgramElement>> AllDstPathToStmtsMap,
                                    Map<String, Set<ProgramElement>> AllDstPathToTokensMap,
                                    Map<String, Set<ProgramElement>> AllDstPathToinnerStmtsMap,
-                                   Map<String, Set<ProgramElement>> AllDstValTokenMap) {//将快速映射阶段没有映射的stmt、token、inner都存入各自的集合中，方便后续映射
-//        for (ProgramElement srcStmt: srcStmts) {
-//            if (!fastEleMappings.isMapped(srcStmt)) {
-//                this.srcStmtsToMap.add(srcStmt);//在快速映射阶段没有映射的语句存入srcStmtsToMap集合
-//            }
+                                   Map<String, Set<ProgramElement>> AllDstValTokenMap,Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap) {//将快速映射阶段没有映射的stmt、token、inner都存入各自的集合中，方便后续映射
+        for (ProgramElement srcStmt: srcStmts) {
+            if (!fastEleMappings.isMapped(srcStmt)) {
+                this.SrcStmtsToMap.add(srcStmt);//在快速映射阶段没有映射的语句存入srcStmtsToMap集合
+            }
+        }
+        srcPathToStmtsMap.put(srcPath, this.SrcStmtsToMap);
+        AllSrcPathToStmtsMap.putAll(srcPathToStmtsMap);
 //            for (ProgramElement tokenEle: srcStmt.getTokenElements()) {
 //                if (!fastEleMappings.isMapped(tokenEle))
 //                    this.srcTokensToMap.add(tokenEle);
@@ -140,6 +152,9 @@ public class FilterDstCandidates {
 //    public Map<String, Set<ProgramElement>> getSrcPathToStmtsMap(){ return srcPathToStmtsMap; }
 //    public Map<String, Set<ProgramElement>> getSrcPathToTokensMap(){ return srcPathToTokensMap; }
 //    public Map<String, Set<ProgramElement>> getSrcPathToinnerStmtsMap(){ return srcPathToinnerStmtsMap; }
+    public Map<String, Set<ProgramElement>> getAllSrcPathToStmtsMap() {
+        return AllSrcPathToStmtsMap;
+    }
     public Map<String, Set<ProgramElement>> getDstPathToStmtsMap(){ return dstPathToStmtsMap; }
     public Map<String, Set<ProgramElement>> getDstPathToTokensMap(){ return dstPathToTokensMap; }
     public Map<String, Set<ProgramElement>> getDstPathToinnerStmtsMap(){ return dstPathToinnerStmtsMap; }

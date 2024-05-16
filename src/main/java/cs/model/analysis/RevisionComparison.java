@@ -45,6 +45,8 @@ public class RevisionComparison {
     public static Map<String, ProgramElement> dstPathToRoot;
     public Map<String, ProgramElement> srcPathToRoot;
     protected Map<String, String> pathMap;
+    public static List<ProgramElement> AllSrcStmtsToMap;
+    public static Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
 
     public RevisionComparison(String project, String commitId, String baseCommitId,
                               String srcFilePath, String dstFilePath, boolean stmtOrToken) throws Exception {
@@ -79,7 +81,7 @@ public class RevisionComparison {
 //        srcStmtsToMap = myMatcher.getSrcStmtsToMap();
         List<ProgramElement> srcStmts = new ArrayList<>();
         srcStmts = srcStmtsToMap.get(srcFilePath);
-        this.myMatcher.buildMappingsOuterLoop(srcStmts,srcFilePath,pathMap);
+        this.myMatcher.buildMappingsOuterLoop(srcStmts,srcFilePath,pathMap, AllSrcStmtsToMap,AllSrcPathToStmtsMap);
         this.myMappings = this.myMatcher.getEleMappings();
 
         // build mappings using gumtree, mtdiff and ijm

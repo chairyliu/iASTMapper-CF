@@ -342,10 +342,10 @@ public class CrossFileRevisionAnalysis {
         }
         System.out.println("=============================");
 
-        /**
-         * test point for one project
-         * project name: activemq
-         */
+//        /**
+//         * test point for one project
+//         * project name: activemq
+//         */
 //        String project = "activemq";
 //        String filePath = "ase2023" + File.separator + "project_commits-1" + File.separator + project + ".txt";
 //        List<String> commitList = getCommitList(project,filePath);

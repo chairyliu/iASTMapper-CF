@@ -43,16 +43,21 @@ public class RevisionAnalysis {
     public static Map<String, Set<ProgramElement>> AllDstPathToinnerStmtsMap;
     public Map<String, Set<ProgramElement>> AllDstValTokenMap;
     public Map<String, iASTMapper> srcPathToMatcher = new HashMap<>();
+    public static List<ProgramElement> AllSrcStmtsToMap;
+    public static Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
 
 //    public RevisionAnalysis(String project, String commitId,
 //                            String baseCommitId, Map<String, String> pathMap) throws Exception{
-    public RevisionAnalysis(String project, String commitId, String srcToPath,Map<String, String> pathMap,iASTMapper matcher,
-                            Map<String, iASTMapper> srcPathToMatcher,List<ProgramElement> srcStmts){
+    public RevisionAnalysis(String project, String commitId, String srcToPath,Map<String, String> pathMap, iASTMapper matcher,
+                            Map<String, iASTMapper> srcPathToMatcher, List<ProgramElement> srcStmts,
+                            List<ProgramElement> AllSrcStmtsToMap, Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap){
         this.project = project;
         this.commitId = commitId;
         this.pathMap = pathMap;
         this.matcher = matcher;
         this.srcPathToMatcher = srcPathToMatcher;
+        this.AllSrcStmtsToMap = AllSrcStmtsToMap;
+        this.AllSrcPathToStmtsMap = AllSrcPathToStmtsMap;
 //        this.srcFilePath = srcFilePath;//删
 //        this.dstFilePath = dstFilePath;//删
 //        srcStmtsToMap = new HashMap<>();
@@ -112,7 +117,7 @@ public class RevisionAnalysis {
 //            srcStmts = srcStmtsToMap.get(srcToPath);
 //            iASTMapper mc = srcPathToMatcher.get(srcToPath);
 
-            matcher.buildMappingsOuterLoop(srcStmts, srcToPath, pathMap);//执行外层循环，建立元素映射及节点映射
+            matcher.buildMappingsOuterLoop(srcStmts, srcToPath, pathMap, AllSrcStmtsToMap, AllSrcPathToStmtsMap);//执行外层循环，建立元素映射及节点映射
             this.eleMappings = matcher.getEleMappings();
             srcRootEle = matcher.getSrcRootEle();
             calMappingRecords();

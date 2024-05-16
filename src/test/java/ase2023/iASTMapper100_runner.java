@@ -99,6 +99,7 @@ public class iASTMapper100_runner {
                             }
 
                             for (String filePath: resultMap.keySet()){
+//                                System.out.println(resultMap);
                                 RevisionAnalysis m = resultMap.get(filePath);
                                 MappingStore ms = m.getMatcher().getMs();
                                 List<StmtTokenAction> actionList = m.generateActions();//如果这个只包含对应文件的action，那么可以再单独创建一个跨文件的输出
@@ -122,10 +123,10 @@ public class iASTMapper100_runner {
                                     for (Map<String, String> pathToSrcStmt : crossFileMap.keySet()){
                                         String dstStmt = crossFileMap.get(pathToSrcStmt);
                                         for (String path : pathToSrcStmt.keySet()){
+                                            String srcStmt = pathToSrcStmt.get(path);
                                             String[] parts = path.split("\\+");
                                             bw2.write("srcFile: " + parts[0] + "\n");
                                             bw2.write("dstFile: " + parts[1] + "\n");
-                                            String srcStmt = pathToSrcStmt.get(path);
                                             bw2.write(srcStmt + " —> " + dstStmt + "\n\n");
                                         }
                                     }
@@ -141,9 +142,11 @@ public class iASTMapper100_runner {
                                 System.out.println(record);//输出框输出的内容
                                 bw.write(record + "\n");
                                 bw1.flush();
+                                bw2.flush();
                                 bw.flush();
                             }
                             bw1.close();
+                            bw2.close();
                         } catch (Exception e) {
                             ebw.write(commitId + " " + oldPath + " -> " + e.getMessage() + "\n");
 //                            ebw.write(commitId + " " + " -> " + e.getMessage() + "\n");

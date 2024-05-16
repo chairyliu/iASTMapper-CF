@@ -45,6 +45,7 @@ public class StmtTokenActionGenerator {
         Set<ProgramElement> calculatedDstStmts = new HashSet<>();
         List<StmtTokenAction> actionList = new ArrayList<>();
         for (ProgramElement srcStmt: srcStmts){
+//            System.out.println(srcStmt);
             ProgramElement dstStmt = eleMappings.getDstForSrc(srcStmt);
             StmtTokenAction action = new StmtTokenAction(srcStmt, dstStmt, eleMappings, subSrcStmtsInLcs, subSrcTokenInLcs);
             if (!includeNonChanged && !action.hasAction()) {

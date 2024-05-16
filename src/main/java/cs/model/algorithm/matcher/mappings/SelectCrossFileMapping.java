@@ -2,7 +2,9 @@ package cs.model.algorithm.matcher.mappings;
 
 import cs.model.algorithm.element.ProgramElement;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class SelectCrossFileMapping {
 
@@ -14,50 +16,54 @@ public class SelectCrossFileMapping {
     public SelectCrossFileMapping(ElementMappings eleMappings, String srcPath, Map<String, String> pathMap,
                                   Map<String, Set<ProgramElement>> allDstPathToStmtsMap,
                                   Map<String, Set<ProgramElement>> allDstPathToTokensMap,
-                                  Map<String, Set<ProgramElement>> allDstPathToinnerStmtsMap){
+                                  Map<String, Set<ProgramElement>> allDstPathToinnerStmtsMap,
+                                  Map<String, Set<ProgramElement>> allSrcPathToStmtsMap){
         srcToDstMap = eleMappings.getSrcToDstMap();
         dstToSrcMap = eleMappings.getDstToSrcMap();
-//        System.out.println(dstToSrcMap);
-//        Map<String, String> srcAndDstPathToSrcStmtMap = new HashMap<>();
-        for (ProgramElement srcEle : srcToDstMap.keySet()){
-            if (srcEle.isStmt() && !srcEle.getStringValue().equals("")){
-//                String src = srcEle.getStringValue();
-//                if (src.equals("package org activeio net")){
-//                    ProgramElement dst = srcToDstMap.get(srcEle);
-//                    System.out.println(dst);
-//                }
-                ProgramElement dstEle = srcToDstMap.get(srcEle);
-//                System.out.println(dstEle);
-                if (dstEle.getStringValue().equals(""))
+        Map<String, String> invertedPathMap = new HashMap<>();
+        for (Map.Entry<String, String> entry : pathMap.entrySet()) {
+            invertedPathMap.put(entry.getValue(), entry.getKey());
+        }
+
+        Set<ProgramElement> srcStmtsToMap = allSrcPathToStmtsMap.get(srcPath);
+
+        for (ProgramElement srcEle : srcStmtsToMap){
+            if (srcEle.getStringValue().equals(""))
+                continue;
+            ProgramElement dstEle = srcToDstMap.get(srcEle);
+            if (dstEle == null || dstEle.getStringValue().equals(""))
+                continue;
+            String dstPath = pathMap.get(srcPath);
+            Set<ProgramElement> samePathDstStmts = allDstPathToStmtsMap.get(dstPath);
+            if (samePathDstStmts != null && samePathDstStmts.contains(dstEle))
+                continue;
+
+            for (Map.Entry<String, Set<ProgramElement>> entry : allDstPathToStmtsMap.entrySet()) {
+                String tmp_dstPath = entry.getKey();
+                if (tmp_dstPath.equals(dstPath))
                     continue;
-                String dstPath = pathMap.get(srcPath);
-                Set<ProgramElement> samePathDstStmts = allDstPathToStmtsMap.get(dstPath);
-                boolean isCrossFileMapping = true;
-                if (samePathDstStmts != null){
-                    for (ProgramElement dstStmt : samePathDstStmts){
-                        if (dstStmt.equals(dstEle)) {
-                            isCrossFileMapping = false;
-                            break;
+                Set<ProgramElement> dstStmtSet = entry.getValue();
+                for (ProgramElement dstStmt : dstStmtSet){
+                    if (dstStmt.equals(dstEle)) {
+                        String tmp_srcPath = invertedPathMap.get(tmp_dstPath);
+                        Set<ProgramElement> srcStmtsSet = allSrcPathToStmtsMap.get(tmp_srcPath);
+                        boolean isContinue = true;
+                        for (ProgramElement tmp_srcStatement : srcStmtsSet){
+                            if (tmp_srcStatement.getStringValue().equals(dstStmt.getStringValue())){
+                                isContinue = false;
+                                break;
+                            }
                         }
-                    }
-                }
-                if (isCrossFileMapping){
-                    for (String everyDstPath : allDstPathToStmtsMap.keySet()){
-                        if (everyDstPath.equals(dstPath))
-                            continue;
-                        Set<ProgramElement> dstStmtSet = allDstPathToStmtsMap.get(everyDstPath);
-                        for (ProgramElement dstStmt : dstStmtSet){
-                            if (dstEle.equals(dstStmt)) {
 //                            srcToDstMap.remove(srcEle);
 //                            dstToSrcMap.remove(dstStmt);
-                                Map<String, String> srcAndDstPathToSrcStmtMap = new HashMap<>();
-                                String path = srcPath + "+" + everyDstPath;
-                                String srcValue = srcEle.getStringValue();
-                                String dstValue = dstEle.getStringValue();
-                                srcAndDstPathToSrcStmtMap.put(path, srcValue);
-                                crossFileMap.put(srcAndDstPathToSrcStmtMap, dstValue);
+                        if (isContinue){
+                            Map<String, String> srcAndDstPathToSrcStmtMap = new HashMap<>();
+                            String path = srcPath + "+" + tmp_dstPath;
+                            String srcValue = srcEle.getStringValue();
+                            String dstValue = dstStmt.getStringValue();
+                            srcAndDstPathToSrcStmtMap.put(path, srcValue);
+                            crossFileMap.put(srcAndDstPathToSrcStmtMap, dstValue);
 //                                System.out.println(crossFileMap);
-                            }
                         }
                     }
                 }

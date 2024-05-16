@@ -87,12 +87,10 @@ public class RevisionAnalysis {
         return ret;
     }
 
-
 //    public String getSrcFilePath() {
 ////        return srcFilePath;
 //        return srcPath;
 //    }
-
 
     public iASTMapper getMatcher() {
         return matcher;

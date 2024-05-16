@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class TestUtils {
     public static void testiASTMapper(String project, String commitId) throws IOException {
-        CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, false);//这里不用传filePaths
+        CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, false);
         long time1 = System.currentTimeMillis();
         mappingResult.calResultMapping(false, false);
         Map<String, RevisionAnalysis> resultMap = mappingResult.getRevisionAnalysisResultMap();

@@ -64,7 +64,7 @@ public class iASTMapper {
 
     private final ElementMappings eleMappings;   // mappings of program elements
     private MappingStore ms;    // mappings of tree nodes
-
+    protected Map<String, String> pathMap;
     private List<TreeEditAction> actions;
 
     private long treeBuildTime;
@@ -75,30 +75,19 @@ public class iASTMapper {
     public static String used_ASTtype = "gt";  // 添加-ZN
 
     public static Set<String> used_rules = new HashSet<>();  // 添加-ZN
-    public Set<ProgramElement> AllSrcStmts;
     public List<ProgramElement> allDstStmts;
-    public Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
-    public Map<String, Set<ProgramElement>> AllSrcPathToTokensMap;
-    public Map<String, Set<ProgramElement>> AllSrcPathToinnerStmtsMap;
     public Map<String, Set<ProgramElement>> allDstPathToStmtsMap = new HashMap<>();
     public Map<String, Set<ProgramElement>> allDstPathToTokensMap = new HashMap<>();
     public Map<String, Set<ProgramElement>> allDstPathToinnerStmtsMap = new HashMap<>();
-    public List<ProgramElement> AllSrcStmtsToMap;
-    public List<ProgramElement> AllSrcTokensToMap;
-    public List<ProgramElement> AllSrcinnerStmtsToMap;
     public List<ProgramElement> allDstStmtsToMap = new ArrayList<>();
     public List<ProgramElement> allDstTokensToMap = new ArrayList<>();
     public List<ProgramElement> allDstinnerStmtsToMap = new ArrayList<>();
     public Map<String, Set<ProgramElement>> allDstValTokenMap;
-//    public Map<String, List<ProgramElement>> srcStmtsToMap;
     public Map<String, ProgramElement> dstPathToRoot;
     public Map<String, ProgramElement> srcPathToRoot;
-    public Map<String, MappingStore> dstPathToMs = new HashMap<>();
-    protected Map<String, String> pathMap;
     public Map<Map<String, String>, String> crossFileMap;
     public Map<String, Set<ProgramElement>> allSrcPathToStmtsMap = new HashMap<>();
 
-    //这里可以加一个if判断是否是对应的文件路径（与前面遍历pathMap合并），如果是，则执行，如果不是，则跳过，后面调用存好的快速映射阶段后的语句进行内外层循环
     public iASTMapper(String srcFileContent, String dstFileContent, String srcPath, String dstPath,
                       Map<String, List<ProgramElement>> srcStmtsToMap,Map<String, ProgramElement> dstPathToRoot,
                       Map<String, ProgramElement> srcPathToRoot,List<ProgramElement> allDstStmts) throws IOException {//这些src的步骤都可以提前计算，这样在for遍历的时候就不用重复算好几次
@@ -153,56 +142,41 @@ public class iASTMapper {
         fastMatcher.buildMappings();
     }
 
-    //另外写一个类调用modifiele的dstPathToStmtMap存入All中，然后revison中写一个传all参数的方法，并用this和commit绑定
-    public void preStoreAllDstCandidates(String srcPath, String dstPath, boolean isLastPath, List<ProgramElement> AllDstStmtsToMap,
+    public void preStoreAllDstCandidates(String srcPath, String dstPath, List<ProgramElement> AllDstStmtsToMap,
                                          List<ProgramElement> AllDstTokensToMap, List<ProgramElement> AllDstinnerStmtsToMap,
                                          Map<String, Set<ProgramElement>> AllDstPathToStmtsMap,
                                          Map<String, Set<ProgramElement>> AllDstPathToTokensMap,
                                          Map<String, Set<ProgramElement>> AllDstPathToinnerStmtsMap,
                                          Map<String, Set<ProgramElement>> AllDstValTokenMap,
                                          Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap){
-        FilterDstCandidates filterDstCandidates = new FilterDstCandidates(eleMappings, srcStmts, dstStmts, srcPath, dstPath,AllDstStmtsToMap, AllDstTokensToMap,
+        FilterDstCandidates filterDstCandidates = new FilterDstCandidates(eleMappings,AllDstStmtsToMap, AllDstTokensToMap,
                 AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,AllDstValTokenMap,AllSrcPathToStmtsMap);
         filterDstCandidates.initStmtsAndTokens(srcStmts, dstStmts, srcPath, dstPath,AllDstStmtsToMap, AllDstTokensToMap,
                 AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,AllDstValTokenMap,AllSrcPathToStmtsMap);
-//        System.out.println(filterDstCandidates);
-//        if (isLastPath == true){
+
         allDstStmtsToMap = filterDstCandidates.getAllDstStmtsToMap();
-//            System.out.println(allDstStmtsToMap);
         allDstTokensToMap = filterDstCandidates.getAllDstTokensToMap();
         allDstinnerStmtsToMap = filterDstCandidates.getAllDstinnerStmtsToMap();
         allDstPathToStmtsMap = filterDstCandidates.getAllDstPathToStmtsMap();
-//            System.out.println(allDstPathToStmtsMap);
         allDstPathToTokensMap = filterDstCandidates.getAllDstPathToTokensMap();
         allDstPathToinnerStmtsMap = filterDstCandidates.getAllDstPathToinnerStmtsMap();
         allDstValTokenMap = filterDstCandidates.getAllDstValTokenMap();
         allSrcPathToStmtsMap = filterDstCandidates.getAllSrcPathToStmtsMap();
-//        if (srcPath.equals("activemq-core/src/main/java/org/activemq/network/NetworkConnector.java"))
-//            System.out.println(allSrcPathToStmtsMap);
-//        }
     }
     /**
      * Build element mappings and tree mappings.
      */
     public void buildMappingsOuterLoop(List<ProgramElement> srcStmts,String srcPath,Map<String, String> pathMap,
-                                       List<ProgramElement> AllSrcStmtsToMap,
                                        Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap) throws IOException {
 
         long time1 = System.currentTimeMillis();
 
-        // Run fast matchers
-//        BaseFastMatcher fastMatcher = new MultiFastMatcher(srcStmts, dstStmts, eleMappings);//快速映射（3种）
-//        fastMatcher.setTreeTokenMaps(srcTtMap, dstTtMap);
-//        fastMatcher.buildMappings();
-
         // Build candidate searcher and best mapping searcher
-        CandidateSetsAndMaps candidateSetsAndMaps = new CandidateSetsAndMaps(eleMappings, srcStmts, srcPath,allDstStmts,
-                allDstStmtsToMap, allDstTokensToMap, allDstinnerStmtsToMap, AllSrcStmtsToMap, AllSrcPathToStmtsMap);
-//        allSrcPathToStmtsMap = candidateSetsAndMaps.getAllSrcPathToStmtsMap();
-//        System.out.println(allSrcPathToStmtsMap);
+        CandidateSetsAndMaps candidateSetsAndMaps = new CandidateSetsAndMaps(eleMappings, srcStmts, allDstStmts,
+                allDstStmtsToMap, allDstTokensToMap, allDstinnerStmtsToMap, AllSrcPathToStmtsMap);
         String dstPath = pathMap.get(srcPath);
-        FilterDstCandidates filterDstCandidates = new FilterDstCandidates(eleMappings, srcStmts, dstStmts, srcPath, dstPath,allDstStmtsToMap, allDstTokensToMap,
-                allDstinnerStmtsToMap,allDstPathToStmtsMap, allDstPathToTokensMap, allDstPathToinnerStmtsMap, allDstValTokenMap,allSrcPathToStmtsMap);
+        FilterDstCandidates filterDstCandidates = new FilterDstCandidates(eleMappings, allDstStmtsToMap, allDstTokensToMap, allDstinnerStmtsToMap,
+                allDstPathToStmtsMap, allDstPathToTokensMap, allDstPathToinnerStmtsMap, allDstValTokenMap,allSrcPathToStmtsMap);
 //        System.out.println("Before: " + candidateSetsAndMaps);
         CandidateSearcher candidateSearcher = new CandidateSearcher(filterDstCandidates,candidateSetsAndMaps, eleMappings);//候选元素搜索器
 //        System.out.println("After: " + candidateSearcher);
@@ -263,9 +237,7 @@ public class iASTMapper {
             }
         }
     }
-//    public Map<String, List<ProgramElement>> getSrcStmtsToMap(){
-//        return srcStmtsToMap;
-//    }
+
     public Map<Map<String, String>, String> getCrossFileMap(){
         return crossFileMap;
 }

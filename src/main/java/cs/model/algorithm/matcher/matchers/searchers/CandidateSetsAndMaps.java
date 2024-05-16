@@ -13,43 +13,31 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
     private final Set<ProgramElement> srcStmtsToMap; //在快速映射阶段没有映射的src中的stmt元素
     private final Set<ProgramElement> srcTokensToMap;//在快速映射阶段没有映射的src中的token元素
     private final Set<ProgramElement> srcinnerStmtsToMap;//在快速映射阶段没有映射的src中的inner-stmt元素
-//    private final Set<ProgramElement> dstStmtsToMap;
-//    private final Set<ProgramElement> dstTokensToMap;
-//    private final Set<ProgramElement> dstinnerStmtsToMap;
-
     private final Map<ProgramElementType, Set<ProgramElement>> dstTypeElementMap;
-    private final Map<String, Set<ProgramElement>> dstValTokenMap;//键是token的value，值是token元素，一个value值可能对应多个token元素
     private final Map<String, Set<ProgramElement>> dstValMultiTokenElementMap;//键是innerstmt的类型与value值的拼接，值是所有的innerstmt集合
-
     private final ElementMappings fastEleMappings;
-    public static List<ProgramElement> AllSrcStmtsToMap;
     public static Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
     public Map<String, Set<ProgramElement>> srcPathToStmtsMap;
 
-    public CandidateSetsAndMaps(ElementMappings fastEleMappings, List<ProgramElement> srcStmts, String srcPath,
+    public CandidateSetsAndMaps(ElementMappings fastEleMappings, List<ProgramElement> srcStmts,
                                 List<ProgramElement> allDstStmts, List<ProgramElement> AllDstStmtsToMap,
                                 List<ProgramElement> AllDstTokensToMap, List<ProgramElement> AllDstinnerStmtsToMap,
-                                List<ProgramElement> AllSrcStmtsToMap, Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap) {
+                                Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap) {
         this.fastEleMappings = fastEleMappings;
         this.dstTypeElementMap = new HashMap<>();
-        this.dstValTokenMap = new HashMap<>();
         this.dstValMultiTokenElementMap = new HashMap<>();
         this.allSrcStmts = new HashSet<>(srcStmts);
         this.srcStmtsToMap = new HashSet<>();
         this.srcTokensToMap = new HashSet<>();
         this.srcinnerStmtsToMap = new HashSet<>();
-        this.AllSrcStmtsToMap = AllSrcStmtsToMap;
         this.AllSrcPathToStmtsMap = AllSrcPathToStmtsMap;
         this.srcPathToStmtsMap = new HashMap<>();
-//        this.dstStmtsToMap = new HashSet<>();
-//        this.dstTokensToMap = new HashSet<>();
-//        this.dstinnerStmtsToMap = new HashSet<>();
-        initStmtsAndTokens(srcStmts, srcPath);
+        initStmtsAndTokens(srcStmts);
         initMultiTokenElementMap(allDstStmts);
         initMap(AllDstStmtsToMap, AllDstTokensToMap, AllDstinnerStmtsToMap);
     }
 
-    private void initStmtsAndTokens(List<ProgramElement> srcStmts, String srcPath) {//将快速映射阶段没有映射的stmt、token、inner都存入各自的集合中，方便后续映射
+    private void initStmtsAndTokens(List<ProgramElement> srcStmts) {//将快速映射阶段没有映射的stmt、token、inner都存入各自的集合中，方便后续映射
         for (ProgramElement srcStmt : srcStmts) {
             if (!fastEleMappings.isMapped(srcStmt)) {
                 this.srcStmtsToMap.add(srcStmt);//在快速映射阶段没有映射的语句存入srcStmtsToMap集合
@@ -63,41 +51,8 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
                     this.srcinnerStmtsToMap.add(innerStmtEle);
             }
         }
-//        srcPathToStmtsMap.put(srcPath, this.srcStmtsToMap);
-//        AllSrcPathToStmtsMap.putAll(srcPathToStmtsMap);
-//        System.out.println(AllSrcPathToStmtsMap);
     }
-//
-//        for (ProgramElement dstStmt: dstStmts) {
-//            if (!fastEleMappings.isMapped(dstStmt)) {
-//                this.dstStmtsToMap.add(dstStmt);
-//            }
-//            for (ProgramElement tokenEle: dstStmt.getTokenElements()) {
-//                if (!fastEleMappings.isMapped(tokenEle)) {
-//                    this.dstTokensToMap.add(tokenEle);
-//                    String value = tokenEle.getStringValue();
-//                    if (!dstValTokenMap.containsKey(value))
-//                        dstValTokenMap.put(value, new HashSet<>());
-//                    dstValTokenMap.get(value).add(tokenEle);
-//                }
-//                for (ProgramElement innerStmtEle: ((TokenElement) tokenEle).getInnerStmtElementsWithToken()) {//为什么dst对应的token还对token的内部语句进行了检查，token还有内部语句？
-//                    if (!fastEleMappings.isMapped(innerStmtEle))
-//                        this.dstinnerStmtsToMap.add(innerStmtEle);
-//                }
-//            }
-//            addrecursive(dstStmt.getInnerStmtElements());//传入当前遍历的这条dstStmt，对其下面的内部语句检查，如果在快速映射阶段没有被映射，则添加到对应的inner-stmt集合中
-//        }
-//    }
-//    //递归，在快速映射阶段 语句的内部语句 没有映射的要被存入dstInnerStmtsToMap集合中，继续递归 内部语句的内部语句
-//    private void addrecursive(List<InnerStmtElement> innerStmtElementList){
-//        if(innerStmtElementList == null)
-//            return;
-//        for (ProgramElement innerStmtEle: innerStmtElementList) {
-//            if (!fastEleMappings.isMapped(innerStmtEle))
-//                this.dstinnerStmtsToMap.add(innerStmtEle);
-//            addrecursive(innerStmtEle.getInnerStmtElements());
-//        }
-//    }
+
     //初始化token元素与其字符串值匹配的集合
     private void initMultiTokenElementMap(List<ProgramElement> allDstStmts) {
         for (ProgramElement dstStmt: allDstStmts) {
@@ -142,10 +97,6 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
         typeEleMap.get(type).add(element);//typeEleMap中的键指类型，值指的是是这个类型的所有元素集合
     }
 
-    public Map<String, Set<ProgramElement>> getAllSrcPathToStmtsMap() {
-        return AllSrcPathToStmtsMap;
-    }
-
     public Set<ProgramElement> getAllSrcStmts() {
         return allSrcStmts;
     }
@@ -169,12 +120,6 @@ public class CandidateSetsAndMaps {//将快速阶段未匹配的三种元素筛�
         return ret;
     }
 
-//    public Set<ProgramElement> getSameValDstCandidates(String value) {
-//        Set<ProgramElement> ret = new HashSet<>();
-//        if (dstValTokenMap.containsKey(value))
-//            ret.addAll(dstValTokenMap.get(value));
-//        return ret;
-//    }
 
     public Set<ProgramElement> getSameValDstMultiTokenElements(String typeWithValue) {
         Set<ProgramElement> ret = new HashSet<>();

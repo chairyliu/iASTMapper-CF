@@ -96,7 +96,7 @@ public class iASTMapper_runner {
                                 for (String filePath: resultMap.keySet()){
                                     RevisionAnalysis m = resultMap.get(filePath);
                                     MappingStore ms = m.getMatcher().getMs();
-                                    List<StmtTokenAction> actionList = m.generateActions();
+                                    List<StmtTokenAction> actionList = m.generateActions(filePath);
                                     List<TreeEditAction> treeEditActions = m.generateEditActions();
 
                                     bw1.write("\n\nFile: " + filePath + "\n\n");

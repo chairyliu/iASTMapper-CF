@@ -29,10 +29,10 @@ public class CommitAnalysis {
     protected String dstFilePath;
     protected String srcFileContent;
     protected String dstFileContent;
-    protected Map<String, String> pathMap;
     private iASTMapper matcher;
 
     public static Map<String, List<ProgramElement>> srcStmtsToMap;
+    public static Map<String, List<ProgramElement>> dstStmtsToMap;
     public static Map<String, ProgramElement> dstPathToRoot;
     public static Map<String, ProgramElement> srcPathToRoot;
     public static List<ProgramElement> AllDstStmtsToMap;
@@ -55,6 +55,7 @@ public class CommitAnalysis {
         this.evaluationMap = new HashMap<>();//后期去掉
         this.stmtOrToken = stmtOrToken;
         srcStmtsToMap = new HashMap<>();
+        dstStmtsToMap = new HashMap<>();
         dstPathToRoot = new HashMap<>();
         srcPathToRoot = new HashMap<>();
         this.AllDstPathToStmtsMap = new HashMap<>();
@@ -75,6 +76,9 @@ public class CommitAnalysis {
         Map<String, String> pathMap = GitInfoRetrieval.getOldModifiedFileMap(project, commitId);//获取“原文件-修订文件”对
         if (pathMap == null || pathMap.size() == 0)
             return;
+        boolean isSingleFile = false;
+        if (pathMap.size() == 1)
+            isSingleFile = true;
 
         for (String srcFilePath : pathMap.keySet()){
             String dstFilePath = pathMap.get(srcFilePath);
@@ -99,8 +103,8 @@ public class CommitAnalysis {
                     this.dstFilePath = null;
                     return;
                 }
-                matcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath,
-                        srcStmtsToMap, dstPathToRoot, srcPathToRoot,allDstStmts);//创建iASTMapper对象
+                matcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, pathMap,
+                        srcStmtsToMap, dstStmtsToMap, dstPathToRoot, srcPathToRoot,allDstStmts);//创建iASTMapper对象
                 matcher.multiFastMapped();
                 matcher.preStoreAllDstCandidates(srcFilePath, dstFilePath, AllDstStmtsToMap, AllDstTokensToMap,
                         AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,
@@ -143,8 +147,8 @@ public class CommitAnalysis {
                     List<ProgramElement> srcStmts = new ArrayList<>();
                     srcStmts = srcStmtsToMap.get(srcToPath);
                     iASTMapper mc = srcPathToMatcher.get(srcToPath);
-                    RevisionAnalysis result = new RevisionAnalysis(project, commitId, srcToPath, pathMap,mc, srcPathToMatcher,
-                            srcStmts, AllSrcPathToStmtsMap);
+                    RevisionAnalysis result = new RevisionAnalysis(project, commitId, srcToPath, pathMap, mc, srcPathToMatcher,
+                            srcStmts, AllSrcPathToStmtsMap, isSingleFile);
                     resultMap.put(srcToPath, result);
                 }
             }

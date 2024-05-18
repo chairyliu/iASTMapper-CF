@@ -27,7 +27,7 @@ public class TestUtils {
 
             RevisionAnalysis m = resultMap.get(filePath);
 
-            List<StmtTokenAction> actionList = m.generateActions();
+            List<StmtTokenAction> actionList = m.generateActions(filePath);
             List<TreeEditAction> treeEditActions = m.generateEditActions();
 
             for (StmtTokenAction action: actionList)//语句编辑操作

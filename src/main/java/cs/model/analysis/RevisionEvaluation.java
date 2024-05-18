@@ -72,6 +72,7 @@ public class RevisionEvaluation {
     private long ijmMappingTime;
     private long ijmActionTime;
     public Map<String, List<ProgramElement>> srcStmtsToMap;
+    public Map<String, List<ProgramElement>> dstStmtsToMap;
     public List<ProgramElement> allDstStmts;
     public static Map<String, ProgramElement> dstPathToRoot;
     public Map<String, ProgramElement> srcPathToRoot;
@@ -79,7 +80,7 @@ public class RevisionEvaluation {
     public static Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
 
     public RevisionEvaluation(String project, String commitId, String baseCommitId,
-                              String srcFilePath, String dstFilePath) throws Exception {
+                              String srcFilePath, String dstFilePath, boolean isSingleFile) throws Exception {
         this.project = project;
         this.commitId = commitId;
         this.srcFilePath = srcFilePath;
@@ -105,11 +106,11 @@ public class RevisionEvaluation {
             return;
         }
         // build mappings using my method
-        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, srcStmtsToMap, dstPathToRoot, srcPathToRoot, allDstStmts);
+        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, pathMap, srcStmtsToMap, dstStmtsToMap,dstPathToRoot, srcPathToRoot, allDstStmts);
         //下面三行-新增-ljy
         List<ProgramElement> srcStmts = new ArrayList<>();
         srcStmts = srcStmtsToMap.get(srcFilePath);
-        this.myMatcher.buildMappingsOuterLoop(srcStmts, srcFilePath, pathMap, AllSrcPathToStmtsMap);
+        this.myMatcher.buildMappingsOuterLoop(srcStmts, srcFilePath, pathMap, AllSrcPathToStmtsMap, isSingleFile);
         this.myMappings = this.myMatcher.getEleMappings();
         this.myActions = this.myMatcher.getTreeEditActions();
 
@@ -146,9 +147,9 @@ public class RevisionEvaluation {
         return this.ijmMappings;
     }
 
-    public List<StmtTokenAction> generateStmtTokenEditActions(){
-        return this.myMatcher.generateStmtTokenEditActions();
-    }
+//    public List<StmtTokenAction> generateStmtTokenEditActions(){
+//        return this.myMatcher.generateStmtTokenEditActions();
+//    }
     public List<StmtTokenAction> generateGtStmtTokenEditActions(){
         StmtTokenActionGenerator generator = new StmtTokenActionGenerator(this.myMatcher.getSrcStmts(), this.myMatcher.getDstStmts(), this.gtAnalysisResult.getEleMappings());
         List<StmtTokenAction> actionList = generator.generateActions(false);

@@ -84,14 +84,6 @@ public class TokenSameStructureMeasure extends AbstractSimMeasure implements Sim
         return true;
     }
 
-    public ITree getSrcMultiTokenNode() {
-        return srcMultiTokenNode;
-    }
-
-    public ITree getDstMultiTokenNode() {
-        return dstMultiTokenNode;
-    }
-
     @Override
     public Set<ProgramElement> filterBadDstCandidateElements(ProgramElement srcEle, Set<ProgramElement> dstCandidates,
                                                              FilterDstCandidates filterDstCandidates,CandidateSetsAndMaps candidateSetsAndMaps) {

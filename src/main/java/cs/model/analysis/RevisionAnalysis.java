@@ -34,7 +34,7 @@ public class RevisionAnalysis {
 
     public RevisionAnalysis(String project, String commitId, String srcToPath,Map<String, String> pathMap, iASTMapper matcher,
                             Map<String, iASTMapper> srcPathToMatcher, List<ProgramElement> srcStmts,
-                            Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap){
+                            Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap, boolean isSingleFile){
         this.project = project;
         this.commitId = commitId;
         this.pathMap = pathMap;
@@ -43,7 +43,7 @@ public class RevisionAnalysis {
         this.AllSrcPathToStmtsMap = AllSrcPathToStmtsMap;
 
         try{
-            matcher.buildMappingsOuterLoop(srcStmts, srcToPath, pathMap, AllSrcPathToStmtsMap);//执行外层循环，建立元素映射及节点映射
+            matcher.buildMappingsOuterLoop(srcStmts, srcToPath, pathMap, AllSrcPathToStmtsMap, isSingleFile);//执行外层循环，建立元素映射及节点映射
             this.eleMappings = matcher.getEleMappings();
             srcRootEle = matcher.getSrcRootEle();
             calMappingRecords();
@@ -67,9 +67,9 @@ public class RevisionAnalysis {
         }
     }
 
-    public List<StmtTokenAction> generateActions() {
+    public List<StmtTokenAction> generateActions(String srcPath) {
         if (actionList == null)
-            actionList = matcher.generateStmtTokenEditActions();
+            actionList = matcher.generateStmtTokenEditActions(srcPath);
         return actionList;
     }
 

@@ -63,6 +63,10 @@ public class FilterDstCandidates {
                                    Map<String, Set<ProgramElement>> AllDstPathToinnerStmtsMap,
                                    Map<String, Set<ProgramElement>> AllDstValTokenMap,Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap) {//将快速映射阶段没有映射的stmt、token、inner都存入各自的集合中，方便后续映射
         for (ProgramElement srcStmt: srcStmts) {
+//            if (srcStmt.getStringValue().equals(""))
+//                continue;
+//            if (srcStmt.getNodeType().equals("Block"))
+//                continue;
             if (!fastEleMappings.isMapped(srcStmt)) {
                 this.SrcStmtsToMap.add(srcStmt);//在快速映射阶段没有映射的语句存入srcStmtsToMap集合
             }
@@ -71,6 +75,10 @@ public class FilterDstCandidates {
         AllSrcPathToStmtsMap.putAll(srcPathToStmtsMap);
 
         for (ProgramElement dstStmt: dstStmts) {
+//            if (dstStmt.getStringValue().equals(""))
+//                continue;
+//            if (dstStmt.getNodeType().equals("Block"))
+//                continue;
             if (!fastEleMappings.isMapped(dstStmt)) {
                 this.dstStmtsToMap.add(dstStmt);
             }

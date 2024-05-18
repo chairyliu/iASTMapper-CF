@@ -83,17 +83,21 @@ public class iASTMapper {
     public List<ProgramElement> allDstTokensToMap = new ArrayList<>();
     public List<ProgramElement> allDstinnerStmtsToMap = new ArrayList<>();
     public Map<String, Set<ProgramElement>> allDstValTokenMap;
+    public Map<String, List<ProgramElement>> dstStmtsToMap;
     public Map<String, ProgramElement> dstPathToRoot;
     public Map<String, ProgramElement> srcPathToRoot;
-    public Map<Map<String, String>, String> crossFileMap;
+    public Map<Map<String, String>, String> crossFileMap = new HashMap<>();
     public Map<String, Set<ProgramElement>> allSrcPathToStmtsMap = new HashMap<>();
 
-    public iASTMapper(String srcFileContent, String dstFileContent, String srcPath, String dstPath,
-                      Map<String, List<ProgramElement>> srcStmtsToMap,Map<String, ProgramElement> dstPathToRoot,
-                      Map<String, ProgramElement> srcPathToRoot,List<ProgramElement> allDstStmts) throws IOException {//这些src的步骤都可以提前计算，这样在for遍历的时候就不用重复算好几次
+    public iASTMapper(String srcFileContent, String dstFileContent, String srcPath, String dstPath,Map<String,String> pathMap,
+                      Map<String, List<ProgramElement>> srcStmtsToMap, Map<String, List<ProgramElement>> dstStmtsToMap,
+                      Map<String, ProgramElement> dstPathToRoot, Map<String, ProgramElement> srcPathToRoot,
+                      List<ProgramElement> allDstStmts) throws IOException {//这些src的步骤都可以提前计算，这样在for遍历的时候就不用重复算好几次
         this.dstPathToRoot = dstPathToRoot;
         this.allDstStmts = allDstStmts;
         this.srcPathToRoot = srcPathToRoot;
+        this.dstStmtsToMap = dstStmtsToMap;
+        this.pathMap = pathMap;
         used_rules.clear(); // 添加-ZN
         // We use gumtree's AST in SE-Mapping algorithm
         long time1 = System.currentTimeMillis();
@@ -129,6 +133,7 @@ public class iASTMapper {
         dstPathToRoot.put(dstPath,this.dstRootEle);
 
         srcStmtsToMap.put(srcPath, this.srcStmts);
+        dstStmtsToMap.put(dstPath, this.dstStmts);
 
         allDstStmts.addAll(this.dstStmts);
 
@@ -167,7 +172,7 @@ public class iASTMapper {
      * Build element mappings and tree mappings.
      */
     public void buildMappingsOuterLoop(List<ProgramElement> srcStmts,String srcPath,Map<String, String> pathMap,
-                                       Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap) throws IOException {
+                                       Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap, boolean isSingleFile) throws IOException {
 
         long time1 = System.currentTimeMillis();
 
@@ -209,10 +214,12 @@ public class iASTMapper {
                 break;
         }
 
-        SelectCrossFileMapping selectCrossFileMapping = new SelectCrossFileMapping(eleMappings, srcPath, pathMap,
-                allDstPathToStmtsMap, allDstPathToTokensMap, allDstPathToinnerStmtsMap, allSrcPathToStmtsMap);
-        crossFileMap = selectCrossFileMapping.getCrossFileMap();
-//        System.out.println(crossFileMap);
+        if (!isSingleFile){
+            SelectCrossFileMapping selectCrossFileMapping = new SelectCrossFileMapping(eleMappings, srcPath, pathMap,
+                    allDstPathToStmtsMap, allDstPathToTokensMap, allDstPathToinnerStmtsMap, allSrcPathToStmtsMap);
+            crossFileMap = selectCrossFileMapping.getCrossFileMap();
+//              System.out.println(crossFileMap);
+        }
 
         // map all inner-stmt elements
         //元素映射转换为AST节点映射（AST code mapping）
@@ -333,8 +340,12 @@ public class iASTMapper {
      * Such actions are grouped along each pair of mapped statements.
      * It is more convenient to visualize the mappings of statements and tokens.
      */
-    public List<StmtTokenAction> generateStmtTokenEditActions(){//如果改原来的输出actionList可能只需要把这里的allDstStmts改成对应的dstStmts
-        StmtTokenActionGenerator generator = new StmtTokenActionGenerator(srcStmts, allDstStmts, eleMappings);
+    public List<StmtTokenAction> generateStmtTokenEditActions(String srcPath){//如果改原来的输出actionList可能只需要把这里的allDstStmts改成对应的dstStmts
+        String dstFilePath = pathMap.get(srcPath);
+        List<ProgramElement> dstStmt = dstStmtsToMap.get(dstFilePath);
+//        if (srcPath.equals("activeio/src/java/org/activeio/adapter/SyncToAsyncChannelServer.java"))
+//            System.out.println(srcPath);
+        StmtTokenActionGenerator generator = new StmtTokenActionGenerator(srcStmts, dstStmt, eleMappings);
         List<StmtTokenAction> actionList = generator.generateActions(false);
         return generator.reorderActions(actionList);
     }

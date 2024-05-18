@@ -178,6 +178,7 @@ public class ElementMappings implements Iterable<ElementMapping> {
             ITree dstT = srcToDst.get(src).getITreeNode();
             ms.addMapping(srcT, dstT);//将源树节点和目标树节点添加到MappingStore中，表示它们之间存在映射关系
         }
+//        System.out.println(srcToDst.size());
         return ms;
     }
 

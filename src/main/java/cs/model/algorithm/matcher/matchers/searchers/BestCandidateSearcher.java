@@ -152,7 +152,7 @@ public class BestCandidateSearcher {
         }
     }
 
-    //用determine和doCompare迭代筛选全局/局部候选集中的元素，ret可能有一个可能有多个元素，也可能有0个元素
+    //用determine和doCompare迭代筛选全局/局部候选集中的元素，ret可能有一个可能有1个元素，也可能有0个元素，也可能有多个元素
     private Set<ProgramElement> findBestCandidates(String measureName,
                                                    Set<ProgramElement> candidateElements,
                                                    ElementSimMeasures mappedMeasures) {

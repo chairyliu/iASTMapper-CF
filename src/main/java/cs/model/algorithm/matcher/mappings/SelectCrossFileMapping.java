@@ -32,7 +32,10 @@ public class SelectCrossFileMapping {
         for (ProgramElement srcEle : srcStmtsToMap) {
             if (srcEle.getStringValue().equals(""))
                 continue;
+//            if (srcEle.getStringValue().equals("node getRegionDestination getDestinationStatistics getDequeues increment"))
+//                System.out.println(srcEle);
             ProgramElement dstEle = srcToDstMap.get(srcEle);
+//            if (dstEle == null)
             if (dstEle == null || dstEle.getStringValue().equals(""))
                 continue;
             if (samePathDstStmts != null && samePathDstStmts.contains(dstEle))
@@ -59,9 +62,8 @@ public class SelectCrossFileMapping {
                             break;
                         }
                     }
-                    if (isContinue) {
+                    if (isContinue)
                         recordCrossFileMapping(srcPath, tmp_dstPath, srcEle, dstStmt);
-                    }
                 }
             }
         }

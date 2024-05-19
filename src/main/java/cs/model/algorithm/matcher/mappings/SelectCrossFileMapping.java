@@ -32,10 +32,9 @@ public class SelectCrossFileMapping {
         for (ProgramElement srcEle : srcStmtsToMap) {
             if (srcEle.getStringValue().equals(""))
                 continue;
-//            if (srcEle.getStringValue().equals("node getRegionDestination getDestinationStatistics getDequeues increment"))
+//            if (srcEle.getStringValue().equals("channel dispose"))
 //                System.out.println(srcEle);
             ProgramElement dstEle = srcToDstMap.get(srcEle);
-//            if (dstEle == null)
             if (dstEle == null || dstEle.getStringValue().equals(""))
                 continue;
             if (samePathDstStmts != null && samePathDstStmts.contains(dstEle))

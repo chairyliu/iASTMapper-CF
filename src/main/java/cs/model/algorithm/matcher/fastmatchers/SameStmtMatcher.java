@@ -36,26 +36,57 @@ public class SameStmtMatcher extends BaseFastMatcher {
         buildValueStmtMap(dstStmts, dstTtMap, dstValueStmtMap);
 
         for (String value: srcValueStmtMap.keySet()){
-            Set<ProgramElement> srcStmts = srcValueStmtMap.get(value);
-//            System.out.println("elemen " + srcStmts);
-//            System.out.println("elemen " + srcStmts + " |And| " + value + " |size| " + srcStmts.size());
-            if (srcStmts.size() > 1)
-                continue;
+            Set<ProgramElement> srcUnsortedStmts = srcValueStmtMap.get(value);
+//            if (value.equals("if(msg==null||msg.length()==0)msg=cause.toString();"))
+//                System.out.println(value);
             if (!dstValueStmtMap.containsKey(value))
                 continue;
-            Set<ProgramElement> dstStmts = dstValueStmtMap.get(value);
-            if (dstStmts.size() > 1)
-                continue;
+//            Set<ProgramElement> dstStmts = dstValueStmtMap.get(value);
+            List<ProgramElement> srcStmts = sortElementsByLineNumber(srcUnsortedStmts);
+            List<ProgramElement> dstStmts = sortElementsByLineNumber(dstValueStmtMap.get(value));
+            int srcSize = srcStmts.size();
+            int dstSize = dstStmts.size();
+//            if (srcStmts.size() > 1){
+//                continue;
+//            }
+//            if (!dstValueStmtMap.containsKey(value))
+//                continue;
+//            Set<ProgramElement> dstStmts = dstValueStmtMap.get(value);
+//            if (dstStmts.size() > 1)
+//                continue;
+            if (srcSize == dstSize) {
+                Iterator<ProgramElement> srcIterator = srcStmts.iterator();
+                Iterator<ProgramElement> dstIterator = dstStmts.iterator();
+                while (srcIterator.hasNext() && dstIterator.hasNext()) {
+                    ProgramElement srcStmtEle = srcIterator.next();
+                    ProgramElement dstStmtEle = dstIterator.next();
+                    if (elementMappings.isMapped(srcStmtEle) || elementMappings.isMapped(dstStmtEle))
+                        continue;
+                    addRecursiveMappings(srcStmtEle, dstStmtEle);
+                }
+            }
 
-            ProgramElement srcStmtEle = srcStmts.iterator().next();//获取集合中的第一个元素
-            ProgramElement dstStmtEle = dstStmts.iterator().next();
-            if (elementMappings.isMapped(srcStmtEle))
-                continue;
-            if (elementMappings.isMapped(dstStmtEle))
-                continue;
-//            System.out.println("Src " + srcStmtEle + " || " + dstStmtEle);
-            addRecursiveMappings(srcStmtEle, dstStmtEle);
+//            ProgramElement srcStmtEle = srcStmts.iterator().next();//获取集合中的第一个元素
+//            ProgramElement dstStmtEle = dstStmts.iterator().next();
+////            System.out.println(srcStmtEle + "+" + dstStmtEle);
+//            if (elementMappings.isMapped(srcStmtEle))
+//                continue;
+//            if (elementMappings.isMapped(dstStmtEle))
+//                continue;
+////            System.out.println("Src " + srcStmtEle + " || " + dstStmtEle);
+//            addRecursiveMappings(srcStmtEle, dstStmtEle);
         }
+    }
+
+    private List<ProgramElement> sortElementsByLineNumber(Set<ProgramElement> elements) {
+        List<ProgramElement> sortedList = new ArrayList<>(elements);
+        Collections.sort(sortedList, new Comparator<ProgramElement>() {
+            @Override
+            public int compare(ProgramElement p1, ProgramElement p2) {
+                return Integer.compare(p1.getStartLine(), p2.getStartLine());
+            }
+        });
+        return sortedList;
     }
 
     //将源程序元素和目标程序元素的语句、内部语句以及token进行递归映射。

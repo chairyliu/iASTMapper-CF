@@ -72,6 +72,7 @@ public class FilterDstCandidates {
             }
         }
         srcPathToStmtsMap.put(srcPath, this.SrcStmtsToMap);
+//        System.out.println(SrcStmtsToMap);
         AllSrcPathToStmtsMap.putAll(srcPathToStmtsMap);
 
         for (ProgramElement dstStmt: dstStmts) {

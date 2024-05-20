@@ -141,11 +141,11 @@ public class iASTMapper {
         this.eleMappings.addMapping(srcRootEle, dstRootEle);//建立了根节点之间的映射,这里先把一对一的根元素匹配在一起了，是否有问题
     }
 
-    public void multiFastMapped(){
-        BaseFastMatcher fastMatcher = new MultiFastMatcher(srcStmts, dstStmts, eleMappings);//快速映射（3种）
-        fastMatcher.setTreeTokenMaps(srcTtMap, dstTtMap);
-        fastMatcher.buildMappings();
-    }
+//    public void multiFastMapped(){
+//        BaseFastMatcher fastMatcher = new MultiFastMatcher(srcStmts, dstStmts, eleMappings);//快速映射（3种）
+//        fastMatcher.setTreeTokenMaps(srcTtMap, dstTtMap);
+//        fastMatcher.buildMappings();
+//    }
 
     public void preStoreAllDstCandidates(String srcPath, String dstPath, List<ProgramElement> AllDstStmtsToMap,
                                          List<ProgramElement> AllDstTokensToMap, List<ProgramElement> AllDstinnerStmtsToMap,
@@ -154,6 +154,10 @@ public class iASTMapper {
                                          Map<String, Set<ProgramElement>> AllDstPathToinnerStmtsMap,
                                          Map<String, Set<ProgramElement>> AllDstValTokenMap,
                                          Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap){
+        BaseFastMatcher fastMatcher = new MultiFastMatcher(srcStmts, dstStmts, eleMappings);//快速映射（3种）
+        fastMatcher.setTreeTokenMaps(srcTtMap, dstTtMap);
+        fastMatcher.buildMappings();
+
         FilterDstCandidates filterDstCandidates = new FilterDstCandidates(eleMappings,AllDstStmtsToMap, AllDstTokensToMap,
                 AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,AllDstValTokenMap,AllSrcPathToStmtsMap);
         filterDstCandidates.initStmtsAndTokens(srcStmts, dstStmts, srcPath, dstPath,AllDstStmtsToMap, AllDstTokensToMap,

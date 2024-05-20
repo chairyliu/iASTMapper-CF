@@ -19,6 +19,10 @@ import java.util.*;
 
 public class iASTMapper_runner {
 
+    public static int crossFileCommitIdNum = 0;
+    public static int crossFileStmtNum = 0;
+    public static int multiFiles = 0;
+    public static int totalCommitIdNum = 0;
     public static void run(String project_commits_path, String method_errors_file, String resPath){
 
         Set<String> erroredFRs = new HashSet<>();
@@ -26,6 +30,8 @@ public class iASTMapper_runner {
             erroredFRs = iASTMapper_runner.getErroredFRs(method_errors_file);
 
         Set<String> filePaths = new HashSet<>();
+        String previousCommitId = null;
+        String recordedcommitId = null;
 
         try {
 
@@ -58,6 +64,7 @@ public class iASTMapper_runner {
                     BufferedReader br = new BufferedReader(new FileReader(f));
                     BufferedWriter bw = new BufferedWriter(new FileWriter(project_resFile, true));
                     BufferedWriter bw1;
+                    BufferedWriter bw2;//新增跨文件的输出（暂时）
                     while((line = br.readLine())!=null) {
                         String[] sa = line.split(" ");
                         if (sa.length == 4) {
@@ -66,10 +73,13 @@ public class iASTMapper_runner {
                             String FR = commitId + " " + oldPath;
                             if (analyzedFRs.contains(FR) || erroredFRs.contains(FR))
                                 continue;
-                            // for test
-//                            if (!commitId.equals("f3ef1a9a31c14e24c2c4587095be7191228af041") &&
-//                                    !commitId.equals("262a5596d9300b7aded14d550cf8f5ee80d7ac0f"))
-//                                continue;
+
+                            if (previousCommitId != null){
+                                if (previousCommitId.equals(commitId))
+                                    continue;
+                            }
+                            previousCommitId = commitId;
+
                             try {
                                 filePaths.clear();
                                 filePaths.add(oldPath);
@@ -78,9 +88,12 @@ public class iASTMapper_runner {
                                 mappingResult.calResultMapping(false, false);
                                 long time2 = System.currentTimeMillis();
                                 long time = time2 - time1;
+                                totalCommitIdNum++;
 
                                 bw1 = new BufferedWriter(new FileWriter(
                                         projectPath + "\\" + commitId + ".txt",true));
+                                bw2 = new BufferedWriter(new FileWriter(
+                                        resPath + "\\" + project + " " + "cross-file output" + ".txt", true));
                                 Map<String, RevisionAnalysis> resultMap = mappingResult.getRevisionAnalysisResultMap();
 
                                 if (resultMap.size() == 0) {
@@ -92,6 +105,9 @@ public class iASTMapper_runner {
                                     ebw.flush();
                                     continue;
                                 }
+
+                                if (resultMap.size() != 1)
+                                    multiFiles++;
 
                                 for (String filePath: resultMap.keySet()){
                                     RevisionAnalysis m = resultMap.get(filePath);
@@ -108,6 +124,30 @@ public class iASTMapper_runner {
                                     for (TreeEditAction action: treeEditActions)
                                         bw1.write(action.toString());
 
+                                    //新增
+                                    iASTMapper matcher = m.getMatcher();
+                                    Map<Map<String, String>, String> crossFileMap = matcher.getCrossFileMap();
+                                    if (crossFileMap.size() != 0){
+//                                    System.out.println(crossFileMap);
+                                        if (recordedcommitId != null){
+                                            if (!recordedcommitId.equals(commitId))
+                                                crossFileCommitIdNum++;
+                                        }
+                                        recordedcommitId = commitId;
+                                        bw2.write("\ncommitId: " + commitId + "\n");
+                                        for (Map<String, String> pathToSrcStmt : crossFileMap.keySet()){
+                                            String dstStmt = crossFileMap.get(pathToSrcStmt);
+                                            crossFileStmtNum++;
+                                            for (String path : pathToSrcStmt.keySet()){
+                                                String srcStmt = pathToSrcStmt.get(path);
+                                                String[] parts = path.split("\\+");
+                                                bw2.write("srcFile: " + parts[0] + "\n");
+                                                bw2.write("dstFile: " + parts[1] + "\n");
+                                                bw2.write(srcStmt + " —> " + dstStmt + "\n\n");
+                                            }
+                                        }
+                                    }
+
                                     int ASTNodeMappings_num = ms.size();
                                     int eleMappings_num = m.getMatcher().getEleMappings().asSet().size();
                                     int ASTESSize = treeEditActions.size();
@@ -118,9 +158,11 @@ public class iASTMapper_runner {
                                     System.out.println(record);
                                     bw.write(record + "\n");
                                     bw1.flush();
+                                    bw2.flush();
                                     bw.flush();
                                 }
                                 bw1.close();
+                                bw2.close();
                             } catch (Exception e) {
                                 ebw.write(commitId + " " + oldPath + " -> " + e.getMessage() + "\n");
                                 ebw.flush();
@@ -197,17 +239,28 @@ public class iASTMapper_runner {
             }
 
             Map<String, String> ruleNameMap = new HashMap<>();
-            ruleNameMap.put("SAME_STMT", "IDEN");
-            ruleNameMap.put("E_ANCESTOR", "ANCE");
-            ruleNameMap.put("DICE", "IMTR");
-            ruleNameMap.put("DM", "IMSR");
-            ruleNameMap.put("EXC", "S-ABS");
-            ruleNameMap.put("INNER_STMT_SAME_STMT", "I-MSIS");
-            ruleNameMap.put("INNER_STMT_ELE_DICE", "I-IMTR");
-            ruleNameMap.put("INNER_STMT_ELE_SANDWICH", "I-ABS");
-            ruleNameMap.put("STMT", "T-MSIS");
-            ruleNameMap.put("INNERSTMT", "T-MSIS");
-            ruleNameMap.put("TOKEN_LRB", "T-ABS");
+//            ruleNameMap.put("SAME_STMT", "IDEN");
+//            ruleNameMap.put("E_ANCESTOR", "ANCE");
+//            ruleNameMap.put("DICE", "IMTR");
+//            ruleNameMap.put("DM", "IMSR");
+//            ruleNameMap.put("EXC", "S-ABS");
+//            ruleNameMap.put("INNER_STMT_SAME_STMT", "I-MSIS");
+//            ruleNameMap.put("INNER_STMT_ELE_DICE", "I-IMTR");
+//            ruleNameMap.put("INNER_STMT_ELE_SANDWICH", "I-ABS");
+//            ruleNameMap.put("STMT", "T-MSIS");
+//            ruleNameMap.put("INNERSTMT", "T-MSIS");
+//            ruleNameMap.put("TOKEN_LRB", "T-ABS");
+            ruleNameMap.put("IDEN", "IDEN");
+            ruleNameMap.put("ANCE", "ANCE");
+            ruleNameMap.put("IMTR", "IMTR");
+            ruleNameMap.put("IMSR", "IMSR");
+            ruleNameMap.put("S-ABS", "S-ABS");
+            ruleNameMap.put("I-MSIS", "I-MSIS");
+            ruleNameMap.put("I-IMTR", "I-IMTR");
+            ruleNameMap.put("I-ABS", "I-ABS");
+            ruleNameMap.put("T-MSIS", "T-MSIS");
+//            ruleNameMap.put("INNERSTMT", "T-MSIS");
+            ruleNameMap.put("T-ABS", "T-ABS");
 
             int c = 0;
             BufferedWriter bw = new BufferedWriter(new FileWriter(method_rulefreq_file));
@@ -321,6 +374,10 @@ public class iASTMapper_runner {
         String iASTMapper_ruleFreqFile = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\iASTMapper_rules.txt";
         run4RuleFreqCal(project_commits_path, iASTMapper_ruleFreqFile);
 
+        System.out.println("The total commitId number is: " + totalCommitIdNum);
+        System.out.println("multiple-files commitId number: " + multiFiles);
+        System.out.println("cross-file commitId number: " + crossFileCommitIdNum);
+        System.out.println("cross-file statements number: " + crossFileStmtNum);
 //        String iASTMapper_IJMAST_resPath = "C:\\Users\\DELL\\Desktop\\iASTMapper\\ase2023\\iASTMapper(IJM-AST)_res";
 //        String iASTMapper_IJMAST_errorsFile = iASTMapper_IJMAST_resPath + "\\__errors_.txt";
 //        GitProjectInfoExtractor.createPath(iASTMapper_IJMAST_resPath);

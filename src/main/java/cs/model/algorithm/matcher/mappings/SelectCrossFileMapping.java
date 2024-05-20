@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static cs.model.analysis.CrossFileRevisionAnalysis.compareTwo;
+
 public class SelectCrossFileMapping {
 
     private ElementMappings eleMappings;
@@ -19,7 +21,7 @@ public class SelectCrossFileMapping {
                                   Map<String, Set<ProgramElement>> allDstPathToinnerStmtsMap,
                                   Map<String, Set<ProgramElement>> allSrcPathToStmtsMap) {
         srcToDstMap = eleMappings.getSrcToDstMap();
-        dstToSrcMap = eleMappings.getDstToSrcMap();
+//        dstToSrcMap = eleMappings.getDstToSrcMap();
         Map<String, String> invertedPathMap = new HashMap<>();
         for (Map.Entry<String, String> entry : pathMap.entrySet()) {
             invertedPathMap.put(entry.getValue(), entry.getKey());
@@ -32,10 +34,19 @@ public class SelectCrossFileMapping {
         for (ProgramElement srcEle : srcStmtsToMap) {
             if (srcEle.getStringValue().equals(""))
                 continue;
-//            if (srcEle.getStringValue().equals("channel dispose"))
+//            if (srcEle.getStringValue().startsWith("import") || srcEle.getStringValue().startsWith("package"))
+//                continue;
+//            if (srcEle.getStringValue().equals("pool close"))
 //                System.out.println(srcEle);
             ProgramElement dstEle = srcToDstMap.get(srcEle);
             if (dstEle == null || dstEle.getStringValue().equals(""))
+                continue;
+//            String src = "syncChannel stop WAIT_FOREVER_TIMEOUT";
+//            String dst = "next stop";
+//            double sim = compareTwo(src, dst);
+//            System.out.println(sim);
+            double similarity = compareTwo(srcEle.getStringValue(), dstEle.getStringValue());
+            if (similarity < 0.45)
                 continue;
             if (samePathDstStmts != null && samePathDstStmts.contains(dstEle))
                 continue;
@@ -56,23 +67,23 @@ public class SelectCrossFileMapping {
                     Set<ProgramElement> srcStmtsSet = allSrcPathToStmtsMap.get(tmp_srcPath);
                     boolean isContinue = true;
                     for (ProgramElement tmp_srcStatement : srcStmtsSet) {
-                        if (tmp_srcStatement.getStringValue().equals(dstStmt.getStringValue())) {
+                        if (tmp_srcStatement.getStringValue().equals(dstEle.getStringValue())) {
                             isContinue = false;
                             break;
                         }
                     }
                     if (isContinue)
-                        recordCrossFileMapping(srcPath, tmp_dstPath, srcEle, dstStmt);
+                        recordCrossFileMapping(srcPath, tmp_dstPath, srcEle, dstEle);
                 }
             }
         }
     }
 
-    private void recordCrossFileMapping(String srcPath, String tmp_dstPath, ProgramElement srcEle, ProgramElement dstStmt) {
+    private void recordCrossFileMapping(String srcPath, String tmp_dstPath, ProgramElement srcEle, ProgramElement dstEle) {
         Map<String, String> srcAndDstPathToSrcStmtMap = new HashMap<>();
         String path = srcPath + "+" + tmp_dstPath;
         String srcValue = srcEle.getStringValue();
-        String dstValue = dstStmt.getStringValue();
+        String dstValue = dstEle.getStringValue();
         srcAndDstPathToSrcStmtMap.put(path, srcValue);
         crossFileMap.put(srcAndDstPathToSrcStmtMap, dstValue);
     }

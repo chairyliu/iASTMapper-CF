@@ -14,6 +14,10 @@ import java.util.*;
 
 
 public class iASTMapper100_runner {
+    public static int crossFileCommitIdNum = 0;
+    public static int crossFileStmtNum = 0;
+    public static int multiFiles = 0;
+    public static int totalCommitIdNum = 0;
 
     public static void run(String project_commits_path, String method_errors_file, String resPath){
 
@@ -23,6 +27,7 @@ public class iASTMapper100_runner {
 
         Set<String> filePaths = new HashSet<>();
         String previousCommitId = null;
+        String recordedcommitId = null;
 
         try {
 
@@ -56,13 +61,8 @@ public class iASTMapper100_runner {
                     String[] sa = line.split(" ");
                     if (sa.length == 4) {
                         String commitId = sa[0];
-//                        if(commitId.equals("0be4c31f80dc38ddf8decbc8d6d13bd23d3ae8b1")){
-//                            System.out.println("stop");
-//                        }
-//                        else{continue;}
                         String oldPath = sa[2];
                         String FR = commitId + " " + oldPath;
-//                        System.out.println(FR);
                         if (analyzedFRs.contains(FR) || erroredFRs.contains(FR))
                             continue;
 
@@ -80,11 +80,12 @@ public class iASTMapper100_runner {
                             mappingResult.calResultMapping(false, false);
                             long time2 = System.currentTimeMillis();
                             long time = time2 - time1;
+                            totalCommitIdNum++;
 
                             bw1 = new BufferedWriter(new FileWriter(
                                     projectPath + File.separator + commitId + ".txt",true));
                             bw2 = new BufferedWriter(new FileWriter(
-                                    resPath + File.separator + "cross-file output" + ".txt", true));
+                                    resPath + File.separator + project + " " + "cross-file output" + ".txt", true));
                             Map<String, RevisionAnalysis> resultMap = mappingResult.getRevisionAnalysisResultMap();
 
                             if (resultMap.size() == 0) {
@@ -93,13 +94,14 @@ public class iASTMapper100_runner {
                                  * OR there is runtime error happened during the execution, then the resultMap is empty!
                                  */
                                 ebw.write(commitId + " " + oldPath + " -> No Result!\n");
-//                                ebw.write(commitId + " " + " -> No Result!\n");
                                 ebw.flush();
                                 continue;
                             }
 
+                            if (resultMap.size() != 1)
+                                multiFiles++;
+
                             for (String filePath: resultMap.keySet()){
-//                                System.out.println(resultMap);
                                 RevisionAnalysis m = resultMap.get(filePath);
                                 MappingStore ms = m.getMatcher().getMs();
                                 List<StmtTokenAction> actionList = m.generateActions(filePath);//如果这个只包含对应文件的action，那么可以再单独创建一个跨文件的输出
@@ -119,9 +121,15 @@ public class iASTMapper100_runner {
                                 Map<Map<String, String>, String> crossFileMap = matcher.getCrossFileMap();
                                 if (crossFileMap.size() != 0){
 //                                    System.out.println(crossFileMap);
+                                    if (recordedcommitId != null){
+                                        if (!recordedcommitId.equals(commitId))
+                                            crossFileCommitIdNum++;
+                                    }
+                                    recordedcommitId = commitId;
                                     bw2.write("\ncommitId: " + commitId + "\n");
                                     for (Map<String, String> pathToSrcStmt : crossFileMap.keySet()){
                                         String dstStmt = crossFileMap.get(pathToSrcStmt);
+                                        crossFileStmtNum++;
                                         for (String path : pathToSrcStmt.keySet()){
                                             String srcStmt = pathToSrcStmt.get(path);
                                             String[] parts = path.split("\\+");
@@ -164,9 +172,6 @@ public class iASTMapper100_runner {
         }
 
     }
-
-    public static Map<String, Integer> ruleFreqMap = new HashMap<>();
-
 
     /**
      * Get the set of analyzed file revisions.
@@ -229,6 +234,12 @@ public class iASTMapper100_runner {
         GitProjectInfoExtractor.createPath(iASTMapper_resPath);
         iASTMapper.used_ASTtype = "gt";
         run(project_commits_path, iASTMapper_errorsFile, iASTMapper_resPath);  // run iASTMapper
+
+        System.out.println("The total commitId number is: " + totalCommitIdNum);
+        System.out.println("multiple-files commitId number: " + multiFiles);
+        System.out.println("cross-file commitId number: " + crossFileCommitIdNum);
+        System.out.println("cross-file statements number: " + crossFileStmtNum);
+//        System.out.println("The rate of cross-file mapping: " + (100 * crossFileCommitIdNum) / multiFiles + "%");
 
 //        String iASTMapper_ruleFreqFile = "ase2023" + File.separator + "iASTMapper_rules.txt";
 //        run4RuleFreqCal(project_commits_path, iASTMapper_ruleFreqFile);

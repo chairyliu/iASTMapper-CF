@@ -107,7 +107,7 @@ public class CommitAnalysis {
                         srcStmtsToMap, dstStmtsToMap, dstPathToRoot, srcPathToRoot,allDstStmts);//创建iASTMapper对象
 //                if (srcFilePath.equals("activemq-core/src/main/java/org/activemq/util/JMSExceptionSupport.java"))
 //                    System.out.println(srcFilePath);
-                matcher.multiFastMapped();
+//                matcher.multiFastMapped();
                 matcher.preStoreAllDstCandidates(srcFilePath, dstFilePath, AllDstStmtsToMap, AllDstTokensToMap,
                         AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,
                         AllDstValTokenMap, AllSrcPathToStmtsMap);

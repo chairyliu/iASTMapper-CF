@@ -4,11 +4,9 @@ import cs.model.algorithm.element.*;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.matcher.measures.ElementSimMeasures;
 import cs.model.algorithm.matcher.rules.ElementMatchDeterminer;
+import cs.model.utils.CosSimilarity;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The class for searching candidates for a given
@@ -84,22 +82,18 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
     //stmt的候选集就是从前一阶段CandidateSetsAndMaps中拿到的map集合（<srcele,<type,set<dstele>>）中直接get，没有用别的方法
     private Set<ProgramElement> getDstCandidateStmtElements(StmtElement srcStmt) {
 //        Set<ProgramElement>  dstStmtCandidates = getDstTypeElementMap().get(srcStmt.getElementType());
+//        if (dstStmtCandidates == null)
+//            return null;
 //        Set<ProgramElement> dstCandidatesStmtElements = new HashSet<>();
 //        String srcValue = srcStmt.getStringValue();
 //        for (ProgramElement dstStmtCandidate : dstStmtCandidates){
 //            String dstValue = dstStmtCandidate.getStringValue();
 //            double similarity = compareTwo(srcValue, dstValue);
-//            if (similarity <= 0.5){
-//                System.out.println(similarity);
-//            } else {
-//                System.out.println(srcStmt);
-//            }
 //            if (similarity > 0.5)
 //                dstCandidatesStmtElements.add(dstStmtCandidate);
-////            System.out.println(dstStmtCandidates.size() + dstCandidatesStmtElements.size());
 //        }
-//          return dstCandidatesStmtElements;
-
+////        System.out.println(dstStmtCandidates.size() + "+" + dstCandidatesStmtElements.size());
+//        return dstCandidatesStmtElements;
         return getDstTypeElementMap().get(srcStmt.getElementType());//获取srcstmt类型（键）对应的所有element列表，将其作为候选集
     }
 
@@ -189,5 +183,23 @@ public class CandidateSearcher {//建立语句、内部语句、token的候选�
             }
             return false;
         }
+    }
+
+    public static double compareTwo(String src, String dst) {
+        String[] srcTokens = src.split("\\s+");
+        String[] dstTokens = dst.split("\\s+");
+        Map<CharSequence, Integer> srcMaptokens = convertToMap(srcTokens);
+        Map<CharSequence, Integer> dstMaptokens = convertToMap(dstTokens);
+        CosSimilarity simEngine = new CosSimilarity();
+        double comparisonSimilarity = simEngine.cosineSimilarity(srcMaptokens, dstMaptokens);
+        return comparisonSimilarity;
+    }
+
+    private static Map<CharSequence, Integer> convertToMap(String[] tokens) {
+        Map<CharSequence, Integer> map = new HashMap<>();
+        for (String token : tokens) {
+            map.put(token, map.getOrDefault(token, 0) + 1);
+        }
+        return map;
     }
 }

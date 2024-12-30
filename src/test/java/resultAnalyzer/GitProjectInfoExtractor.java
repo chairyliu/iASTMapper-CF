@@ -105,8 +105,8 @@ public class GitProjectInfoExtractor {
     public static void main(String[] args) {
 
 
-        String RQ1_path = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\RQ1";
-        String project_commits_path = "C:\\Users\\29366\\Desktop\\iASTMapper\\ase2023\\project_commits-1";
+        String RQ1_path = "C:\\Users\\HP\\Desktop\\iASTMapper\\ase2023\\RQ1";
+        String project_commits_path = "D:\\iASTMapper\\ase2023\\project_commits-1";
         createPath(project_commits_path);
 
         String[] projects = new String[]{ "activemq", "commons-io", "commons-lang", "commons-math",

@@ -2,7 +2,9 @@
 
 # iASTMapper-CF:
 
-An Iterative Similarity-Based Abstract Syntax Tree Mapping Algorithm
+An Iterative Similarity-Based Abstract Syntax Tree Mapping Algorithm Supporting Cross-File and One-to-Many Mappings
+
+iASTMapper-CF is an extension of the existing AST mapping algorithm iASTMapper, designed to analyze code file differences by iteratively mapping Abstract Syntax Tree (AST) nodes.It supports cross-file mappings and one-to-many mappings, enabling detailed analysis of complex code modifications and their interactions.  The tool integrates processes such as node extraction, mapping, and generating actionable results to help researchers and developers effectively understand and manage code changes.
 
 # How to run our code
 1. Clone the ten studied projects (ActiveMQ and so on) to the directory `D://tmp`. You can change the path in `resources/config.properties`.

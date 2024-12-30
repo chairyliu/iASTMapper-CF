@@ -22,8 +22,8 @@ public class TreePositionIndex {
     private Set<Integer> rawTreeEndPosSet;   // end positions of ITree objects
 
     public TreePositionIndex(ITree root, ITree rawTreeRoot){
-        this.rawTreeRoot = rawTreeRoot;//原始树的根
-        postOrderTrees = TreeUtils.postOrder(root);//返回每个子树和使用后序排序的树的列表。
+        this.rawTreeRoot = rawTreeRoot;
+        postOrderTrees = TreeUtils.postOrder(root);
         postOrderRawTrees = TreeUtils.postOrder(rawTreeRoot);
         initTrees();
     }
@@ -36,30 +36,35 @@ public class TreePositionIndex {
         posTreesMap = new HashMap<>();
         posRawTreesMap = new HashMap<>();
 
-        for (ITree t: postOrderTrees){//遍历每一个树节点
-            posSet.add(t.getPos());//获取该树节点的开始位置
-            if (!posTreesMap.containsKey(t.getPos()))//如果posTreesMap中不含有这个开始位置
-                posTreesMap.put(t.getPos(), new ArrayList<>());//就将这个开始位置存入map集合中，作为键，初始化一个list集合作为值
-            posTreesMap.get(t.getPos()).add(t);//将t这个节点添加到开始位置（键）对应的值列表中
+        for (ITree t: postOrderTrees){
+            if (t != null){
+                posSet.add(t.getPos());
+                if (!posTreesMap.containsKey(t.getPos()))
+                    posTreesMap.put(t.getPos(), new ArrayList<>());
+                posTreesMap.get(t.getPos()).add(t);
+            }
         }
 
         for (ITree t: postOrderRawTrees){
-            rawPosSet.add(t.getPos());
-            if (!posRawTreesMap.containsKey(t.getPos()))
-                posRawTreesMap.put(t.getPos(), new ArrayList<>());
-            posRawTreesMap.get(t.getPos()).add(t);
+            if (t != null){
+                rawPosSet.add(t.getPos());
+                if (!posRawTreesMap.containsKey(t.getPos()))
+                    posRawTreesMap.put(t.getPos(), new ArrayList<>());
+                posRawTreesMap.get(t.getPos()).add(t);
+            }
         }
 
-        nodeStartPositions = new ArrayList<>(posSet);//将set集合中存储的所有posSet都取出来存到nodeStartPositions中
-        Collections.sort(nodeStartPositions);//按从小到大排序
+        nodeStartPositions = new ArrayList<>(posSet);
+        Collections.sort(nodeStartPositions);
 
         rawNodeStartPositions = new ArrayList<>(rawPosSet);
         Collections.sort(rawNodeStartPositions);
 
-        for (ITree t: rawTreeRoot.preOrder()){
-            rawTreePosSet.add(t.getPos());
-            rawTreeEndPosSet.add(t.getEndPos());
-//            System.out.println("The T is " + t + " T getPos : " + t.getPos() + " T getEndPos: " + t.getEndPos());
+        if (rawTreeRoot != null) {
+            for (ITree t : rawTreeRoot.preOrder()) {
+                rawTreePosSet.add(t.getPos());
+                rawTreeEndPosSet.add(t.getEndPos());
+            }
         }
     }
 
@@ -95,7 +100,6 @@ public class TreePositionIndex {
         int pos = range.first;
         if (posTreesMap.containsKey(pos)){
             ITree t = posTreesMap.get(pos).get(0);
-//            System.out.println("ITree pos " + posTreesMap.get(pos) + " ITree " + t);
             if (t.getEndPos() < range.second)
                 throw new RuntimeException("Find Tree of Word Error!");
             return t;

@@ -88,14 +88,6 @@ public class PartialMatcher implements Matcher {
         }
     }
 
-
-//    protected void addMapping(ITree src, ITree dst) {
-//        if (src.isMatched() || dst.isMatched())
-//            return;
-//
-//        super.addMapping(src,dst);
-//    }
-
     @Override
     public MappingStore match(ITree src, ITree dst, MappingStore mappings) {
         this.src = src;

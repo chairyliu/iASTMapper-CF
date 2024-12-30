@@ -40,7 +40,6 @@ public class StmtSandwichRule extends AbstractElementMatchRule implements Elemen
         }
         boolean leftMapped = isLeftStmtMapped(srcEle, dstEle);
         boolean rightMapped = isRightStmtMapped(srcEle, dstEle);
-//        System.out.println("Brother " + srcEle + " | " + dstEle + " " + leftMapped + " " + rightMapped);
         if (leftMapped && rightMapped)
             return 1;
         return 0;
@@ -56,7 +55,6 @@ public class StmtSandwichRule extends AbstractElementMatchRule implements Elemen
             ProgramElement srcEle1 = srcSiblingElements.get(srcElement.getChildIdx() - 1);
             ProgramElement dstEle1 = dstSiblingElements.get(dstElement.getChildIdx() - 1);
 
-//            System.out.println("Left Src is " + srcElement + " " + srcEle1 + " Dst is " + dstElement + " " + dstEle1);
             if (elementMappings.getDstForSrc(srcEle1) == dstEle1)
                 leftMapped = true;
         }
@@ -74,7 +72,6 @@ public class StmtSandwichRule extends AbstractElementMatchRule implements Elemen
         else if (srcElement.getChildIdx() < srcSiblingSize - 1 && dstElement.getChildIdx() < dstSiblingSize - 1){
             ProgramElement srcEle2 = srcSiblingElements.get(srcElement.getChildIdx() + 1);
             ProgramElement dstEle2 = dstSiblingElements.get(dstElement.getChildIdx() + 1);
-//            System.out.println("Right Src is " + srcElement + " " + srcEle2 + " Dst is " + dstElement + " " + dstEle2);
             if (elementMappings.getDstForSrc(srcEle2) == dstEle2)
                 rightMapped = true;
         }

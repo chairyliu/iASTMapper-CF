@@ -5,7 +5,6 @@ import cs.model.algorithm.element.StmtElement;
 import cs.model.algorithm.matcher.measures.AbstractSimMeasure;
 import cs.model.algorithm.matcher.measures.SimMeasure;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -27,10 +26,7 @@ public class StmtDescendantMappingMeasure extends AbstractSimMeasure implements 
 
         Set<ProgramElement> srcSubStmts = ((StmtElement) srcEle).getAllNonBlockDescendantStmts();
         Set<ProgramElement> dstSubStmts = ((StmtElement) dstEle).getAllNonBlockDescendantStmts();
-//        List<StmtElement> srcSubStmts = srcEle.getNearestDescendantStmts();
-//        List<StmtElement> dstSubStmts = dstEle.getNearestDescendantStmts();
         for (ProgramElement srcStmt: srcSubStmts){
-//            System.out.println("Descent   " + srcStmt);
             if (elementMappings.isMapped(srcStmt)) {
                 ProgramElement dstStmt = elementMappings.getDstForSrc(srcStmt);
                 if (dstSubStmts.contains(dstStmt)) {
@@ -40,7 +36,6 @@ public class StmtDescendantMappingMeasure extends AbstractSimMeasure implements 
         }
         if (val > 0)
             val = val * 2 / (srcSubStmts.size() + dstSubStmts.size());
-//        System.out.println("Descent src is " + srcEle + " Dst is " + dstEle + " " + val);
         return val;
     }
 }

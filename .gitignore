@@ -1,8 +1,8 @@
 target/
-ase2023/
+tse/
 .idea/
 paperData/
 !*.java
-!/src/test/java/ase2023
+!/src/test/java/resultAnalyzer
 
 

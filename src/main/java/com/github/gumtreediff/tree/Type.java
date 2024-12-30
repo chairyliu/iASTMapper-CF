@@ -27,11 +27,10 @@ import static com.github.gumtreediff.tree.TypeSet.type;
 
 public final class Type {
 
-    // Type的名字
     public final String name;
 
     public static final Type NO_TYPE = type("");
-    // 增加代码
+
     public static final Type NODE_AGGREGATION_TYPE = type("MTDIFF_NODE_AGGREGATION_TYPE");
 
     private Type(String value) {

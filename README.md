@@ -1,6 +1,6 @@
 # Guide for running the code
 
-# iASTMapper:
+# iASTMapper-CF:
 
 An Iterative Similarity-Based Abstract Syntax Tree Mapping Algorithm
 
@@ -13,16 +13,16 @@ An Iterative Similarity-Based Abstract Syntax Tree Mapping Algorithm
 TestUtils.testBaseline(project, commitId, file, "gt");
 
 // To test iASTMapper
-TestUtils.testiASTMapper(project, commitId, file);
+TestUtils.testiASTMapper(project, commitId);
 ```
 
-3. Run `cs.zju.analysis.CommitAnalysis`. The `CommitAnalysis` includes a lot of the APIs using `jgit` and quickly extract the content of each file before and after a commit.
+3. Run `test.java.resultAnalyzer.iASTMapper_runner`. The `iASTMapper-CF` integrates all processes, including node extraction, mapping, output, and more.
 ```
-// run analysis using iASTMapper for all the file revisions of a commit.
-CommitAnalysis analysis = new CommitAnalysis(project, commitId);
+// mappingResult using iASTMapper for all the file revisions of a commit.
+CommitAnalysis mappingResult = new CommitAnalysis(project, commitId);
 
-// run analysis for each file revision using iASTMapper
-analysis.calResultMappings(false, false);
+// mappingResult for each file revision using iASTMapper
+mappingResult.calResultMappings(false, false);
 
 // RevisionAnalysis provides APIs to retrieve the mappings of elements, 
 // mappings of tree nodes, edit actions and so on

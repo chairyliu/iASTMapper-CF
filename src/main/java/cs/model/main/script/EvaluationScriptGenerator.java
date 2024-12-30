@@ -128,7 +128,7 @@ public class EvaluationScriptGenerator {
         filesToAnalyze.add(filePath);
 
         CommitAnalysis commitResult = new CommitAnalysis(project, commitId, true);
-        commitResult.calResultMapping(false, false);
+        commitResult.calResultMapping(true);
 
         Map<String, RevisionEvaluation> comparisonMap = commitResult.getEvaluationMap();
         RevisionEvaluation comparison = comparisonMap.get(filePath);

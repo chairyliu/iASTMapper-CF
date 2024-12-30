@@ -58,18 +58,18 @@ public class TreeTokensMap {
 
     public TreeTokensMap(RangeCalculator rc, ITree rootNode, ITree rawTreeRootNode,
                 Set<Integer> removedPositions){
-        this.fileContent = rc.getFileContent();//rc里面有行末索引，每行的内容
+        this.fileContent = rc.getFileContent();
         this.rc = rc;
         this.rootNode = rootNode;
-        this.removedPositions = removedPositions;//返回set<Integer>,注释或javadoc的位置，当前版本不考虑这两种
-        tokenRanges = new ArrayList<>();//每个token都表示为其字符值的范围
-        tokenRangeTreeMap = new HashMap<>();//存储标记范围到树节点的映射
-        treeTokenRangeMap = new HashMap<>();//存储树节点到标记范围的映射
+        this.removedPositions = removedPositions;
+        tokenRanges = new ArrayList<>();
+        tokenRangeTreeMap = new HashMap<>();
+        treeTokenRangeMap = new HashMap<>();
         initAllLiterals(rootNode);
-        treePosIdx = new TreePositionIndex(rootNode, rawTreeRootNode);//建立树节点位置的索引
+        treePosIdx = new TreePositionIndex(rootNode, rawTreeRootNode);
         initTokensInNode();
         for (int i = 0; i < tokenRanges.size(); i++)
-            rangeIdxMap.put(tokenRanges.get(i), i);//将每个标记范围与其索引关联，并将关联关系存储在rangeIdxMap中
+            rangeIdxMap.put(tokenRanges.get(i), i);
         handleGarbage();
     }
 
@@ -166,25 +166,24 @@ public class TreeTokensMap {
         return ret;
     }
 
-    //将树节点t和token的字符一一对应起来，并记录树节点的开始和结束位置
+
     private void initTokensInNode(){
         initAllTokensFromNode(rootNode, fileContent, tokenRanges, tokenRangeTreeMap);
         startPositions = new ArrayList<>();
-        endPositions = new ArrayList<>();//初始化用于存储起始和结束位置的列表
-        startPosTokenIdxMap = new HashMap<>();//存储起始位置与标记索引的映射
-        endPosTokenIdxMap = new HashMap<>();//存结束位置与标记索引的映射
-        for (int i = 0; i < tokenRanges.size(); i++){//遍历标记范围列表
-            TokenRange range = tokenRanges.get(i);//获取token范围内的每个字符
-            ITree t = tokenRangeTreeMap.get(range);//对应到树中的节点
-            //如果 treeTokenRangeMap 中不包含当前语法树节点 t，则添加一个空的列表
+        endPositions = new ArrayList<>();
+        startPosTokenIdxMap = new HashMap<>();
+        endPosTokenIdxMap = new HashMap<>();
+        for (int i = 0; i < tokenRanges.size(); i++){
+            TokenRange range = tokenRanges.get(i);
+            ITree t = tokenRangeTreeMap.get(range);
             if (!treeTokenRangeMap.containsKey(t))
                 treeTokenRangeMap.put(t, new ArrayList<>());
-            treeTokenRangeMap.get(t).add(range);//将token字符range与树节点t对应，添加到treeTokenRangeMap中存储
+            treeTokenRangeMap.get(t).add(range);
 
             // position and token map
             int startPos = range.first;
             int endPos = range.second;
-            startPosTokenIdxMap.put(startPos, i);//将token字符的起始/结束位置与本身字符关联起来
+            startPosTokenIdxMap.put(startPos, i);
             endPosTokenIdxMap.put(endPos, i);
             startPositions.add(startPos);
             endPositions.add(endPos);
@@ -199,7 +198,6 @@ public class TreeTokensMap {
             range = new TokenRange(start, end);
             tokenRanges.add(range);
             ITree tmp = treePosIdx.findITreeOfToken(range);
-//            System.out.println("My tmp " + tmp);
             allTokenTreeMap.put(range, tmp);
         } else {
             range = new TokenRange(t.getPos(), t.getEndPos());
@@ -215,13 +213,12 @@ public class TreeTokensMap {
         int end = node.getEndPos();
         String token = "";
         int start = node.getPos();
-//        System.out.println("Scanner Index " + scannerIndex + " end is " + end + " start " + start);
         while (scannerIndex < end){
-            if (removedPositions.contains(scannerIndex)){//如果当前节点是注释或者Javadoc，不考虑，顺序到下一节点
+            if (removedPositions.contains(scannerIndex)){
                 scannerIndex ++;
                 continue;
             }
-            ITree tmp = findLiteralByPos(scannerIndex);//返回的是一个ITree类型的token元素
+            ITree tmp = findLiteralByPos(scannerIndex);
             if (tmp != null) {
                 if (!token.equals(""))
                     addTokenRange(tokenRanges, allTokenTreeMap, start, scannerIndex, null);
@@ -235,7 +232,6 @@ public class TreeTokensMap {
 
             Pair<Integer, Integer> commentRange = checkRangeOfComment(scannerIndex, fileContent);
             if (commentRange != null){
-//                System.out.println("My tmp ");
                 if (!token.equals(""))
                     addTokenRange(tokenRanges, allTokenTreeMap, start, scannerIndex, null);
 
@@ -250,7 +246,6 @@ public class TreeTokensMap {
             if (treePosIdx.isStartPosOfNode(scannerIndex) ||
                     treePosIdx.isEndPosOfNode(scannerIndex)){
                 if (!token.equals("")) {
-//                    System.out.println("Token is " + token + " " + start + " | " + scannerIndex);
                     addTokenRange(tokenRanges, allTokenTreeMap, start, scannerIndex, null);
                 }
                 if (isSeparateCharacter(scannerIndex)){
@@ -267,7 +262,6 @@ public class TreeTokensMap {
 
             if (isSeparateCharacter(scannerIndex)){
                 if (!token.equals("")){
-//                    System.out.println("Token is " + token + " " + start + " || " + scannerIndex);
                     addTokenRange(tokenRanges, allTokenTreeMap, start, scannerIndex, null);
                     token = "";
                 }
@@ -302,19 +296,19 @@ public class TreeTokensMap {
         return false;
     }
 
-    private ITree findLiteralByPos(int pos){//返回一个ITree类型的token
-        return posLiteralMap.get(pos);//posLiteralMap的键表示一个ITree节点的位置（pos），值是对应的ITree节点也是一个token元素
+    private ITree findLiteralByPos(int pos){
+        return posLiteralMap.get(pos);
     }
 
-    private void initAllLiterals(ITree node){//遍历给定树节点node的所有子节点，分辨不同类型的节点，并将它们与节点本身关联，方便后续快速访问
-        posLiteralMap = new HashMap<>();//存储节点位置与文字的映射
+    private void initAllLiterals(ITree node){
+        posLiteralMap = new HashMap<>();
         if (node != null) {
-            for (ITree t : node.preOrder()) {//先序遍历给定node的所有子节点
+            for (ITree t : node.preOrder()) {
                 if (StaticNodeTypeChecker.getConfigNodeTypeChecker().isStringLiteral(t) ||
-                        StaticNodeTypeChecker.getConfigNodeTypeChecker().isCharacterLiteral(t)){//是否为字符串文字或字符文字
-                    posLiteralMap.put(t.getPos(), t);//将节点的位置与节点本身关联
+                        StaticNodeTypeChecker.getConfigNodeTypeChecker().isCharacterLiteral(t)){
+                    posLiteralMap.put(t.getPos(), t);
                 }
-                if (StaticNodeTypeChecker.getConfigNodeTypeChecker().isNumberLiteral(t))//是否为数字文字
+                if (StaticNodeTypeChecker.getConfigNodeTypeChecker().isNumberLiteral(t))
                     posLiteralMap.put(t.getPos(), t);
             }
         }

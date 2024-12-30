@@ -37,9 +37,9 @@ public class GitInfoRetrieval {
         GitInfoRetrieval.commitId = commitId;
 
         try {
-            addedFiles = new ArrayList<>();//跨文件映射
+            addedFiles = new ArrayList<>();
             oldModifiedFileMap = new HashMap<>();
-            fileDiffMap = new HashMap<>();//跨文件
+            fileDiffMap = new HashMap<>();
             GitUtils.getModificationInfo(project, commitId, addedFiles,
                     oldModifiedFileMap, fileDiffMap, true);
             hasDeletedFile = oldModifiedFileMap.size() > 0;

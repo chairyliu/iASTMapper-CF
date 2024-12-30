@@ -39,10 +39,12 @@ public final class TreeUtils {
     }
 
     private static void preOrder(ITree tree, List<ITree> trees) {
-        trees.add(tree);
-        if (!tree.isLeaf())
-            for (ITree c: tree.getChildren())
-                preOrder(c, trees);
+        if (tree != null){
+            trees.add(tree);
+            if (!tree.isLeaf())
+                for (ITree c: tree.getChildren())
+                    preOrder(c, trees);
+        }
     }
 
     /**
@@ -113,9 +115,11 @@ public final class TreeUtils {
     }
 
     private static void postOrder(ITree tree, List<ITree> trees) {
-        if (!tree.isLeaf())
-            for (ITree c: tree.getChildren())
-                postOrder(c, trees);
+        if (tree != null){
+            if (!tree.isLeaf())
+                for (ITree c: tree.getChildren())
+                    postOrder(c, trees);
+        }
         trees.add(tree);
     }
 
@@ -187,8 +191,10 @@ public final class TreeUtils {
             }
 
             private void push(ITree tree) {
-                if (!tree.isLeaf())
-                    stack.push(tree.getChildren().iterator());
+                if (tree != null){
+                    if (!tree.isLeaf())
+                        stack.push(tree.getChildren().iterator());
+                }
             }
 
             @Override

@@ -1,9 +1,11 @@
 package cs.model.analysis;
 
+import com.github.gumtreediff.tree.ITree;
 import cs.model.algorithm.element.ElementTreeUtils;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.iASTMapper;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
+import cs.model.algorithm.utils.GumTreeUtil;
 import cs.model.baseline.BaselineMatcher;
 import cs.model.evaluation.config.MyConfig;
 import cs.model.evaluation.csvrecord.compare.ComparisonRecord;
@@ -47,6 +49,8 @@ public class RevisionComparison {
     public Map<String, ProgramElement> srcPathToRoot;
     protected Map<String, String> pathMap;
     public static Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
+    private ITree src;
+    private ITree dst;
 
     public RevisionComparison(String project, String commitId, String baseCommitId,
                               String srcFilePath, String dstFilePath, boolean stmtOrToken, boolean isSingleFile) throws Exception {
@@ -75,13 +79,15 @@ public class RevisionComparison {
             noGoodResult = true;
             return;
         }
+        src = GumTreeUtil.getITreeRoot(srcFileContent, "gt");
+        dst = GumTreeUtil.getITreeRoot(dstFileContent, "gt");
         // build mappings using our method
-        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, pathMap,srcStmtsToMap, dstStmtsToMap,dstPathToRoot, srcPathToRoot, allDstStmts);
+        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent,src,dst, srcFilePath, dstFilePath, pathMap,srcStmtsToMap, dstStmtsToMap,dstPathToRoot, srcPathToRoot, allDstStmts);
         //下三行新增-ljy
 //        srcStmtsToMap = myMatcher.getSrcStmtsToMap();
         List<ProgramElement> srcStmts = new ArrayList<>();
         srcStmts = srcStmtsToMap.get(srcFilePath);
-        this.myMatcher.buildMappingsOuterLoop(srcStmts, srcFilePath, pathMap, AllSrcPathToStmtsMap, isSingleFile);
+        this.myMatcher.buildMappingsOuterLoop(srcStmts, srcFilePath, pathMap, AllSrcPathToStmtsMap, isSingleFile, true);
         this.myMappings = this.myMatcher.getEleMappings();
 
         // build mappings using gumtree, mtdiff and ijm

@@ -58,7 +58,6 @@ public class CdJdtVisitor extends AbstractJdtVisitor {
 
         // @Inria
         pushNode(node, node.toString());
-        //
         visitListAsNode(EntityType.MODIFIERS, node.modifiers());
         node.getType().accept(this);
         visitListAsNode(EntityType.FRAGMENTS, node.fragments());

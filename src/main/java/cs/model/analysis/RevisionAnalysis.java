@@ -20,10 +20,8 @@ import java.util.Set;
 public class RevisionAnalysis {
     protected String project;
     protected String commitId;
-    protected String srcFilePath;
-
+    protected String srcToPath;
     protected Map<String, String> pathMap;
-
     private iASTMapper matcher;
     private List<StmtMappingAndMeasureRecord> mappingRecords;
     private ProgramElement srcRootEle;
@@ -34,33 +32,37 @@ public class RevisionAnalysis {
 
     public RevisionAnalysis(String project, String commitId, String srcToPath,Map<String, String> pathMap, iASTMapper matcher,
                             Map<String, iASTMapper> srcPathToMatcher, List<ProgramElement> srcStmts,
-                            Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap, boolean isSingleFile){
+                            Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap, boolean isSingleFile, boolean doCrossFileMapping){
         this.project = project;
         this.commitId = commitId;
+        this.srcToPath = srcToPath;
         this.pathMap = pathMap;
         this.matcher = matcher;
         this.srcPathToMatcher = srcPathToMatcher;
         this.AllSrcPathToStmtsMap = AllSrcPathToStmtsMap;
 
         try{
-            matcher.buildMappingsOuterLoop(srcStmts, srcToPath, pathMap, AllSrcPathToStmtsMap, isSingleFile);//执行外层循环，建立元素映射及节点映射
+            matcher.buildMappingsOuterLoop(srcStmts, srcToPath, pathMap, AllSrcPathToStmtsMap, isSingleFile, doCrossFileMapping);
             this.eleMappings = matcher.getEleMappings();
             srcRootEle = matcher.getSrcRootEle();
-            calMappingRecords();
+            storeMappingRecords();
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    //遍历源代码中的语句，对于每一对源语句和目标语句，创建一个记录对象，并计算并设置相关的信息，然后将这些记录添加到mappingRecords列表中
-    private void calMappingRecords(){
+    /**
+     * Calculate and store mapping records between source and target statements,
+     * mapping records means the mapping information and measures.
+     */
+    private void storeMappingRecords(){
         mappingRecords = new ArrayList<>();
-        List<ProgramElement> srcStmts = ElementTreeUtils.getAllStmtsPreOrder(srcRootEle);//获取源代码树中所有stmt列表
+        List<ProgramElement> srcStmts = ElementTreeUtils.getAllStmtsPreOrder(srcRootEle);
         for (ProgramElement srcStmt: srcStmts) {
-            ProgramElement dstStmt = eleMappings.getDstForSrc(srcStmt);//获取与srcStmt对应映射的dstStmt
+            ProgramElement dstStmt = eleMappings.getDstForSrc(srcStmt);
             if (dstStmt != null){
-                StmtMappingAndMeasureRecord record = new StmtMappingAndMeasureRecord(project, commitId, srcFilePath);
-                record.setStmtInfo((StmtElement) srcStmt, (StmtElement) dstStmt);//将srcStmt和dstStmt设置到record中
+                StmtMappingAndMeasureRecord record = new StmtMappingAndMeasureRecord(project, commitId, srcToPath);
+                record.setStmtInfo((StmtElement) srcStmt, (StmtElement) dstStmt);
                 record.setMeasures(srcStmt, dstStmt, eleMappings);
                 mappingRecords.add(record);
             }
@@ -86,11 +88,6 @@ public class RevisionAnalysis {
         }
         return ret;
     }
-
-//    public String getSrcFilePath() {
-////        return srcFilePath;
-//        return srcPath;
-//    }
 
     public iASTMapper getMatcher() {
         return matcher;

@@ -53,7 +53,7 @@ public class AnalysisMultipleCommits {
                 Set<String> filesToAnalyze = null;
 //                EvalASTMatchForCommit eval = new EvalASTMatchForCommit(project, commitId, methods, filesToAnalyze);
                 CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, true);
-                mappingResult.calResultMapping(false, false);
+                mappingResult.calResultMapping(true);
                 Map<String, RevisionEvaluation> evaluationMap = mappingResult.getEvaluationMap();
                 for (String filePath: evaluationMap.keySet()) {
                     System.out.println(filePath);
@@ -72,7 +72,7 @@ public class AnalysisMultipleCommits {
             }
             idx++;
         }
-        long endTime=System.currentTimeMillis(); //获取结束时间
+        long endTime=System.currentTimeMillis();
         System.out.println("All Time： "+(endTime-startTime) / (commitId_length + 1) +"ms");
     }
 }

@@ -45,7 +45,6 @@ public class JdtVisitor  extends AbstractJdtVisitor {
     private static final Type PREFIX_EXPRESSION_OPERATOR = type("PREFIX_EXPRESSION_OPERATOR");
     private static final Type POSTFIX_EXPRESSION_OPERATOR = type("POSTFIX_EXPRESSION_OPERATOR");
 
-    //增加代码
     private static final Type INSTANCE_OF_OPERATOR = type("INSTANCE_OF_OPERATOR");
     private static final Type INFIX_EXPRESSION = type("InfixExpression");
 
@@ -413,12 +412,19 @@ public class JdtVisitor  extends AbstractJdtVisitor {
             int prevToken = -1;
             while (true) {
                 int token = scanner.getNextToken();
-                scanner.getCurrentTokenSource();
-                if ((token == ITerminalSymbols.TokenNameclass || token == ITerminalSymbols.TokenNameinterface)
-                        && prevToken != ITerminalSymbols.TokenNameDOT) {
-                    pos = scanner.getCurrentTokenStartPosition();
-                    length = scanner.getCurrentTokenEndPosition() - pos + 1;
-                    break;
+                if (token == ITerminalSymbols.TokenNameEOF) {
+                    break; // 如果到达文件末尾，则退出循环
+                }
+                if (token != ITerminalSymbols.TokenNameEOF && token != ITerminalSymbols.TokenNameERROR) {
+                    scanner.getCurrentTokenSource();
+//                scanner.getCurrentTokenSource();
+
+                    if ((token == ITerminalSymbols.TokenNameclass || token == ITerminalSymbols.TokenNameinterface)
+                            && prevToken != ITerminalSymbols.TokenNameDOT) {
+                        pos = scanner.getCurrentTokenStartPosition();
+                        length = scanner.getCurrentTokenEndPosition() - pos + 1;
+                        break;
+                    }
                 }
                 prevToken = token;
             }

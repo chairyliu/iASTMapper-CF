@@ -32,10 +32,10 @@ public class TreeEditAction {
      */
     public TreeEditAction(Action action, MappingStore ms,
                           RangeCalculator srcRc, RangeCalculator dstRc){
-        extractActionInfo(ms, action);//提取ms对应的编辑操作是什么
-        calCodeRange(srcRc, dstRc);//获取每个ITree节点的起始行和结束行
+        extractActionInfo(ms, action);
+        calCodeRange(srcRc, dstRc);
 
-        if (srcNode != null)//不为空，添加节点对应的文件内容信息
+        if (srcNode != null)
             srcContent = srcRc.getFileContent().substring(srcNode.getPos(), srcNode.getEndPos());
         if (dstNode != null)
             dstContent = dstRc.getFileContent().substring(dstNode.getPos(), dstNode.getEndPos());

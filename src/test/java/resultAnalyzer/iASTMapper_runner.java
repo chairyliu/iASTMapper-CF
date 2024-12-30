@@ -1,4 +1,4 @@
-package ase2023;
+package resultAnalyzer;
 
 import com.github.gumtreediff.matchers.MappingStore;
 import cs.model.algorithm.actions.StmtTokenAction;
@@ -267,9 +267,9 @@ public class iASTMapper_runner {
      */
     public static void main(String[] args) {
 
-        String project_commits_path = "D:\\iASTMapper\\ase2023\\project_commits-1";
+        String project_commits_path = "D:\\iASTMapper\\tse\\project_commits-1";
 
-        String iASTMapper_resPath = "D:\\iASTMapper\\ase2023\\iASTMapper_res";
+        String iASTMapper_resPath = "D:\\iASTMapper\\tse\\iASTMapper_res";
         String iASTMapper_errorsFile = iASTMapper_resPath + "\\__errors_.txt";
         GitProjectInfoExtractor.createPath(iASTMapper_resPath);
         iASTMapper.used_ASTtype = "gt";

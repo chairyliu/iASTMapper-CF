@@ -164,7 +164,7 @@ public class TokenElement extends InnerStmtElement implements ProgramElement {
     }
 
     public InnerStmtElement getNearestMultiTokenInnerStmtElement() {
-        if (nearestMultiTokenElement != null)//最邻近的多token内部语句元素
+        if (nearestMultiTokenElement != null)
             return nearestMultiTokenElement;
         if (innerStmtElementsWithToken == null)
             getStmtElement().calTokensOfInnerStmtElements();
@@ -190,10 +190,9 @@ public class TokenElement extends InnerStmtElement implements ProgramElement {
             if (tmpNode != null) {
                 while (tmpNode != null && !isStatementNode(tmpNode)) {
                     InnerStmtElement ele = nodeElementMap.get(tmpNode);
-//                    System.out.println("The inner stmt is " + ele);
-                    ele.addTokenElement(this);//将当前类的实例（this）作为当前ele这条内部语句的token元素添加
-                    innerStmtElementsWithToken.add(ele);//有token子元素的内部语句
-                    tmpNode = tmpNode.getParent();//更新 tmpNode 为其父节点，以继续循环直到找到语句节点或者到达树的根节点
+                    ele.addTokenElement(this);
+                    innerStmtElementsWithToken.add(ele);
+                    tmpNode = tmpNode.getParent();
                 }
             }
         }

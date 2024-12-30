@@ -66,8 +66,11 @@ public class TokenSandwichRule extends AbstractElementMatchRule implements Eleme
             }
 
             if (!srcInFieldAccess && dstInFieldAccess) {
-                TokenElement dstThisToken = dstTokenEle.getStmtElement().getTokenElements().get(dstTokenEle.getChildIdx() - 1);
-                return isLeftMapped(srcTokenEle, dstThisToken);
+                int childIndex = dstTokenEle.getChildIdx();
+                if (childIndex > 0){
+                    TokenElement dstThisToken = dstTokenEle.getStmtElement().getTokenElements().get(childIndex - 1);
+                    return isLeftMapped(srcTokenEle, dstThisToken);
+                }
             }
         }
         return false;
@@ -132,8 +135,6 @@ public class TokenSandwichRule extends AbstractElementMatchRule implements Eleme
         ProgramElement srcEle = measures.getSrcEle();
         ProgramElement dstEle = measures.getDstEle();
         return calMeasureValue(srcEle, dstEle) == 1.0;
-//        SimMeasure measure = measures.getSimMeasure(SimMeasureNames.TOKEN_SANDWICH, eleMappings);
-//        return measure.getValue() == 1.0;
     }
 }
 

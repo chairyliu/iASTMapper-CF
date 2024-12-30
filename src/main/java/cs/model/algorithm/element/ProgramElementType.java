@@ -24,7 +24,6 @@ public class ProgramElementType {
     public static ProgramElementType getElementType(ProgramElement element) {
         ProgramElementType type = new ProgramElementType();
         type.nodeType = element.getNodeType();
-//        System.out.println("Ele " + element + " nodeType is " + element.getNodeType());
         if (element.isToken()) {
             TokenElement tokenEle = (TokenElement) element;
             if (tokenEle.isName())
@@ -34,7 +33,6 @@ public class ProgramElementType {
             if (specialTokenTypeMap.containsKey(tokenValue))
                 type.specialTokenType = specialTokenTypeMap.get(tokenValue);
         }
-//        System.out.println("Ele " + element + " nodeType is " + type.nodeType + " " + type.tokenType);
         return type;
     }
 

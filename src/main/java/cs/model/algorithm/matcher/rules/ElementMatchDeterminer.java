@@ -35,18 +35,14 @@ public class ElementMatchDeterminer {
      * @param simMeasures the similarity measures containing value of different similarity measures.
      * @return whether the mapping is reasonable
      */
-    //主要是根据第一套规则进行过滤，determineCanBeMapped返回布尔值，只要当前的匹配对满足第一套的任一规则，则返回true，并且将当前匹配对加入合法映射的集合中
     public boolean determine(ElementSimMeasures simMeasures) {
         if (legalMappings.contains(simMeasures.getElementMapping()))
             return true;
         if (illegalMappings.contains(simMeasures.getElementMapping()))
             return false;
-        //这里用的第一套
         String[] ruleNames = MatchRulesConfiguration.getRuleConfiguration(simMeasures.getSrcEle());
         for (String ruleName: ruleNames) {
-            //getRuleConfiguration和getElementMatchRule统一起来
             ElementMatchRule rule = getElementMatchRule(ruleName);
-            //determineCanBeMapped是第一套
             if (rule.determineCanBeMapped(simMeasures, eleMappings)) {
                 legalMappings.add(simMeasures.getElementMapping());
                 return true;
@@ -56,7 +52,7 @@ public class ElementMatchDeterminer {
         return false;
     }
 
-    public ElementMatchRule getElementMatchRule(String ruleName) {  // 修改public-ZN
+    public ElementMatchRule getElementMatchRule(String ruleName) {
         ElementMatchRule rule;
         switch (ruleName) {
             case MatchRuleNames.IDEN:
@@ -70,7 +66,6 @@ public class ElementMatchDeterminer {
                 break;
             case MatchRuleNames.RETURN_STMT:
                 rule = new ReturnOrThrowStmtRule();
-//                System.out.println("=====RETURN=====");
                 break;
             case MatchRuleNames.STMT_SANDWICH:
                 rule = new StmtSandwichRule();

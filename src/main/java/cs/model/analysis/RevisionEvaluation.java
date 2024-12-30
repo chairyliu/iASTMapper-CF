@@ -78,6 +78,8 @@ public class RevisionEvaluation {
     public Map<String, ProgramElement> srcPathToRoot;
     protected Map<String, String> pathMap;
     public static Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
+    private ITree src;
+    private ITree dst;
 
     public RevisionEvaluation(String project, String commitId, String baseCommitId,
                               String srcFilePath, String dstFilePath, boolean isSingleFile) throws Exception {
@@ -105,12 +107,14 @@ public class RevisionEvaluation {
             noGoodResult = true;
             return;
         }
+        src = GumTreeUtil.getITreeRoot(srcFileContent, "gt");
+        dst = GumTreeUtil.getITreeRoot(dstFileContent, "gt");
         // build mappings using my method
-        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, pathMap, srcStmtsToMap, dstStmtsToMap,dstPathToRoot, srcPathToRoot, allDstStmts);
+        this.myMatcher = new iASTMapper(srcFileContent, dstFileContent, src,dst,srcFilePath, dstFilePath, pathMap, srcStmtsToMap, dstStmtsToMap,dstPathToRoot, srcPathToRoot, allDstStmts);
         //下面三行-新增-ljy
         List<ProgramElement> srcStmts = new ArrayList<>();
         srcStmts = srcStmtsToMap.get(srcFilePath);
-        this.myMatcher.buildMappingsOuterLoop(srcStmts, srcFilePath, pathMap, AllSrcPathToStmtsMap, isSingleFile);
+        this.myMatcher.buildMappingsOuterLoop(srcStmts, srcFilePath, pathMap, AllSrcPathToStmtsMap, isSingleFile, true);
         this.myMappings = this.myMatcher.getEleMappings();
         this.myActions = this.myMatcher.getTreeEditActions();
 
@@ -147,9 +151,6 @@ public class RevisionEvaluation {
         return this.ijmMappings;
     }
 
-//    public List<StmtTokenAction> generateStmtTokenEditActions(){
-//        return this.myMatcher.generateStmtTokenEditActions();
-//    }
     public List<StmtTokenAction> generateGtStmtTokenEditActions(){
         StmtTokenActionGenerator generator = new StmtTokenActionGenerator(this.myMatcher.getSrcStmts(), this.myMatcher.getDstStmts(), this.gtAnalysisResult.getEleMappings());
         List<StmtTokenAction> actionList = generator.generateActions(false);
@@ -165,6 +166,7 @@ public class RevisionEvaluation {
         List<StmtTokenAction> actionList = generator.generateActions(false);
         return generator.reorderActions(actionList);
     }
+
     public List<TreeEditAction> getTreeEditActions() {
         return this.myMatcher.getTreeEditActions();
     }

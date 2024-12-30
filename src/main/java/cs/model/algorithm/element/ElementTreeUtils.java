@@ -21,14 +21,4 @@ public class ElementTreeUtils {
         for (ProgramElement stmtEle: stmtElements)
             preOrder(stmtEle, elements);
     }
-
-//    private static void postOrder(ProgramElement element, List<ProgramElement> elements) {
-//        List<StmtElement> stmtElements = element.getNearestDescendantStmts();
-//        if (stmtElements.size() > 0){
-//            for (ProgramElement ele: stmtElements)
-//                postOrder(ele,  elements);
-//        }
-//        if (element.isStmt())
-//            elements.add(element);
-//    }
 }

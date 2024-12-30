@@ -17,9 +17,10 @@ import java.util.Map;
 
 public class TestUtils {
     public static void testiASTMapper(String project, String commitId) throws IOException {
+        boolean doCrossFileMapping = true;
         CommitAnalysis mappingResult = new CommitAnalysis(project, commitId, false);
         long time1 = System.currentTimeMillis();
-        mappingResult.calResultMapping(false, false);
+        mappingResult.calResultMapping(doCrossFileMapping);
         Map<String, RevisionAnalysis> resultMap = mappingResult.getRevisionAnalysisResultMap();
 
         for (String filePath: resultMap.keySet()){
@@ -30,10 +31,10 @@ public class TestUtils {
             List<StmtTokenAction> actionList = m.generateActions(filePath);
             List<TreeEditAction> treeEditActions = m.generateEditActions();
 
-            for (StmtTokenAction action: actionList)//语句编辑操作
+            for (StmtTokenAction action: actionList)
                 System.out.println(action);
 
-            for (TreeEditAction action: treeEditActions) {//AST编辑操作
+            for (TreeEditAction action: treeEditActions) {
                 System.out.println(action);
             }
 

@@ -22,10 +22,6 @@ public class CuttingCopyTreeHelper {
 
     public ITree cutTree(ITree root) {
         ITree rootCopy = root.deepCopy();
-        // reset matching info
-//        rootCopy.getMetrics();
-
-//        cutTree(root, rootCopy);
         return rootCopy;
     }
 

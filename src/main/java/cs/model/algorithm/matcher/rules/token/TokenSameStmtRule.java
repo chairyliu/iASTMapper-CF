@@ -34,7 +34,6 @@ public class TokenSameStmtRule extends AbstractElementMatchRule implements Eleme
         ProgramElement dstEle = measures.getDstEle();
         if (measure1.getValue() == 1.0) {
             // if two tokens have the same value or the two tokens are renamed
-//            SimMeasure measure2 = measures.getSimMeasure(SimMeasureNames.SAME_VALUE_RENAME, eleMappings);
             if (calMeasureValue(srcEle, dstEle) == 1.0)
                 return true;
         }

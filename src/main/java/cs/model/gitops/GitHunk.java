@@ -41,10 +41,10 @@ public class GitHunk {
         this.content = content;
         this.srcRc = srcRc;
         this.dstRc = dstRc;
-        this.oldBeginPosition = oldBeginPosition; // old文件的初始位置
-        this.oldEndPosition = oldEndPosition;    // old文件的结束位置
-        this.newBeginPosition = newBeginPosition; // new文件的初始位置
-        this.newEndPosition = newEndPosition;  // old文件的结束位置
+        this.oldBeginPosition = oldBeginPosition;
+        this.oldEndPosition = oldEndPosition;
+        this.newBeginPosition = newBeginPosition;
+        this.newEndPosition = newEndPosition;
         initAllGitLines();
     }
 
@@ -188,7 +188,6 @@ public class GitHunk {
         return ret;
     }
 
-    // 忽略空行,comment行, import 行的增加行数
     private int getNumberAdditionsIgnoreBlankAndComment(){
         return getAdditionLineNumbersIgnoreBlankAndComment(true).size();
     }
@@ -203,15 +202,12 @@ public class GitHunk {
                 if (isNotNoise(content, ignoreBlock))
                     lineNumbers.add(syncNumber);
             }
-            // Deletion 是原来文件行，不能被计算到
-            // 新文件中
             if (!isDeletion(l))
                 syncNumber ++;
         }
         return lineNumbers;
     }
 
-    // 忽略空行和comment行的减少行数
     private int getNumberDeletionsIgnoreBlankAndComment(){
         return getDeletionLineNumbersIgnoreBlankAndComment(true).size();
     }
@@ -226,8 +222,6 @@ public class GitHunk {
                 if (isNotNoise(content, ignoreBlock))
                     lineNumbers.add(syncNumber);
             }
-            // Addition 是新文件的行，
-            // 不能被计算到该文件中
             if (!isAddition(l))
                 syncNumber ++;
         }
@@ -240,7 +234,6 @@ public class GitHunk {
                 && (!isPackageDeclaration(content));
     }
 
-    // 得到commit之后的文件内容
     public String getPreContent(){
         String[] lines = content.split("\\r?\\n");
         List<String> preLines = new ArrayList<>();
@@ -253,7 +246,6 @@ public class GitHunk {
         return StringUtils.join(preLines, "\n");
     }
 
-    // 得到所有Commit之后文件的内容
     public String getNextContent(){
         String[] lines = content.split("\\r?\\n");
         List<String> preLines = new ArrayList<>();
@@ -270,7 +262,6 @@ public class GitHunk {
         return gitLines;
     }
 
-    // 得到所有相关commit在某文件的GitHunk
     public static List<GitHunk> getGitHunks(ByteArrayOutputStream diff, String project,
                                             String oldPath, String newPath, String commitId){
         List<GitHunk> hunks = new ArrayList<>();
@@ -318,7 +309,6 @@ public class GitHunk {
         return hunks;
     }
 
-    // 根据信息创建 GitHunk
     private static GitHunk createGitHunk(String commitId,
                                          String oldPath, String newPath,
                                          RangeCalculator srcRc, RangeCalculator dstRc,
@@ -337,7 +327,6 @@ public class GitHunk {
         return null;
     }
 
-    // GitHunk 在commit之前文件的开始行
     private static int getPrevContextStartingLineNumber(String header) {
         String[] tokens = header.split(" ");
         String toAnalyze = tokens[1];
@@ -346,7 +335,6 @@ public class GitHunk {
         return Integer.parseInt(lineNumberStr);
     }
 
-    // GitHunk 在commit之前的文件范围
     private static int getPrevContextLineRange(String header) {
         String[] tokens = header.split(" ");
         String toAnalyze = tokens[1];
@@ -355,7 +343,6 @@ public class GitHunk {
         return Integer.parseInt(lineNumberStr);
     }
 
-    // GitHunk 在commit之后文件的开始位置
     private static int getNextContextStartingLineNumber(String header) {
         String[] tokens = header.split(" ");
         String toAnalyze = tokens[2];
@@ -364,7 +351,6 @@ public class GitHunk {
         return Integer.parseInt(lineNumberStr);
     }
 
-    // GitHunk 在commit之后文件范围
     private static int getNextContextLineRange(String header) {
         String[] tokens = header.split(" ");
         String toAnalyze = tokens[2];
@@ -373,12 +359,10 @@ public class GitHunk {
         return Integer.parseInt(lineNumberStr);
     }
 
-    // 该行是否是增加行
     public static boolean isAddition(String line) {
         return line.startsWith("+");
     }
 
-    // 该行是不是减少行
     public static boolean isDeletion(String line) {
         return line.startsWith("-");
     }
@@ -404,8 +388,6 @@ public class GitHunk {
         return false;
     }
 
-    // 去除前后 + - 号
-    // 去除前后空格
     public static String prepareContent(String line){
         String content = line.trim();
         if(content.length() > 0){
@@ -422,8 +404,6 @@ public class GitHunk {
         return content;
     }
 
-    // 识别当前行是否属于空行、comment行
-    // 当考虑block时，
     public static boolean isCommentOrBlankLine(String line, boolean ignoreBlock){
         line = prepareContent(line);
         if (line.length() == 0)
@@ -510,14 +490,12 @@ public class GitHunk {
         return result;
     }
 
-    // 识别当前文件增加行数，忽略blank, comment
     private static int getNumAdditionsOfFileIgnoreBlankAndComment(String project,
                                                                   String commitId,
                                                                   String filePath) {
         return getAllAddedLines(project, commitId, filePath, true).size();
     }
 
-    // 识别当前文件删除行数, 忽略blank, comment
     private static int getNumDeletionsOfFileIgnoreBlankAndComment(String project,
                                                                   String commitId,
                                                                   String filePath) {
@@ -564,14 +542,12 @@ public class GitHunk {
         return getAllInvolvedLinesFromGitHunks(hunks, modifyType, ignoreBlock);
     }
 
-    // 得到一个文件全部增加行数
     public static Set<Integer> getAllAddedLines(String project, String commitId,
                                                 String filePath,
                                                 boolean ignoreBlock) {
         return getAllInvolvedLinesFromGit(project, commitId, filePath, "ADD", ignoreBlock);
     }
 
-    // 得到一个文件全部delete行数
     public static Set<Integer> getAllDeletedLines(String project, String commitId,
                                                   String filePath,
                                                   boolean ignoreBlock) {

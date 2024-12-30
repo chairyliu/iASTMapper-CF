@@ -26,7 +26,7 @@ public class GitProjectInfoRetrieval {
 
     private void init() {
         try {
-            RevWalk revWalk = GitUtils.getRevWalkForAllBranches(gitService);//记录每个commit对应的RevCommit对象，用于后续其它数据获取
+            RevWalk revWalk = GitUtils.getRevWalkForAllBranches(gitService);
             Iterator<RevCommit> iter = revWalk.iterator();
             while (iter.hasNext()) {
                 RevCommit tmp = iter.next();
@@ -70,8 +70,10 @@ public class GitProjectInfoRetrieval {
     }
 
     public String getBaseCommitId(String commitId){
-//        System.out.println("the commitId is " + commitId);
         RevCommit curCommit = getCommitObjById(commitId);
+        if (curCommit == null){
+            return null;
+        }
         if (curCommit.getParentCount() == 1)
             return CommitOps.getCommitId(curCommit.getParent(0));
         return null;

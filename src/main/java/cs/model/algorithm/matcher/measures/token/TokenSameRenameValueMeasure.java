@@ -31,12 +31,12 @@ public class TokenSameRenameValueMeasure extends AbstractSimMeasure implements S
             return ret;
 
         String tokenValue = srcEle.getStringValue();
-        ret.addAll(filterDstCandidates.getSameValDstCandidates(tokenValue));
+        ret.addAll(candidateSetsAndMaps.getSameValDstCandidates(tokenValue));
 
         Set<String> renameValues = elementMappings.getRenameStatistics().getDstNameForSrcName(tokenValue);
         if (renameValues != null) {
             for (String renameValue: renameValues) {
-                ret.addAll(filterDstCandidates.getSameValDstCandidates(renameValue));
+                ret.addAll(candidateSetsAndMaps.getSameValDstCandidates(renameValue));
             }
         }
 

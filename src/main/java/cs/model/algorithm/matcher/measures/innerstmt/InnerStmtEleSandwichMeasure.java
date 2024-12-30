@@ -1,12 +1,8 @@
 package cs.model.algorithm.matcher.measures.innerstmt;
 
-import cs.model.algorithm.element.InnerStmtElement;
 import cs.model.algorithm.element.ProgramElement;
-import cs.model.algorithm.element.TokenElement;
 import cs.model.algorithm.matcher.measures.AbstractSimMeasure;
 import cs.model.algorithm.matcher.measures.SimMeasure;
-
-import java.util.List;
 
 public class InnerStmtEleSandwichMeasure extends AbstractSimMeasure implements SimMeasure {
 
@@ -56,42 +52,6 @@ public class InnerStmtEleSandwichMeasure extends AbstractSimMeasure implements S
             rightMapped = true;
         else if (rightSrcInnerEle != null && rightDstInnerEle != null)
             rightMapped = elementMappings.getMappedElement(rightSrcInnerEle) == rightDstInnerEle;
-        return rightMapped;
-    }
-
-    protected boolean tokenSandwich(ProgramElement srcEle, ProgramElement dstEle) {
-        InnerStmtElement srcInnerStmtEle = (InnerStmtElement) srcEle;
-        InnerStmtElement dstInnerStmtEle = (InnerStmtElement) dstEle;
-
-        List<TokenElement> srcTokenElements = srcInnerStmtEle.getTokenElements();
-        List<TokenElement> dstTokenElements = dstInnerStmtEle.getTokenElements();
-
-        if (srcTokenElements.size() == 0 || dstTokenElements.size() == 0)
-            return false;
-
-        TokenElement srcFirstToken = srcTokenElements.get(0);
-        TokenElement dstFirstToken = dstTokenElements.get(0);
-        TokenElement srcLeftSiblingToken = (TokenElement) srcFirstToken.getLeftSibling();
-        TokenElement dstLeftSiblingToken = (TokenElement) dstFirstToken.getLeftSibling();
-        boolean leftMapped = false;
-        if (srcLeftSiblingToken == null && dstLeftSiblingToken == null)
-            leftMapped = true;
-        else if (srcLeftSiblingToken != null && dstLeftSiblingToken != null)
-            leftMapped = elementMappings.getMappedElement(srcLeftSiblingToken) == dstLeftSiblingToken;
-
-        if (!leftMapped)
-            return false;
-
-        TokenElement srcLastToken = srcTokenElements.get(srcTokenElements.size() - 1);
-        TokenElement dstLastToken = dstTokenElements.get(dstTokenElements.size() - 1);
-        TokenElement srcRightSiblingToken = (TokenElement) srcLastToken.getRightSibling();
-        TokenElement dstRightSiblingToken = (TokenElement) dstLastToken.getRightSibling();
-        boolean rightMapped = false;
-        if (srcRightSiblingToken == null && dstRightSiblingToken == null)
-            rightMapped = true;
-        else if (srcRightSiblingToken != null && dstRightSiblingToken != null)
-            rightMapped = elementMappings.getMappedElement(srcRightSiblingToken) == dstRightSiblingToken;
-
         return rightMapped;
     }
 }

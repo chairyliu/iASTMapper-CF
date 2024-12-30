@@ -190,7 +190,8 @@ public final class TreeIoUtils {
                 writeTo(s);
                 return s.toString();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                return "TreeContext could not be serialized due to: " + e.getMessage();
+//                throw new RuntimeException(e);
             }
         }
 

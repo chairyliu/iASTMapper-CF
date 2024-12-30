@@ -32,7 +32,7 @@ public abstract class BaseMatcher {
     // Whether to process tokens
     protected boolean processToken = false;
 
-    protected Map<ElementMapping, Integer> mappingTimeRecord;//键是一对匹配的<srcEle,dstEle>,值是他们出现匹配的次数
+    protected Map<ElementMapping, Integer> mappingTimeRecord;
 
     protected Set<ProgramElement> infiniteLoopElements;
 
@@ -68,6 +68,7 @@ public abstract class BaseMatcher {
         this.processToken = processToken;
     }
 
+
     /**
      * Iteratively build mappings for stmt or token between
      * file before and after a revision
@@ -78,8 +79,8 @@ public abstract class BaseMatcher {
         removeIllegalMappings();
 
         do {
-            ElementMatchDeterminer determiner = new ElementMatchDeterminer(elementMappings);//构建相似度规则的判别器对象
-            bestMappingSearcher.setElementMappings(elementMappings);//每次更新元素映射时设置当前元素映射
+            ElementMatchDeterminer determiner = new ElementMatchDeterminer(elementMappings);
+            bestMappingSearcher.setElementMappings(elementMappings);
             bestMappingSearcher.setElementMatchDeterminer(determiner);
             bestMappingSearcher.clearBestCandidateMaps();
 
@@ -89,22 +90,22 @@ public abstract class BaseMatcher {
             elementsToMap.clear();
 
             // First find mappings considering all the target elements
-            bestMappingSearcher.findElementPairsToMap(elementsToMap, srcElementsToMap, false);//false代表全局
-            if (elementsToMap.size() > 0) {//从全局中找到的一对一映射不为空
+            bestMappingSearcher.findElementPairsToMap(elementsToMap, srcElementsToMap, false);
+            if (elementsToMap.size() > 0) {
                 // We first check if there may exist an infinite loop.
                 // Then, we add the element pairs to element mappings
                 for (ProgramElement srcEle : elementsToMap.keySet()) {
-                    if (infiniteLoopElements.contains(srcEle))//检查是否出现了无限循环的匹配对（3次）
+                    if (infiniteLoopElements.contains(srcEle))
                         continue;
                     ProgramElement dstEle = elementsToMap.get(srcEle);
                     if (infiniteLoopElements.contains(dstEle))
-                        continue;//如果<srcEle,dstEle>对均不是无限循环
+                        continue;
                     addElementMapping(srcEle, dstEle);
-                    findMappingInThisLoop = true;//表明在此次循环中有新的映射产生
+                    findMappingInThisLoop = true;
                 }
             } else {
                 // find mappings excluding target elements that have been mapped.
-                bestMappingSearcher.findElementPairsToMap(elementsToMap, srcElementsToMap, true);//true代表局部
+                bestMappingSearcher.findElementPairsToMap(elementsToMap, srcElementsToMap, true);
 
                 // add the element pairs to element mappings
                 for (ProgramElement srcEle: elementsToMap.keySet()) {
@@ -113,7 +114,7 @@ public abstract class BaseMatcher {
                     findMappingInThisLoop = true;
                 }
             }
-            findMapping |= findMappingInThisLoop;//位运算符，只要findMappingInThisLoop中的任何一个值为true，findMapping为true
+            findMapping |= findMappingInThisLoop;
             if (!findMappingInThisLoop)
                 break;
         } while (elementsToMap.size() > 0);
@@ -121,8 +122,8 @@ public abstract class BaseMatcher {
         return findMapping;
     }
 
-    private void removeIllegalMappings() {//根据相似性度量的条件判断
-        for (ProgramElement srcEle: srcElementsToMap) {///遍历还没有匹配的src元素
+    private void removeIllegalMappings() {
+        for (ProgramElement srcEle: srcElementsToMap) {
             if (elementMappings.isMapped(srcEle)) {
                 ProgramElement dstEle = elementMappings.getMappedElement(srcEle);
                 ElementSimMeasures measures = getElementSimMeasures(srcEle, dstEle);
@@ -139,17 +140,16 @@ public abstract class BaseMatcher {
      * @param srcEle source element
      * @param dstEle destination element
      */
-    //将传入的srcEle和dstEle的匹配次数+1，如果超过3，则加入到无限循环列表中，否则，添加到elementMappings中
     protected void addElementMapping(ProgramElement srcEle, ProgramElement dstEle){
         ElementMapping mapping = new ElementMapping(srcEle, dstEle);
-        if (!mappingTimeRecord.containsKey(mapping))//如果已有的映射集合中没有当前映射，那么新加入，并且为匹配次数赋值为0
+        if (!mappingTimeRecord.containsKey(mapping))
             mappingTimeRecord.put(mapping, 0);
-        mappingTimeRecord.put(mapping, mappingTimeRecord.get(mapping) + 1);//如果当前映射已经存在，那么匹配次数+1
-        if (mappingTimeRecord.get(mapping) >= infiniteLoopTime) {//判断匹配次数是否大于3，如果是，将当前src和dst元素添加到无限循环的集合中，之后遇到该元素，直接跳过
+        mappingTimeRecord.put(mapping, mappingTimeRecord.get(mapping) + 1);
+        if (mappingTimeRecord.get(mapping) >= infiniteLoopTime) {
             infiniteLoopElements.add(srcEle);
             infiniteLoopElements.add(dstEle);
         }
-        elementMappings.addMapping(srcEle, dstEle);//如果不是无限循环，那么将该匹配对加入elementMappings
+        elementMappings.addMapping(srcEle, dstEle);
     }
 
     protected abstract Set<ProgramElement> getAllSrcElementsToMap();

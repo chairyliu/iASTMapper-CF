@@ -16,7 +16,6 @@ public class IdenticalStmtMeasure extends AbstractSimMeasure implements SimMeasu
     protected double calMeasureValue(ProgramElement srcEle, ProgramElement dstEle) {
         if (typeChecker.isBlock(srcEle.getITreeNode()))
             return 0;
-//        System.out.println("Src identical " + srcEle + " dst identical " + dstEle + " isRename " + isIdenticalWithRename(srcEle, dstEle) + "  isSignature  " + isWithSameMethodSignature(srcEle, dstEle));
         if (isIdenticalWithRename(srcEle, dstEle))
             return 1;
         if (isWithSameMethodSignature(srcEle, dstEle))

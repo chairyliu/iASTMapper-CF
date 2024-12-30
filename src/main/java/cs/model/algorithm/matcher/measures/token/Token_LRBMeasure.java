@@ -24,17 +24,14 @@ public class Token_LRBMeasure extends AbstractSimMeasure implements SimMeasure {
         double val = 0;
         TokenElement srcTokenEle = (TokenElement) srcEle;
         TokenElement dstTokenEle = (TokenElement) dstEle;
-        // 获取传入token的上级stmt语句下的所有tokens元素
         List<TokenElement> srcTokenElements = srcTokenEle.getStmtElement().getTokenElements();
         List<TokenElement> dstTokenElements = dstTokenEle.getStmtElement().getTokenElements();
 
-        // 如果只有一个token，则就是当前的srcTokenEle。但T-ABS是针对于传入token的邻居tokens，如果只有一个token就没有必要讨论
         if (srcTokenElements.size() == 1 && dstTokenElements.size() == 1 && !isParentMapping(srcEle, dstEle))
             return val;
 
         // Check if node of the token is the statement node.
         // Do not map two tokens with sandwich measure when node of the token is the statement node
-        // 如果是stmt级别的token，就不匹配
         if (srcTokenEle.getStmtElement().getITreeNode() == srcTokenEle.getITreeNode()) {
             if (dstTokenEle.getStmtElement().getITreeNode() == dstTokenEle.getITreeNode()) {
                 if (!isParentMapping(srcEle, dstEle)) {
@@ -54,11 +51,9 @@ public class Token_LRBMeasure extends AbstractSimMeasure implements SimMeasure {
         return val;
     }
 
-    private boolean isLeftMapped(TokenElement srcTokenEle, TokenElement dstTokenEle) {//有两种情况，一种是直接获取传入toekn的子元素，另一种是借助inner对比
-        //获取传入token的子元素索引
+    private boolean isLeftMapped(TokenElement srcTokenEle, TokenElement dstTokenEle) {
         int srcChildIdx = srcTokenEle.getChildIdx();
         int dstChildIdx = dstTokenEle.getChildIdx();
-        //如果没有孩子节点，直接返回true，认为左节点匹配
         if (srcChildIdx == 0 && dstChildIdx == 0)
             return true;
         if (srcChildIdx > 0 && dstChildIdx > 0) {
@@ -74,7 +69,6 @@ public class Token_LRBMeasure extends AbstractSimMeasure implements SimMeasure {
             InnerStmtElement dstInnerStmtEle = dstTokenEle.getNearestMultiTokenInnerStmtElement();
             if (srcInnerStmtEle != null && dstInnerStmtEle != null &&
                     !srcInnerStmtEle.isNullElement() && !dstInnerStmtEle.isNullElement()) {
-                //最邻近的多token内部语句 下面 的第一个token元素，等于当前传入的token，则返回true，认为左匹配
                 if (srcInnerStmtEle.getTokenElements().get(0) == srcTokenEle)
                     if (dstInnerStmtEle.getTokenElements().get(0) == dstTokenEle)
                         return true;

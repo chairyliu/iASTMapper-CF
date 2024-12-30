@@ -1,4 +1,4 @@
-package ase2023;
+package resultAnalyzer;
 
 import cs.model.algorithm.actions.StmtTokenAction;
 import cs.model.algorithm.actions.StmtTokenActionGenerator;
@@ -127,19 +127,19 @@ public class Baseline_runner {
      */
     public static void main(String[] args) {
 
-        String project_commits_path = "C:\\Users\\HP\\Desktop\\iASTMapper\\ase2023\\project_commits-1";
+        String project_commits_path = "D:\\iASTMapper\\tse\\project_commits-1";
 
-        String GT_resPath = "C:\\Users\\HP\\Desktop\\iASTMapper\\ase2023\\GT_res";
+        String GT_resPath = "D:\\iASTMapper\\tse\\GT_res";
         String GT_errorsFile = GT_resPath + "\\__errors_.txt";
         GitProjectInfoExtractor.createPath(GT_resPath);
         run(project_commits_path, "gt", GT_errorsFile, GT_resPath);
 
-        String IJM_resPath = "C:\\Users\\HP\\Desktop\\iASTMapper\\ase2023\\IJM_res";
+        String IJM_resPath = "D:\\iASTMapper\\tse\\IJM_res";
         String IJM_errorsFile = IJM_resPath + "\\__errors_.txt";
         GitProjectInfoExtractor.createPath(IJM_resPath);
         run(project_commits_path, "ijm", IJM_errorsFile, IJM_resPath);
 
-        String MTD_resPath = "C:\\Users\\HP\\Desktop\\iASTMapper\\ase2023\\MTD_res";
+        String MTD_resPath = "D:\\iASTMapper\\tse\\MTD_res";
         String MTD_errorsFile = MTD_resPath + "\\__errors_.txt";
         GitProjectInfoExtractor.createPath(MTD_resPath);
         run(project_commits_path, "mtd", MTD_errorsFile, MTD_resPath);

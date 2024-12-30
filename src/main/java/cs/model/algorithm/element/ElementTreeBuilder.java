@@ -24,48 +24,47 @@ public class ElementTreeBuilder {
      */
     public static ProgramElement buildElementTree(ITree root, TreeTokensMap ttMap,
                                                   TokenRangeTypeMap trtMap, boolean isSrc){
-        Map<ITree, ProgramElement> treeElementMap = new HashMap<>();//创建一个映射，将树节点和对应的程序元素关联起来
-        //创建树的根元素，默认为RootElement，如果根节点是语句节点，则创建StmtElement
+        Map<ITree, ProgramElement> treeElementMap = new HashMap<>();
         AbstractElement rootEle = new RootElement();
         if (ProgramElement.typeChecker.isStatementNode(root))
             rootEle = new StmtElement();
         rootEle.initNearestDescendantStmts();
         rootEle.initTokenElements();
-        rootEle.setRoot(true);//将根元素标记为树的根
-        rootEle.setFromSrc(isSrc);//设置根元素rootEle是否来自源代码，根据布尔值isSrc
+        rootEle.setRoot(true);
+        rootEle.setFromSrc(isSrc);
         rootEle.setITreeNode(root);
-        treeElementMap.put(root, rootEle);//将树节点root和根元素rootEle放入映射
+        treeElementMap.put(root, rootEle);
         for (ITree t: root.preOrder()){
             if (t == root)
                 continue;
-            if (ProgramElement.typeChecker.isStatementNode(t)){//如果节点是语句节点，则创建相应的StmtElement
+            if (ProgramElement.typeChecker.isStatementNode(t)){
                 ProgramElement stmtEle = createStmtElement(t, ttMap, isSrc,
                         treeElementMap, trtMap, rootEle);
-                treeElementMap.put(t, stmtEle);//将语句元素和树节点对应起来
+                treeElementMap.put(t, stmtEle);
             } else {
-                if (isJavadocRelated(t))//不考虑javadoc
+                if (isJavadocRelated(t))
                     continue;
-                ITree stmt = findNearestAncestorStmt(t);//查找最近的祖先语句节点
+                ITree stmt = findNearestAncestorStmt(t);
                 if (stmt != null) {
-                    ProgramElement stmtEle = treeElementMap.get(stmt);//stmt是树节点，从映射中找到对应的语句元素
-                    InnerStmtElement element = ((StmtElement) stmtEle).addInnerStmtElement(t);//并创建内部语句元素
+                    ProgramElement stmtEle = treeElementMap.get(stmt);
+                    InnerStmtElement element = ((StmtElement) stmtEle).addInnerStmtElement(t);
 
-                    ITree parent = t.getParent();//内部语句的父节点
-                    ProgramElement parentEle = treeElementMap.get(parent);//内部语句的父元素
-                    element.setParentElement(parentEle);//将stmt的父节点也设置成对应的innerstmt的父节点
-                    element.setChildIdx(parentEle.getInnerStmtElements().size());//获取父元素的内部语句的大小，并将该索引赋值给当前的内部语句，相当于将当前内部语句添加到父元素的末尾
-                    parentEle.addInnerStmtElement(element);//将内部语句元素添加到父元素的内部语句元素列表中
-                    element.setStartLine(ttMap.getStartLineOfNode(t.getPos()));//设置内部语句元素的起始行
+                    ITree parent = t.getParent();
+                    ProgramElement parentEle = treeElementMap.get(parent);
+                    element.setParentElement(parentEle);
+                    element.setChildIdx(parentEle.getInnerStmtElements().size());
+                    parentEle.addInnerStmtElement(element);
+                    element.setStartLine(ttMap.getStartLineOfNode(t.getPos()));
                     treeElementMap.put(t, element);
                 }
             }
         }
-        //获取所有语句元素的列表
+
         List<ProgramElement> allStmts = ElementTreeUtils.getAllStmtsPreOrder(rootEle);
         for (ProgramElement stmt: allStmts) {
-            for (TokenElement token: stmt.getTokenElements()) {//得到所有的token元素
-                ProgramElement element = treeElementMap.get(token.getITreeNode());//获取token的树节点对应的token元素（element）
-                if (element.isInnerStmtElement())//如果是内部语句元素，则设置为token的内部语句
+            for (TokenElement token: stmt.getTokenElements()) {
+                ProgramElement element = treeElementMap.get(token.getITreeNode());
+                if (element.isInnerStmtElement())
                     token.setInnerStmtEleOfToken((InnerStmtElement) element);
             }
         }

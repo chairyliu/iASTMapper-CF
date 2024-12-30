@@ -41,7 +41,6 @@ public class MyConfig {
     private static Configuration getConfiguration(String fileName){
         try {
             Parameters params = new Parameters();
-//            System.out.println("File name is " + fileName);
             FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
                     new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
                             .configure(params.properties()

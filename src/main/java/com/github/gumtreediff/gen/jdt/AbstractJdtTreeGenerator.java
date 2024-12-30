@@ -20,7 +20,6 @@
 
 package com.github.gumtreediff.gen.jdt;
 
-import com.github.gumtreediff.gen.SyntaxException;
 import com.github.gumtreediff.gen.TreeGenerator;
 import com.github.gumtreediff.tree.TreeContext;
 import org.eclipse.jdt.core.JavaCore;
@@ -28,7 +27,10 @@ import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.compiler.IScanner;
 import org.eclipse.jdt.core.dom.*;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +40,7 @@ public abstract class AbstractJdtTreeGenerator extends TreeGenerator {
     private static char[] readerToCharArray(Reader r) throws IOException {
         StringBuilder fileData = new StringBuilder();
         try (BufferedReader br = new BufferedReader(r)) {
-            char[] buf = new char[10];
+            char[] buf = new char[1024];
             int numRead = 0;
             while ((numRead = br.read(buf)) != -1) {
                 String readData = String.valueOf(buf, 0, numRead);
@@ -67,11 +69,8 @@ public abstract class AbstractJdtTreeGenerator extends TreeGenerator {
         AbstractJdtVisitor v = createVisitor(scanner);
         ASTNode node = parser.createAST(null);
 
-//        BufferedWriter srcContent = new BufferedWriter(new FileWriter("D:\\SE-Mapping\\files\\activemq\\activemq-broker\\src\\main\\java\\org\\apache\\activemq\\broker\\PublishedAddressPolicy_4800a7a1a46dd248b130b4289cf9f26787fe5612\\org_SrcNode.java"));
-//        print(node,srcContent,0);
-//        srcContent.close();
         if ((node.getFlags() & ASTNode.MALFORMED) != 0) // bitwise flag to check if the node has a syntax error
-            throw new SyntaxException(this, r);
+            return null;
         node.accept(v);
         return v.getTreeContext();
     }
@@ -91,14 +90,12 @@ public abstract class AbstractJdtTreeGenerator extends TreeGenerator {
                     f.write(simple.getId() + " : " + value.toString() + "\n");
                 else
                     f.write(simple.getId() + " : Null\n");
-//                System.out.println(simple.getId() + " (" + value.toString() + ")");
             } else if (descriptor instanceof ChildPropertyDescriptor) {
                 ChildPropertyDescriptor child = (ChildPropertyDescriptor) descriptor;
                 ASTNode childNode = (ASTNode) node.getStructuralProperty(child);
                 if (childNode != null) {
                     for(int i = 0;i < nums;i++)
                         f.write("    |");
-//                    f.write("Child : " + child.getId() + "\n");
                     f.write(child.getId() + "\n");
                     print(childNode,f,nums+1);
                 }

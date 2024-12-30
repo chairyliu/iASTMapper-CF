@@ -65,7 +65,7 @@ public class StmtMappingSingleAnalysis {
             try {
                 Set<String> filesToAnalyze = runningBlueMap.get(commitId);
                 CommitAnalysis commitResult = new CommitAnalysis(project, commitId, true);
-                commitResult.calResultMapping(false, false);
+                commitResult.calResultMapping(true);
                 Map<String, RevisionAnalysis> resultMap = commitResult.getRevisionAnalysisResultMap();
 
                 String[] runningRecord = new RunningRecord(commitId).toRecord();

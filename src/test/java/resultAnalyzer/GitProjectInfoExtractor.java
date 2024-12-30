@@ -1,4 +1,4 @@
-package ase2023;
+package resultAnalyzer;
 
 import cs.model.gitops.CommitOps;
 import cs.model.gitops.GitService;

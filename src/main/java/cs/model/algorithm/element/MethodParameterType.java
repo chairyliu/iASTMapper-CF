@@ -1,7 +1,6 @@
 package cs.model.algorithm.element;
 
 import com.github.gumtreediff.tree.ITree;
-import cs.model.algorithm.languageutils.typechecker.StaticNodeTypeChecker;
 import cs.model.algorithm.matcher.mappings.ElementMappings;
 import cs.model.algorithm.ttmap.TokenTypeCalculator;
 
@@ -46,14 +45,9 @@ public class MethodParameterType {
     public boolean equalsWithRename(MethodParameterType that, ElementMappings elementMappings) {
         if (!nodeType.equals(that.nodeType))
             return false;
-//        System.out.println("Node type is " + nodeType + " " + that.nodeType);
         if (this.tokens.size() != that.tokens.size())
             return false;
         for (int i = 0; i < this.tokens.size(); i++) {
-//            System.out.println(i + " The tolen is " + this.tokens.get(i));
-//            TokenElement srcToken = (TokenElement) this.tokens.get(i);
-//            String srcStr = srcToken.getStringValue();
-//            System.out.println(" The tolen value is " + srcStr);
             if (this.tokens.get(i).equalValue(that.tokens.get(i)))
                 continue;
             if (elementMappings.isTokenRenamed(this.tokens.get(i), that.tokens.get(i)))
@@ -66,12 +60,13 @@ public class MethodParameterType {
     public static boolean isIdenticalMethodParameterTypeList(List<MethodParameterType> typeList1,
                                                              List<MethodParameterType> typeList2,
                                                              ElementMappings elementMappings) {
+        if (typeList1 == null || typeList2 == null)
+            return false;
         if (typeList1.size() != typeList2.size())
             return false;
         for (int i = 0; i < typeList1.size(); i++) {
             MethodParameterType type1 = typeList1.get(i);
             MethodParameterType type2 = typeList2.get(i);
-//            System.out.println("Methode type "+ type1 +" " + type2);
             if (!type1.equalsWithRename(type2, elementMappings))
                 return false;
         }

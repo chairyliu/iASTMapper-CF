@@ -22,7 +22,6 @@ public class RenameStatistics {
         String dstTokenStr = dstTokenEle.getStringValue();
         if (srcTokenStr.equals(dstTokenStr))
             return;
-//        System.out.println("isName ? " + srcTokenEle.isName());
         if (!srcTokenEle.isName())
             return;
 
@@ -32,7 +31,6 @@ public class RenameStatistics {
             overallRenameStatistics.get(srcTokenStr).put(dstTokenStr, 0);
         int num = overallRenameStatistics.get(srcTokenStr).get(dstTokenStr);
         overallRenameStatistics.get(srcTokenStr).put(dstTokenStr, num + 1);
-//        System.out.println("value is " + srcTokenStr + " " + dstTokenStr + " " + overallRenameStatistics.get(srcTokenStr));
     }
 
     public void removeRenameByTokenMapping(TokenElement srcTokenEle, TokenElement dstTokenEle) {
@@ -68,21 +66,19 @@ public class RenameStatistics {
             return null;
         Map<String, Integer> dstNameMap = new HashMap<>(overallRenameStatistics.get(srcName));
 
-//        System.out.println("Src Token is " + srcToken + "| " + srcToken.getTokenType() + " Dst " + dstToken + "| " + dstToken.getTokenType() + " " + dstNameMap);
         if (currentMappings.isMapped(srcToken)) {
             ProgramElement tmpDstToken = currentMappings.getMappedElement(srcToken);
             if (!srcToken.equalValue(tmpDstToken)) {
                 String tmpDstName = tmpDstToken.getStringValue();
-                if (dstNameMap.containsKey(tmpDstName))  // 添加-ZN
+                if (dstNameMap.containsKey(tmpDstName))
                     dstNameMap.put(tmpDstName, dstNameMap.get(tmpDstName) - 1);
             }
         }
         if (currentMappings.isMapped(dstToken)) {
             ProgramElement tmpSrcToken = currentMappings.getMappedElement(dstToken);
-//            System.out.println("Src Token is " + tmpSrcToken);
             if (tmpSrcToken.equalValue(srcToken) && tmpSrcToken != srcToken) {
                 String dstName = dstToken.getStringValue();
-                if (dstNameMap.containsKey(dstName))  // 添加-ZN
+                if (dstNameMap.containsKey(dstName))
                     dstNameMap.put(dstName, dstNameMap.get(dstName) - 1);
             }
         }

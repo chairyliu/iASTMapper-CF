@@ -34,15 +34,37 @@ public class StmtTokenAction {
     private ElementMappings eleMappings;
     private List<TokenElement> srcTokenElements = new ArrayList<>();
     private List<TokenElement> dstTokenElements = new ArrayList<>();
+    private String srcPath;
+    private Map<String, List<ProgramElement>> dstPathToStmtsMap;
 
     /**
      * Constructor
-     * @param srcStmtEle source statement
-     * @param dstStmtEle target statement
-     * @param eleMappings element mappings
-     * @param subSrcStmtsInLcs source statements sorted by lcs
-     * @param subSrcTokenInLcs source tokens sorted by lcs
+     *
+     * @param srcStmtEle        source statement
+     * @param dstStmtEle        target statement
+     * @param eleMappings       element mappings
+     * @param subSrcStmtsInLcs  source statements sorted by lcs
+     * @param subSrcTokenInLcs  source tokens sorted by lcs
+     * @param srcPath
+     * @param dstPathToStmtsMap
      */
+    public StmtTokenAction(ProgramElement srcStmtEle, ProgramElement dstStmtEle, ElementMappings eleMappings,
+                           Map<ProgramElement, Set<ProgramElement>> subSrcStmtsInLcs,
+                           Map<ProgramElement, Set<ProgramElement>> subSrcTokenInLcs,
+                           String srcPath, Map<String, List<ProgramElement>> dstPathToStmtsMap){
+        this.srcStmtEle = srcStmtEle;
+        this.dstStmtEle = dstStmtEle;
+        this.eleMappings = eleMappings;
+        this.srcPath = srcPath;
+        this.dstPathToStmtsMap = dstPathToStmtsMap;
+        if (srcStmtEle != null)
+            srcTokenElements = srcStmtEle.getTokenElements();
+        if (dstStmtEle != null)
+            dstTokenElements = dstStmtEle.getTokenElements();
+        this.subSrcStmtsInLcs = subSrcStmtsInLcs;
+        this.subSrcTokenInLcs = subSrcTokenInLcs;
+    }
+
     public StmtTokenAction(ProgramElement srcStmtEle, ProgramElement dstStmtEle, ElementMappings eleMappings,
                            Map<ProgramElement, Set<ProgramElement>> subSrcStmtsInLcs,
                            Map<ProgramElement, Set<ProgramElement>> subSrcTokenInLcs){
@@ -60,7 +82,7 @@ public class StmtTokenAction {
     /**
      * Get a map between element and action type
      */
-    public Map<ProgramElement, String> getElementActionMap(){//没用到
+    public Map<ProgramElement, String> getElementActionMap(){
         Map<ProgramElement, String> eleActionMap = new HashMap<>();
         String stmtActionType = getStmtActionType();
         if (srcStmtEle != null){
@@ -89,27 +111,48 @@ public class StmtTokenAction {
     }
 
     public boolean hasAction(){
-//        ProgramElement srcParentEle = srcStmtEle.getParentElement();
-//        if (subSrcStmtsInLcs.containsKey(srcParentEle))
-//            System.out.println("stmt is " + srcStmtEle + " " + subSrcStmtsInLcs.get(srcParentEle));
         String stmtAction = getStmtActionType();
         return !stmtAction.equals("***");
     }
 
     @Override
-    public String toString() {//输入文件的格式
-        String stmtActionType = getStmtActionType();//stmtActionType指增删改查
+    public String toString() {
+        String stmtActionType = getStmtActionType();
         if (stmtActionType.equals("***"))
             return "***";
         String ret = "==================================================";
         ret += "\n";
         ret += "**" + stmtActionType + "**:";
-        if (srcStmtEle == null)
-            ret += dstStmtEle.toString() + "\n";
+        boolean isFind = false;
+        if (srcStmtEle == null) {
+            for (Map.Entry<String, List<ProgramElement>> entry : dstPathToStmtsMap.entrySet()) {
+                String dstPath = entry.getKey();
+                for (ProgramElement dstEle : entry.getValue()){
+                    if (dstEle.getStringValue().equals(dstStmtEle.getStringValue()) && dstEle.equals(dstStmtEle)) {
+                        ret += dstStmtEle.toString() + "," + dstPath + "\n";
+                        isFind = true;
+                        break;
+                    }
+                }
+                if (isFind)
+                    break;
+            }
+        }
         else{
-            ret += srcStmtEle.toString();
+            ret += srcStmtEle.toString() + "," + srcPath;
             if (dstStmtEle != null){
-                ret += " => " + dstStmtEle.toString() + "\n";
+                for (Map.Entry<String, List<ProgramElement>> entry : dstPathToStmtsMap.entrySet()) {
+                    String dstPath = entry.getKey();
+                    for (ProgramElement dstEle : entry.getValue()) {
+                        if (dstEle.getStringValue().equals(dstStmtEle.getStringValue()) && dstEle.equals(dstStmtEle)) {
+                            ret += " => " + dstStmtEle.toString() + "," + dstPath + "\n";
+                            isFind = true;
+                            break;
+                        }
+                    }
+                    if (isFind)
+                        break;
+                }
             } else {
                 ret += "\n";
             }

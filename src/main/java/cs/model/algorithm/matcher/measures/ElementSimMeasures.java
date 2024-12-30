@@ -44,7 +44,6 @@ public class ElementSimMeasures {
         SimMeasure measure = new ElementTypeMeasure();
         measure.calSimMeasure(srcEle, dstEle);
         measureMap.put("E_TYPE", measure);
-//        System.out.println("4");
     }
 
     private int isSameStringValueForStmt() {
@@ -60,7 +59,6 @@ public class ElementSimMeasures {
     }
 
     public ElementMapping getElementMapping(){
-//        System.out.println("SrcEle " + srcEle + " DstEle " + dstEle);
         return new ElementMapping(srcEle, dstEle);
     }
 
@@ -77,7 +75,6 @@ public class ElementSimMeasures {
         return dstEle;
     }
 
-    // 添加-ZN
     public Map<String, SimMeasure> getMeasureMap() {
         return measureMap;
     }
@@ -168,35 +165,6 @@ public class ElementSimMeasures {
     }
 
     /**
-     * calculate all the similarity measures when building dataset
-     */
-//    private void calAllSimMeasures(ElementMappings eleMappings){
-//        if (srcEle.isStmt()) {
-//            for (String measureName: SimMeasureConfiguration.STMT_MEASURE_CONFIGURATION)
-//                addNewMeasure(measureName, eleMappings);
-//        } else {
-//            for (String measureName: SimMeasureConfiguration.TOKEN_MEASURE_CONFIGURATION)
-//                addNewMeasure(measureName, eleMappings);
-//        }
-//    }
-
-    /**
-     * get feature vector for training and testing dataset.
-     */
-//    public List<AttrValue> toMeasureVector(ElementMappings elementMappings){
-//        List<AttrValue> ret = new ArrayList<>();
-//        String[] measures = srcEle.isStmt() ?
-//                SimMeasureConfiguration.STMT_MEASURE_CONFIGURATION :
-//                SimMeasureConfiguration.TOKEN_MEASURE_CONFIGURATION;
-//        for (String measureName: measures) {
-//            double value = getSimMeasure(measureName, elementMappings).getValue();
-//            AttrValue attrValue = new AttrValue(measureName, value);
-//            ret.add(attrValue);
-//        }
-//        return ret;
-//    }
-
-    /**
      * Compare between two measures given a measure name
      * @param measures1 first measures1
      * @param measures2 second measures
@@ -206,31 +174,13 @@ public class ElementSimMeasures {
      */
     public static int doCompare(ElementSimMeasures measures1, ElementSimMeasures measures2,
                                  ElementMappings eleMappings, String measureName) {
-        // If two program elements have same string value,
-        // it is not necessary to use NAME, NIT, DICE and NGRAM to compare the measure
-        // .. What do those 3 do here ?
         if (measures1.isSameStringValueForStmt() == 1 && measures2.isSameStringValueForStmt() == 1){
-//            if (measureName.equals(SimMeasureNames.NIT))
-//                return 0;
             if (measureName.equals(SimMeasureNames.IMTR))
                 return 0;
-//            if (measureName.equals(SimMeasureNames.NGRAM))
-//                return 0;
         }
 
         SimMeasure measure1 = measures1.getSimMeasure(measureName, eleMappings);
         SimMeasure measure2 = measures2.getSimMeasure(measureName, eleMappings);
-//        System.out.println("Mea1 " + measure1.getValue() + " Mea2 " + measure2.getValue());
         return measure1.compare(measure2);
     }
-
-//    public static int doCompareWithConfigMeasures(ElementSimMeasures measures1, ElementSimMeasures measures2,
-//                                                  ElementMappings elementMappings, String[] measures) {
-//        for (String measureName: measures) {
-//            int cmp = doCompare(measures1, measures2, elementMappings, measureName);
-//            if (cmp != 0)
-//                return cmp;
-//        }
-//        return 0;
-//    }
 }

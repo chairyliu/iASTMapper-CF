@@ -28,7 +28,7 @@ public class MultiFastMatcher extends BaseFastMatcher {
 
         // Fast matcher 3: match all tokens in identical inner-statements
         BaseFastMatcher matcher3 = new SameBigStructureMatcher(srcStmts, dstStmts, elementMappings);
-        matcher3.setTokenMapStatistics(statistics);//考虑删去
+        matcher3.setTokenMapStatistics(statistics);
         matcher3.buildMappings();
     }
 }

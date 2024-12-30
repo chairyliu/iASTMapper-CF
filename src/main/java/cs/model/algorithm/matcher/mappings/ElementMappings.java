@@ -27,7 +27,7 @@ public class ElementMappings implements Iterable<ElementMapping> {
 
     public Map<ProgramElement,ProgramElement> getSrcToDst(){
         return this.srcToDst;
-    }//其实没用到
+    }
 
     public void addMapping(ProgramElement srcEle, ProgramElement dstEle){
         removeMapping(srcEle);
@@ -160,7 +160,6 @@ public class ElementMappings implements Iterable<ElementMapping> {
         TokenElement dstToken = (TokenElement) dstElement;
         String srcStr = srcToken.getStringValue();
         String dstStr = dstToken.getStringValue();
-//        System.out.println("String value is " + srcStr + " " + dstStr);
         if (srcStr.equals(dstStr))
             return false;
         Set<String> otherNames = getRenameStatistics()
@@ -171,14 +170,12 @@ public class ElementMappings implements Iterable<ElementMapping> {
     }
 
     public MappingStore toMappingStore(ITree srcRoot, ITree dstRoot) {
-        //创建一个MappingStore对象，表示源树和目标树之间的映射关系
         MappingStore ms = new MappingStore(srcRoot, dstRoot);
-        for (ProgramElement src: srcToDst.keySet()) {//遍历源到目标的映射关系
-            ITree srcT = src.getITreeNode();//获取源元素对应的源树节点
+        for (ProgramElement src: srcToDst.keySet()) {
+            ITree srcT = src.getITreeNode();
             ITree dstT = srcToDst.get(src).getITreeNode();
-            ms.addMapping(srcT, dstT);//将源树节点和目标树节点添加到MappingStore中，表示它们之间存在映射关系
+            ms.addMapping(srcT, dstT);
         }
-//        System.out.println(srcToDst.size());
         return ms;
     }
 

@@ -25,13 +25,6 @@ public class IdenticalImportsMatcher implements Matcher {
 
     private static JavaNodeTypeChecker typeChecker = StaticNodeTypeChecker.getConfigNodeTypeChecker();
 
-//    public IdenticalImportsMatcher(ITree src, ITree dst, MappingStore store) {
-//        super(src, dst, store);
-//
-//        srcIds = new TreeMap(src);
-//        dstIds = new TreeMap(dst);
-//    }
-
     private void match() {
         List<ITree> srcTreesInPostOrder = TreeUtils.postOrder(src);
         List<ITree> dstTreesInPostOrder = TreeUtils.postOrder(dst);

@@ -22,7 +22,6 @@ public class InnerStmtEleTokenDiceMeasure extends AbstractSimMeasure implements 
         double equalValue = getDiceForEqualTokens(elementMappings, srcElement, dstElement);
         double val = mappingValue + equalValue;
         return 2 * val / (srcElement.getTokenElements().size() + dstElement.getTokenElements().size());
-//        return InnerStmtElement.getDiceForMappedTokens(elementMappings, srcElement, dstElement);
     }
 
     public static double getDiceForMappedTokens(ElementMappings mappings, InnerStmtElement srcEle,

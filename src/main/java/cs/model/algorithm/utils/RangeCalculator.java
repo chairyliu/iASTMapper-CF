@@ -21,14 +21,14 @@ public class RangeCalculator {
         buildLines();
     }
 
-    private void buildLines(){//查找每一行的内容，保存在lines中
-        List<String> tmpLines = new ArrayList<>();//暂时存储每一行的内容
-        String currentLine = "";//当前正在处理的行的内容
+    private void buildLines(){
+        List<String> tmpLines = new ArrayList<>();
+        String currentLine = "";
         for (int i = 0; i < fileContent.length(); i++){
-            char c = fileContent.charAt(i);//获取文件内容中当前位置的字符
+            char c = fileContent.charAt(i);
             if (c == '\n'){
                 tmpLines.add(currentLine);
-                currentLine = "";//重置
+                currentLine = "";
             } else {
                 currentLine += c;
             }
@@ -37,24 +37,22 @@ public class RangeCalculator {
             tmpLines.add("");
         else if (!currentLine.equals(""))
             tmpLines.add(currentLine);
-        lines = tmpLines.toArray(new String[tmpLines.size()]);//将tmpLines转换为字符串数组，lines包含了文件内容中每一行的字符串
+        lines = tmpLines.toArray(new String[tmpLines.size()]);
     }
 
     public String[] getLines() {
         return lines;
     }
 
-    //根据换行符确定每行结束的索引，以及每行有多少个字符
     private void initLineEndIndexes(String fileContent){
-        lineEndIndexes = new ArrayList<>();//存储每行结束的索引
-        int the_end = 0;//存储每行有多少个字符
+        lineEndIndexes = new ArrayList<>();
+        int the_end = 0;
         for (int i = 0; i < fileContent.length(); i++) {
-            if (fileContent.charAt(i) == '\n')//如果当前字符是换行符，就把i添加到lineEndIndexes列表中，表示这是一行的结束位置
+            if (fileContent.charAt(i) == '\n')
                 lineEndIndexes.add(i);
             the_end++;
         }
-        // repair the bug add the last line index (because the last line hasn't the end character) 20220510 21:57
-        lineEndIndexes.add(the_end);//因为最后一行可能没有换行符，所以在遍历完成后，将the_end的最终值添加到lineEndIndexes
+        lineEndIndexes.add(the_end);
     }
 
     /**
@@ -62,8 +60,7 @@ public class RangeCalculator {
      * @param pos the character position
      * @return the line number of pos
      */
-    public int getLineNumberOfPos(int pos){//获取给定字符的行号
-//        System.out.println(pos + " || " + lineEndIndexes);
+    public int getLineNumberOfPos(int pos){
         int ret = findEndIndexesBetweenNode(pos, lineEndIndexes);
         if (ret == -1)
             throw new RuntimeException("Cannot find the line number of pos!");

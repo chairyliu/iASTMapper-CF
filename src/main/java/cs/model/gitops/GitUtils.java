@@ -163,7 +163,7 @@ public class GitUtils {
         return list;
     }
 
-    private static void initProjectInfoRetrieval(String project){//初始化项目信息的检索
+    private static void initProjectInfoRetrieval(String project){
         if (projectInfoRetrieval == null)
             projectInfoRetrieval = new GitProjectInfoRetrieval(project);
         else if (!projectInfoRetrieval.checkCurrentProject(project)) {
@@ -193,7 +193,6 @@ public class GitUtils {
      * @param getDiff whether get the git diff results
      * @throws Exception
      */
-    //获取指定项目中某个提交的修改信息，包括添加的文件列表、旧的修改映射以及文件的差异信息（如果需要的话）
     public static void getModificationInfo(String project, String commitId,
                                            List<String> addedFiles, Map<String, String> oldModifyMap,
                                            Map<String, ByteArrayOutputStream> fileDiffMap,
@@ -207,10 +206,8 @@ public class GitUtils {
         else
             baseCommit = null;
         if (baseCommit != null) {
-            //获取当前提交与父提交之间的文件修改信息，将结果存储在传递的列表和映射中
             gitService.getFileModificationInfo(curCommit, baseCommit, addedFiles, oldModifyMap);
             if (getDiff) {
-                //获取当前提交与父提交之间的文件差异信息
                 Map<String, ByteArrayOutputStream> tmp = gitService.diffOperation(curCommit, baseCommit, oldModifyMap);
                 fileDiffMap.putAll(tmp);
             }
@@ -223,11 +220,9 @@ public class GitUtils {
     }
 
     public static GitService getRawGitService(String project) {
-        String projectFolder = PathResolver.projectFolder(project);//创建指定project的克隆仓库路径
-        String cloneUrl = MyConfig.getCloneUrl(project);//获取project的克隆URL
-//        System.out.println("ProjectPath is " + projectFolder + " " + cloneUrl);
+        String projectFolder = PathResolver.projectFolder(project);
+        String cloneUrl = MyConfig.getCloneUrl(project);
         try {
-            //创建指定project克隆仓库的GitService对象，用于后续的project数据获取
             return GitService.GitServiceFactory.makeGitService(projectFolder, cloneUrl);
         } catch (Exception e){
             throw new RuntimeException("Git Init Error: " + e.getMessage());

@@ -144,10 +144,8 @@ public class GitService {
      */
     public List<ObjectId> getAllBranchObjectId(String branch) throws Exception{
         List<ObjectId> currentRemoteRefs = new ArrayList<ObjectId>();
-//        System.out.println("Repositiry " +  repository.getRefDatabase().getRefs());
         for (Ref ref: repository.getRefDatabase().getRefs()){
             String refName = ref.getName();
-//            System.out.println("redName is " + refName);
             if (branch == null || refName.endsWith("/" + branch)) {
                 currentRemoteRefs.add(ref.getObjectId());
             }
@@ -232,7 +230,6 @@ public class GitService {
             String oldPath = diff.getOldPath();
             String newPath = diff.getNewPath();
 
-            // 如果不是增加文件，也不是拷贝文件
             if (changeType != DiffEntry.ChangeType.ADD && changeType != DiffEntry.ChangeType.COPY)
                 oldModifiedFiles.put(oldPath, newPath);
             else
@@ -241,7 +238,6 @@ public class GitService {
         tw.close();
     }
 
-    // 获取Commit全部的非新加文件
     public Map<String, String> getOldModifiedFiles(RevCommit currentCommit, RevCommit baseCommit) throws Exception{
         Map<String, String> ret = new HashMap<>();
 
@@ -257,7 +253,6 @@ public class GitService {
             String oldPath = diff.getOldPath();
             String newPath = diff.getNewPath();
 
-            // 如果不是增加文件，也不是拷贝文件
             if (changeType != DiffEntry.ChangeType.ADD && changeType != DiffEntry.ChangeType.COPY)
                 ret.put(oldPath, newPath);
         }
@@ -380,7 +375,6 @@ public class GitService {
         Map<String, ByteArrayOutputStream> ret = new HashMap<>();
 
         for (DiffEntry entry: diffs2){
-            // 不考虑增加文件
             DiffEntry.ChangeType changeType = entry.getChangeType();
             if (changeType == DiffEntry.ChangeType.ADD)
                 continue;

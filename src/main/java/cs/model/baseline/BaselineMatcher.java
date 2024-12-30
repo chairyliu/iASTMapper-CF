@@ -39,7 +39,7 @@ public class BaselineMatcher {
 
     private List<TreeEditAction> actions;
 
-    private MappingStore ms;  // 添加-ZN
+    private MappingStore ms;
 
     private long gtMappingTime = 0;
     private long gtActionTime = 0;
@@ -231,7 +231,6 @@ public class BaselineMatcher {
         return tmp;
     }
 
-    // 添加-ZN
     public MappingStore getMs() {
         return ms;
     }

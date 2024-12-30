@@ -64,7 +64,6 @@ public abstract class AbstractSimMeasure implements SimMeasure {
     protected boolean isWithRename(ProgramElement srcElement, ProgramElement dstElement) {
         TokenElement srcNameToken = ((StmtElement) srcElement).getNameToken();
         TokenElement dstNameToken = ((StmtElement) dstElement).getNameToken();
-//        System.out.println("Name Token is " + srcNameToken + " | " + dstNameToken);
         if (srcNameToken != null && dstNameToken != null) {
             return elementMappings.isTokenRenamed(srcNameToken, dstNameToken);
         }

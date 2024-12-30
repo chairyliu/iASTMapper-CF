@@ -18,7 +18,6 @@ public class FastTokenCandidateSearcher {
     private TokenElement srcToken;
     private Set<ProgramElement> sameTypeCandidates;
 
-    //针对给定的源令牌元素（TokenElement）在目标程序中查找不同类型的候选元素
     public FastTokenCandidateSearcher(TokenElement srcToken, ElementMappings elementMappings,
                                       FilterDstCandidates filterDstCandidates, CandidateSetsAndMaps candidateSetsAndMaps) {
         this.srcToken = srcToken;
@@ -29,25 +28,25 @@ public class FastTokenCandidateSearcher {
     }
 
     public Set<ProgramElement> getSameStmtCandidateTokensForSrcToken() {
-        SimMeasure measure = new TokenStmtMeasure();//计算源令牌和目标令牌在语句中相似度的度量
+        SimMeasure measure = new TokenStmtMeasure();
         measure.setElementMappings(elementMappings);
-        return measure.filterBadDstCandidateElements(srcToken, sameTypeCandidates, filterDstCandidates,candidateSetsAndMaps);//返回过滤后的候选目标元素集合
+        return measure.filterBadDstCandidateElements(srcToken, sameTypeCandidates, filterDstCandidates,candidateSetsAndMaps);
     }
 
     public Set<ProgramElement> getNeighborCandidateTokensForSrcToken() {
-        SimMeasure measure = new TokenNeighborMeasure();//在邻近位置的相似度的度量
+        SimMeasure measure = new TokenNeighborMeasure();
         measure.setElementMappings(elementMappings);
         return measure.filterBadDstCandidateElements(srcToken, sameTypeCandidates, filterDstCandidates,candidateSetsAndMaps);
     }
 
     public Set<ProgramElement> getSameValOrRenameCandidateTokensForSrcToken() {
-        SimMeasure measure = new TokenSameRenameValueMeasure();//计算源令牌和目标令牌在值相同或重命名的相似度的度量
+        SimMeasure measure = new TokenSameRenameValueMeasure();
         measure.setElementMappings(elementMappings);
         return measure.filterBadDstCandidateElements(srcToken, sameTypeCandidates, filterDstCandidates,candidateSetsAndMaps);
     }
 
     public Set<ProgramElement> getCandidatesWithIdenticalMultiTokenForSrcToken() {
-        SimMeasure measure = new TokenSameStructureMeasure();//在结构上相似度的度量
+        SimMeasure measure = new TokenSameStructureMeasure();
         measure.setElementMappings(elementMappings);
         return measure.filterBadDstCandidateElements(srcToken, sameTypeCandidates, filterDstCandidates,candidateSetsAndMaps);
     }

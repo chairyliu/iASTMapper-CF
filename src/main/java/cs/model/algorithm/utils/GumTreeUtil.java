@@ -12,9 +12,11 @@ import com.github.gumtreediff.matchers.MappingStore;
 import com.github.gumtreediff.matchers.Matcher;
 import com.github.gumtreediff.matchers.Matchers;
 import com.github.gumtreediff.tree.ITree;
+import com.github.gumtreediff.tree.TreeContext;
 import cs.model.algorithm.languageutils.typechecker.StaticNodeTypeChecker;
 
-import java.io.*;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.List;
 
 /**
@@ -26,14 +28,21 @@ public class GumTreeUtil {
         Run.initGenerators();
         ITree t = null;
         try {
+            TreeContext generatedTree = null;
             if (matcherId.equals("change-distiller")) {
-                t = new CdJdtTreeGenerator().generate(reader).getRoot();
+                generatedTree = new CdJdtTreeGenerator().generate(reader);
             } else if (matcherId.equals("ijm")) {
-                t = new OptimizedJdtTreeGenerator().generate(reader).getRoot();
+                generatedTree = new OptimizedJdtTreeGenerator().generate(reader);
             } else {
-                t = new JdtTreeGenerator().generate(reader).getRoot();
+                generatedTree = new JdtTreeGenerator().generate(reader);
+            }
+            if (generatedTree != null) {
+                t = generatedTree.getRoot();
+            } else {
+                return null;
             }
         } catch(Exception e) {
+            e.printStackTrace();
             throw new GumTreeException(e.getMessage());
         }
         return t;

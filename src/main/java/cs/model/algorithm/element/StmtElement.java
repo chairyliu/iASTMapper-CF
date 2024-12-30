@@ -77,7 +77,6 @@ public class StmtElement extends AbstractElement implements ProgramElement {
         if (valueTokenElementMap == null || (this.onlyNameAndLiteral != onlyNameAndLiteral)){
             valueTokenElementMap = new HashMap<>();
             for (TokenElement tokenEle: this.tokenElements){
-//                System.out.println("The token is " + tokenEle + " " + tokenEle.isName() + " " + tokenEle.isLiteral() + " " + tokenEle.tokenType);
                 if (onlyNameAndLiteral && (!tokenEle.isName() && !tokenEle.isLiteral()))
                     continue;
                 String val = tokenEle.getStringValue();
@@ -90,12 +89,11 @@ public class StmtElement extends AbstractElement implements ProgramElement {
         return valueTokenElementMap;
     }
 
-    public Map<String, Integer> getTokenNumMap(boolean onlyNameAndLiteral) {//拿到每一个token以及它的数量
+    public Map<String, Integer> getTokenNumMap(boolean onlyNameAndLiteral) {
         if (tokenFreqMap == null || (this.onlyNameAndLiteral != onlyNameAndLiteral)){
             Map<String, Set<TokenElement>> valEleMap = getValueTokenElementMap(onlyNameAndLiteral);
             tokenFreqMap = new HashMap<>();
             for (String key: valEleMap.keySet()){
-//                System.out.println("The key is " + key);
                 tokenFreqMap.put(key, valEleMap.get(key).size());
             }
         }
@@ -110,7 +108,6 @@ public class StmtElement extends AbstractElement implements ProgramElement {
         if (tokenNumMap != null) {
             for (String val : tokenNumMap.keySet()) {
                 int tokenNum = tokenNumMap.get(val);
-//                System.out.println("Token is " + val + " " + tokenNum);
                 ret += tokenNum;
             }
         }
@@ -172,12 +169,6 @@ public class StmtElement extends AbstractElement implements ProgramElement {
 
         if (this.isFromSrc() != element.isFromSrc())
             return false;
-//        if (element.getNodeType().equals("PackageDeclaration")) {
-//            System.out.println("the node type is: " + element.getITreeNode().getType());
-//            System.out.println("the node pos is: " + element.getITreeNode().getPos());
-//            System.out.println("the node label is: " + element.getITreeNode().getLabel());
-//            System.out.println("the node length is: " + element.getITreeNode().getLength());
-//        }
         if (this.node.getType() != element.getITreeNode().getType() ||
                 this.node.getPos() != element.getITreeNode().getPos() ||
                 this.node.getLength() != element.getITreeNode().getLength())
@@ -192,7 +183,6 @@ public class StmtElement extends AbstractElement implements ProgramElement {
         hash = hash * 31 + this.node.getType().hashCode();
         hash = hash * 31 + Integer.hashCode(this.node.getPos());
         hash = hash * 31 + Integer.hashCode(this.node.getLength());
-//        hash = hash * 31 + Integer.hashCode(this.node.getEndPos());
         return hash;
     }
 
@@ -316,7 +306,7 @@ public class StmtElement extends AbstractElement implements ProgramElement {
 
     public void calTokensOfInnerStmtElements() {
         for (TokenElement tokenEle: getTokenElements()) {
-            tokenEle.createInnerStmtElementsWithToken(treeInnerStmtEleMap);//传入的是innerstmt的树节点和element元素对应的map
+            tokenEle.createInnerStmtElementsWithToken(treeInnerStmtEleMap);
         }
     }
 

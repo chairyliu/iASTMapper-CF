@@ -38,14 +38,40 @@ public class StmtTokenActionGenerator {
 
     /**
      * Generate a list of StmtTokenAction
+     *
      * @param includeNonChanged whether include non-changed statements
+     * @param srcPath
+     * @param dstPathToStmtsMap
      * @return a list of stmt-token actions
      */
+    public List<StmtTokenAction> generateActions(boolean includeNonChanged, String srcPath, Map<String, List<ProgramElement>> dstPathToStmtsMap){
+        Set<ProgramElement> calculatedDstStmts = new HashSet<>();
+        List<StmtTokenAction> actionList = new ArrayList<>();
+        for (ProgramElement srcStmt: srcStmts){
+            ProgramElement dstStmt = eleMappings.getDstForSrc(srcStmt);
+            StmtTokenAction action = new StmtTokenAction(srcStmt, dstStmt, eleMappings, subSrcStmtsInLcs, subSrcTokenInLcs, srcPath, dstPathToStmtsMap);
+            if (!includeNonChanged && !action.hasAction()) {
+                if (dstStmt != null)
+                    calculatedDstStmts.add(dstStmt);
+                continue;
+            }
+            actionList.add(action);
+            if (dstStmt != null)
+                calculatedDstStmts.add(dstStmt);
+        }
+        for (ProgramElement dstStmt: dstStmts){
+            if (calculatedDstStmts.contains(dstStmt))
+                continue;
+            StmtTokenAction action = new StmtTokenAction(null, dstStmt, eleMappings, subSrcStmtsInLcs, subSrcTokenInLcs, srcPath, dstPathToStmtsMap);
+            actionList.add(action);
+        }
+        return actionList;
+    }
+
     public List<StmtTokenAction> generateActions(boolean includeNonChanged){
         Set<ProgramElement> calculatedDstStmts = new HashSet<>();
         List<StmtTokenAction> actionList = new ArrayList<>();
         for (ProgramElement srcStmt: srcStmts){
-//            System.out.println(srcStmt);
             ProgramElement dstStmt = eleMappings.getDstForSrc(srcStmt);
             StmtTokenAction action = new StmtTokenAction(srcStmt, dstStmt, eleMappings, subSrcStmtsInLcs, subSrcTokenInLcs);
             if (!includeNonChanged && !action.hasAction()) {

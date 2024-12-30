@@ -72,42 +72,6 @@ public abstract class AbstractBottomUpMatcher {
             return candidates;
         }
 
-//        protected void lastChanceMatch(ITree src, ITree dst) {
-//
-//            if (src.getMetrics().size < AbstractBottomUpMatcher.SIZE_THRESHOLD
-//                    || dst.getMetrics().size < AbstractBottomUpMatcher.SIZE_THRESHOLD) {
-//                Matcher m = new ZsMatcher();
-//                MappingStore zsMappings = m.match(src, dst, new MappingStore(src, dst));
-//                for (Mapping candidate : zsMappings) {
-//                    ITree srcCand = candidate.first;
-//                    ITree dstCand = candidate.second;
-//                    if (mappings.isMappingAllowed(srcCand, dstCand))
-//                        mappings.addMapping(srcCand, dstCand);
-//                }
-//            }
-//        }
-
-//        private Set<Integer> getCannotRemoveNodes(ITree node, boolean isSrc, MyITreeMap originTreeMap){
-//            Set<ITree> ret = new HashSet<>();
-//            ITree p = node.getParent();
-//            node.setParent(null);
-//            for (ITree t: node.postOrder()){
-//                if (isSrc && !mappings.isSrcMapped(t))
-//                    ret.addAll(t.getParents());
-//                else if (!isSrc && !mappings.isDstMapped(t))
-//                    ret.addAll(t.getParents());
-//            }
-//
-//            Set<Integer> ret2 = new HashSet<>();
-//            for (ITree t: ret){
-//                if (t == null)
-//                    continue;
-//                ret2.add(originTreeMap.getIdOfTree(t));
-//            }
-//            node.setParent(p);
-//            return ret2;
-//        }
-
         private void getMappedTreeIndexInPreOrder(ITree node, boolean isSrc,
                                                   Set<Integer> mappedTreeIndexes,
                                                   MyITreeMap treeMap){

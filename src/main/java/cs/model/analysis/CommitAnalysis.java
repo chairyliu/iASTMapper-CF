@@ -1,7 +1,9 @@
 package cs.model.analysis;
 
+import com.github.gumtreediff.tree.ITree;
 import cs.model.algorithm.element.ProgramElement;
 import cs.model.algorithm.iASTMapper;
+import cs.model.algorithm.utils.GumTreeUtil;
 import cs.model.gitops.GitHunk;
 import cs.model.gitops.GitInfoRetrieval;
 import cs.model.gitops.GitUtils;
@@ -29,56 +31,55 @@ public class CommitAnalysis {
     protected String dstFilePath;
     protected String srcFileContent;
     protected String dstFileContent;
+    private ITree src;
+    private ITree dst;
     private iASTMapper matcher;
 
-    public static Map<String, List<ProgramElement>> srcStmtsToMap;
-    public static Map<String, List<ProgramElement>> dstStmtsToMap;
+    public static Map<String, List<ProgramElement>> srcPathToStmtsMap;
+    public static Map<String, List<ProgramElement>> dstPathToStmtsMap;
     public static Map<String, ProgramElement> dstPathToRoot;
     public static Map<String, ProgramElement> srcPathToRoot;
-    public static List<ProgramElement> AllDstStmtsToMap;
-    public static List<ProgramElement> AllDstTokensToMap;
-    public static List<ProgramElement> AllDstinnerStmtsToMap;
+    public static List<ProgramElement> AllDstStmtsList;
+    public static List<ProgramElement> AllDstTokensList;
+    public static List<ProgramElement> AllDstinnerStmtsList;
     public static Map<String, Set<ProgramElement>> AllDstPathToStmtsMap;
-    public static Map<String, Set<ProgramElement>> AllDstPathToTokensMap;
-    public static Map<String, Set<ProgramElement>> AllDstPathToinnerStmtsMap;
+    public static Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
     public Map<String, Set<ProgramElement>> AllDstValTokenMap;
     public Map<String, iASTMapper> srcPathToMatcher = new HashMap<>();
     public List<ProgramElement> allDstStmts;
-    public static Map<String, Set<ProgramElement>> AllSrcPathToStmtsMap;
-
+    private long treeBuildTime;
 
     public CommitAnalysis(String project, String commitId, boolean stmtOrToken) {
         this.project = project;
         this.commitId = commitId;
         this.resultMap = new HashMap<>();
-        this.comparisonResultMap = new HashMap<>();//后期去掉
-        this.evaluationMap = new HashMap<>();//后期去掉
+        this.comparisonResultMap = new HashMap<>();
+        this.evaluationMap = new HashMap<>();
         this.stmtOrToken = stmtOrToken;
-        srcStmtsToMap = new HashMap<>();
-        dstStmtsToMap = new HashMap<>();
+        srcPathToStmtsMap = new HashMap<>();
+        dstPathToStmtsMap = new HashMap<>();
         dstPathToRoot = new HashMap<>();
         srcPathToRoot = new HashMap<>();
         this.AllDstPathToStmtsMap = new HashMap<>();
-        this.AllDstPathToTokensMap = new HashMap<>();
-        this.AllDstPathToinnerStmtsMap = new HashMap<>();
-        this.AllDstStmtsToMap = new ArrayList<>();
-        this.AllDstTokensToMap = new ArrayList<>();
-        this.AllDstinnerStmtsToMap = new ArrayList<>();
+        this.AllDstStmtsList = new ArrayList<>();
+        this.AllDstTokensList = new ArrayList<>();
+        this.AllDstinnerStmtsList = new ArrayList<>();
         this.AllDstValTokenMap = new HashMap<>();
         this.AllSrcPathToStmtsMap = new HashMap<>();
         allDstStmts = new ArrayList<>();
     }
 
-    public void calResultMapping(boolean doComparison, boolean doEvaluation) {
+    public void calResultMapping(boolean doCrossFileMapping) {
         String baseCommitId = GitUtils.getBaseCommitId(project, commitId);
         if (baseCommitId == null)
             return;
-        Map<String, String> pathMap = GitInfoRetrieval.getOldModifiedFileMap(project, commitId);//获取“原文件-修订文件”对
+        Map<String, String> pathMap = GitInfoRetrieval.getOldModifiedFileMap(project, commitId);
         if (pathMap == null || pathMap.size() == 0)
             return;
         boolean isSingleFile = false;
-        if (pathMap.size() == 1)
+        if (pathMap.size() == 1){
             isSingleFile = true;
+        }
 
         for (String srcFilePath : pathMap.keySet()){
             String dstFilePath = pathMap.get(srcFilePath);
@@ -86,11 +87,13 @@ public class CommitAnalysis {
                 continue;
             if (checkOnlyRenameOperation(project, baseCommitId, commitId, srcFilePath, dstFilePath))
                 continue;
-            if (checkAddedOrDeletedLines(srcFilePath, dstFilePath))
+            if (checkAddedOrDeletedLines(srcFilePath))
                 continue;
+
             try {
+                // get file content
                 ByteArrayOutputStream srcFileStream = GitUtils
-                        .getFileContentOfCommitFile(project, baseCommitId, srcFilePath);//获取源文件和修订后文件的内容
+                        .getFileContentOfCommitFile(project, baseCommitId, srcFilePath);
                 srcFileContent = srcFileStream.toString("UTF-8");
                 if (srcFileContent.equals("")){
                     this.srcFilePath = null;
@@ -103,14 +106,22 @@ public class CommitAnalysis {
                     this.dstFilePath = null;
                     return;
                 }
-                matcher = new iASTMapper(srcFileContent, dstFileContent, srcFilePath, dstFilePath, pathMap,
-                        srcStmtsToMap, dstStmtsToMap, dstPathToRoot, srcPathToRoot,allDstStmts);//创建iASTMapper对象
-//                if (srcFilePath.equals("activemq-core/src/main/java/org/activemq/util/JMSExceptionSupport.java"))
-//                    System.out.println(srcFilePath);
-//                matcher.multiFastMapped();
-                matcher.preStoreAllDstCandidates(srcFilePath, dstFilePath, AllDstStmtsToMap, AllDstTokensToMap,
-                        AllDstinnerStmtsToMap,AllDstPathToStmtsMap, AllDstPathToTokensMap, AllDstPathToinnerStmtsMap,
-                        AllDstValTokenMap, AllSrcPathToStmtsMap);
+
+                // get the AST tree
+                long time1 = System.currentTimeMillis();
+                src = GumTreeUtil.getITreeRoot(srcFileContent, "gt");
+                dst = GumTreeUtil.getITreeRoot(dstFileContent, "gt");
+                long time2 = System.currentTimeMillis();
+                treeBuildTime = time2 - time1;
+                if (src == null || dst == null)
+                    return;
+
+                matcher = new iASTMapper(srcFileContent, dstFileContent, src, dst, srcFilePath, dstFilePath, pathMap,
+                        srcPathToStmtsMap, dstPathToStmtsMap, dstPathToRoot, srcPathToRoot, allDstStmts);
+                matcher.identicalMapping();
+                if (doCrossFileMapping)
+                    matcher.preStoreAllDstCandidates(srcFilePath, dstFilePath, AllDstStmtsList, AllDstTokensList,
+                            AllDstinnerStmtsList,AllDstPathToStmtsMap, AllDstValTokenMap, AllSrcPathToStmtsMap);
                 srcPathToMatcher.put(srcFilePath,matcher);
             }catch (Exception e){
                 e.printStackTrace();
@@ -121,55 +132,27 @@ public class CommitAnalysis {
         }
 
         try {
-            if (doComparison){//去掉
-                /*
-                  Case 1:
-                  Separately compare mappings of statements and tokens.
-                 */
-//                    RevisionComparison comparison = new RevisionComparison(project, commitId, baseCommitId,
-//                            oldPath, newPath, stmtOrToken);
-//                    if (!comparison.isNoGoodResult())
-//                        comparisonResultMap.put(oldPath, comparison);
-            } else if (doEvaluation) {//删去
-//                    System.out.println(oldPath);
-                /*
-                  Case 2:
-                  Compare mappings of statements and tokens collectively.
-                 */
-//                    RevisionEvaluation comparison = new RevisionEvaluation(project, commitId, baseCommitId,
-//                            oldPath, newPath);
-//                    if (!comparison.isNoGoodResult())
-//                        evaluationMap.put(oldPath, comparison);
-            } else {
-                /*
-                  Case 3:
-                  directly analyze mappings generated by our method.
-                 */
-                for (String srcToPath : srcStmtsToMap.keySet()){
-                    List<ProgramElement> srcStmts = new ArrayList<>();
-                    srcStmts = srcStmtsToMap.get(srcToPath);
-                    iASTMapper mc = srcPathToMatcher.get(srcToPath);
-                    RevisionAnalysis result = new RevisionAnalysis(project, commitId, srcToPath, pathMap, mc, srcPathToMatcher,
-                            srcStmts, AllSrcPathToStmtsMap, isSingleFile);
-                    resultMap.put(srcToPath, result);
-                }
+            // For each source file, iterate through all target files in the same commit
+            for (String srcToPath : srcPathToStmtsMap.keySet()){
+                List<ProgramElement> srcStmts = new ArrayList<>();
+                srcStmts = srcPathToStmtsMap.get(srcToPath);
+                if (srcStmts == null)
+                    return;
+                iASTMapper mc = srcPathToMatcher.get(srcToPath);
+                RevisionAnalysis result = new RevisionAnalysis(project, commitId, srcToPath, pathMap, mc, srcPathToMatcher,
+                        srcStmts, AllSrcPathToStmtsMap, isSingleFile, doCrossFileMapping);
+                resultMap.put(srcToPath, result);
             }
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public Map<String, RevisionAnalysis> getRevisionAnalysisResultMap() {
-        return resultMap;
-    }
+    public Map<String, RevisionAnalysis> getRevisionAnalysisResultMap() { return resultMap;}
 
-    public Map<String, RevisionComparison> getComparisonResultMap() {
-        return comparisonResultMap;
-    }
+    public Map<String, RevisionComparison> getComparisonResultMap() { return comparisonResultMap;}
 
-    public Map<String, RevisionEvaluation> getEvaluationMap() {
-        return evaluationMap;
-    }
+    public Map<String, RevisionEvaluation> getEvaluationMap() { return evaluationMap;}
 
     /**
      * If file is only renamed, not necessary to analyze it.
@@ -193,7 +176,7 @@ public class CommitAnalysis {
     /**
      * If not add or delete code lines, not necessary to analyze it.
      */
-    private boolean checkAddedOrDeletedLines(String srcFilePath, String dstFilePath){
+    private boolean checkAddedOrDeletedLines(String srcFilePath){
         Set<Integer> addedLines = GitHunk.getAllAddedLines(project, commitId, srcFilePath, false);
         Set<Integer> deletedLines = GitHunk.getAllDeletedLines(project, commitId, srcFilePath, false);
 

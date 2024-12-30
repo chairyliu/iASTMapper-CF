@@ -21,7 +21,6 @@ public class StmtNameMatchRule extends AbstractElementMatchRule implements Eleme
     protected double calMeasureValue(ProgramElement srcEle, ProgramElement dstEle) {
         if (srcEle.getName() == null || dstEle.getName() == null)
             return 0;
-//        System.out.println("Src and name " + srcEle + " " + srcEle.getName() + " Dst and name " + dstEle + " " + dstEle.getName());
         boolean equalName = srcEle.getName().equals(dstEle.getName());
         return equalName || isWithRename(srcEle, dstEle) ? 1 : 0;
     }
@@ -29,7 +28,6 @@ public class StmtNameMatchRule extends AbstractElementMatchRule implements Eleme
     protected boolean isWithRename(ProgramElement srcElement, ProgramElement dstElement) {
         TokenElement srcNameToken = ((StmtElement) srcElement).getNameToken();
         TokenElement dstNameToken = ((StmtElement) dstElement).getNameToken();
-//        System.out.println("Name Token is " + srcNameToken + " | " + dstNameToken);
         if (srcNameToken != null && dstNameToken != null) {
             return elementMappings.isTokenRenamed(srcNameToken, dstNameToken);
         }
